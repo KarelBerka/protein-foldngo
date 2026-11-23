@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Protein Fold'n'Go — Proteinové Ubongo</title>
+  <meta name="description" content="Interaktivní biochemická skládačka ve stylu Ubongo: skládej globulární proteiny, membránové kanály, fibrily i enzymy s polárním tunelem a aktivním místem C*." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --background: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --foreground: #0f172a;
+      --muted-foreground: #475569;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #e2e8f0;
+      --secondary-foreground: #0f172a;
+    }
+    html.dark {
+      --background: #0b1120;
+      --card: #111827;
+      --border: #1f2937;
+      --foreground: #f1f5f9;
+      --muted-foreground: #94a3b8;
+      --primary: #3b82f6;
+      --primary-foreground: #ffffff;
+      --secondary: #1e293b;
+      --secondary-foreground: #f1f5f9;
+    }
+    .aa-F  { background: #f59e0b; color: #1c1917; border-color: #b45309; } /* Hydrofobní ● */
+    .aa-P  { background: #10b981; color: #052e16; border-color: #047857; } /* Polární */
+    .aa-POS{ background: #3b82f6; color: #ffffff; border-color: #1d4ed8; } /* Kladně nabité + */
+    .aa-NEG{ background: #ef4444; color: #ffffff; border-color: #b91c1c; } /* Záporně nabité − */
+    .aa-S  { background: #a855f7; color: #ffffff; border-color: #7e22ce; } /* Speciální * / ° */
+
+    .cell-water {
+      background: rgba(56, 189, 248, 0.14);
+      border: 1.5px dashed rgba(56, 189, 248, 0.55);
+    }
+    .cell-lipid {
+      background: rgba(245, 158, 11, 0.16);
+      border: 1.5px dashed rgba(245, 158, 11, 0.65);
+    }
+    .cell-pore {
+      background: rgba(16, 185, 129, 0.18);
+      border: 1.5px dashed rgba(16, 185, 129, 0.7);
+    }
+    .cell-active {
+      background: rgba(168, 85, 247, 0.22);
+      border: 2px dashed rgba(168, 85, 247, 0.9);
+      box-shadow: inset 0 0 8px rgba(168, 85, 247, 0.25);
+    }
+    .cell-invalid-env {
+      box-shadow: inset 0 0 0 3px #ef4444;
+      animation: pulseWarn 1.4s infinite;
+    }
+    @keyframes pulseWarn {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.18); }
+    }
+    .piece-card {
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+    }
+    .piece-card:hover {
+      transform: translateY(-2px);
+    }
+    .bond-badge {
+      position: absolute;
+      z-index: 35;
+      pointer-events: none;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1;
+      padding: 2px 4px;
+      border-radius: 9999px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+      transform: translate(-50%, -50%);
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #ffffff !important; color: #111827 !important; }
+      .print-break { page-break-before: always; }
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased min-h-screen">
+  <div class="max-w-6xl mx-auto p-4 md:p-6 space-y-5">
+
+    <!-- Header -->
+    <header class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[var(--border)]">
+      <div>
+        <h1 class="text-xl font-bold tracking-tight flex items-center gap-2">
+          <span>🧬</span> Protein Fold'n'Go <span class="text-sm font-normal text-[var(--muted-foreground)]">(Proteinové Ubongo)</span>
+          <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            8 úrovní · 12–28 AK
+          </span>
+          <span id="overall-progress" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+            0 / 8 složeno
+          </span>
+        </h1>
+        <p class="text-xs text-[var(--muted-foreground)] mt-1">
+          Skládej proteiny od jednoduchých peptidů po enzymy s polárním tunelem, aktivním místem C* a velké membránové transportéry.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 no-print">
+        <button id="btn-mode-play" onclick="setViewMode('play')"
+          class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]">
+          Interaktivní hra
+        </button>
+        <button id="btn-theme" onclick="toggleTheme()" title="Přepnout světlý / tmavý režim"
+          class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90">
+          🌙
+        </button>
+        <button id="btn-mode-print" onclick="setViewMode('print')"
+          class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90">
+          🖨️ Tisková šablona (KSICHT)
+        </button>
+      </div>
+    </header>
+
+    <!-- Legend -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <span class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+          Kódování aminokyselin (barvy + značky pro černobílý tisk)
+        </span>
+        <span class="text-xs text-[var(--muted-foreground)]">
+          Přetáhni myší nebo klikni · Pravý klik / <kbd class="px-1.5 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> = otočit o 90°
+        </span>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
+        <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)]">
+          <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-F shrink-0">L●</span>
+          <div>
+            <div class="font-semibold">Hydrofobní (●)</div>
+            <div class="text-[var(--muted-foreground)]">L, V, I, F, A, M</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)]">
+          <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-P shrink-0">S</span>
+          <div>
+            <div class="font-semibold">Polární</div>
+            <div class="text-[var(--muted-foreground)]">S, T, N, Q (voda/tunel)</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)]">
+          <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-POS shrink-0">K+</span>
+          <div>
+            <div class="font-semibold">Kladné (+)</div>
+            <div class="text-[var(--muted-foreground)]">K, R (solný můstek)</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)]">
+          <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-NEG shrink-0">D−</span>
+          <div>
+            <div class="font-semibold">Záporné (−)</div>
+            <div class="text-[var(--muted-foreground)]">D, E (solný můstek)</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)] col-span-2 sm:col-span-1">
+          <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-S shrink-0">C*</span>
+          <div>
+            <div class="font-semibold">Speciální (* / °)</div>
+            <div class="text-[var(--muted-foreground)]">C* (S–S / akt. místo), G°, P°</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAY VIEW -->
+    <main id="view-play" class="space-y-4">
+      <!-- 8-Level Selector Grid -->
+      <div id="level-selector" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+
+      <!-- Workspace -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+        <!-- Left: Board -->
+        <div class="lg:col-span-7 bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h2 id="level-title" class="font-bold text-base"></h2>
+                <span id="level-diff-pill" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[var(--secondary)]"></span>
+              </div>
+              <p id="level-desc" class="text-xs text-[var(--muted-foreground)] mt-0.5"></p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="hintOnePiece()"
+                class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-90">
+                💡 Nápověda
+              </button>
+              <button onclick="showSolution()"
+                class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-90">
+                ✨ Řešení
+              </button>
+              <button onclick="resetLevel()"
+                class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] hover:opacity-90">
+                ↺ Reset
+              </button>
+            </div>
+          </div>
+
+          <!-- Variant Switcher -->
+          <div class="flex flex-wrap items-center justify-between gap-2 py-2 px-2.5 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-[var(--muted-foreground)] font-medium mr-1">Kombinace dílků:</span>
+              <div id="variant-buttons" class="flex items-center gap-1 flex-wrap"></div>
+            </div>
+            <button onclick="generateRandomVariant()"
+              class="px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 shrink-0">
+              🎲 Jiná kombinace
+            </button>
+          </div>
+
+          <!-- Grid -->
+          <div class="flex flex-col items-center justify-center py-2 overflow-x-auto">
+            <div id="env-top-label" class="text-xs font-medium text-[var(--muted-foreground)] mb-2"></div>
+            <div class="flex items-center gap-3">
+              <div id="env-left-label" class="text-xs font-medium text-[var(--muted-foreground)] text-right w-16 hidden sm:block"></div>
+              <div id="board-wrapper" class="relative select-none touch-none">
+                <div id="board-grid" class="grid gap-1"></div>
+                <div id="ghost-layer" class="absolute inset-0 pointer-events-none z-20"></div>
+                <div id="bonds-layer" class="absolute inset-0 pointer-events-none z-30"></div>
+              </div>
+              <div id="env-right-label" class="text-xs font-medium text-[var(--muted-foreground)] text-left w-16 hidden sm:block"></div>
+            </div>
+            <div id="env-bottom-label" class="text-xs font-medium text-[var(--muted-foreground)] mt-2"></div>
+          </div>
+
+          <!-- Zone Legend -->
+          <div class="flex flex-wrap items-center justify-center gap-3 pt-2 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)]">
+            <span class="flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded cell-water inline-block"></span> Voda (H₂O)
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded cell-lipid inline-block"></span> Hydrofobní jádro / lipidy (F●)
+            </span>
+            <span id="legend-pore" class="flex items-center gap-1.5 hidden">
+              <span class="w-4 h-4 rounded cell-pore inline-block"></span> Polární pór / tunel
+            </span>
+            <span id="legend-active" class="flex items-center gap-1.5 hidden">
+              <span class="w-4 h-4 rounded cell-active inline-block"></span> Aktivní místo (vyžaduje <strong>C*</strong>!)
+            </span>
+          </div>
+
+          <!-- Status -->
+          <div class="rounded-lg border border-[var(--border)] p-3 text-xs space-y-2 bg-[var(--background)]">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="font-semibold">Biochemické hodnocení struktury</span>
+              <span id="status-badge" class="px-2 py-0.5 rounded-full font-semibold"></span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-center">
+              <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)]">
+                <div class="text-[var(--muted-foreground)]">Vyplněno</div>
+                <div id="stat-filled" class="text-sm font-bold tabular-nums">0 / 0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)]">
+                <div class="text-[var(--muted-foreground)]">Správně umístěno</div>
+                <div id="stat-correct" class="text-sm font-bold tabular-nums">0 / 0</div>
+              </div>
+              <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)]">
+                <div class="text-[var(--muted-foreground)]">Stabilizační můstky</div>
+                <div id="stat-bonds" class="text-sm font-bold tabular-nums">0</div>
+              </div>
+            </div>
+            <div id="status-message" class="text-[var(--muted-foreground)]"></div>
+          </div>
+        </div>
+
+        <!-- Right: Piece Tray -->
+        <div class="lg:col-span-5 bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-4">
+          <div class="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-[var(--background)] border border-[var(--border)]">
+            <div class="text-xs">
+              <span class="text-[var(--muted-foreground)]">Vybraný:</span>
+              <span id="active-piece-label" class="font-bold ml-1">žádný</span>
+            </div>
+            <button onclick="rotateSelected()"
+              class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
+              ↻ Otočit (R)
+            </button>
+          </div>
+
+          <div id="piece-tray" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2.5"></div>
+
+          <div class="p-3 rounded-lg border border-[var(--border)] bg-[var(--background)] text-xs space-y-1.5">
+            <div class="font-semibold flex items-center gap-1.5">
+              <span>🔬</span> Biochemický kontext
+            </div>
+            <p id="didactic-note" class="text-[var(--muted-foreground)] leading-relaxed"></p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- PRINT VIEW (KSICHT A4 Sheet) -->
+    <section id="view-print" class="hidden space-y-6">
+      <div class="flex items-center justify-between gap-3 p-3 rounded-xl bg-[var(--card)] border border-[var(--border)] no-print">
+        <div class="text-xs">
+          <strong>Tisková šablona (KSICHT A4):</strong> 10 univerzálních dílků P1–P10 a 3 KSICHTí desky (Globulární enzym, Membránový kanál, Dlouhá fibrila).
+        </div>
+        <button onclick="window.print()"
+          class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] shrink-0">
+          🖨️ Vytisknout / PDF
+        </button>
+      </div>
+
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
+        <h2 class="font-bold text-base">1. KSICHTí sada 10 peptidových dílků P1–P10 (pouze otáčet!)</h2>
+        <div id="print-pieces-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2"></div>
+      </div>
+
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-5 print-break">
+        <h2 class="font-bold text-base">2. Zadávací karty — 3 KSICHTí proteiny</h2>
+        <div id="print-boards-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    function aaLabel(aa, cat) {
+      if (cat === 'F') return `${aa}●`;
+      if (cat === 'POS') return `${aa}+`;
+      if (cat === 'NEG') return `${aa}−`;
+      if (cat === 'S') return aa === 'C' ? `${aa}*` : `${aa}°`;
+      return aa;
+    }
+
+    // Helper to convert compact tuple arrays [r, c, aa, cat, env] to cell objects
+    function mkCells(arr) {
+      return arr.map(([r, c, aa, cat, env]) => ({ r, c, aa, cat, env }));
+    }
+
+    // =========================================================================
+    // PIECE LIBRARY (P1-P10 KSICHT master set + specialized campaign pieces)
+    // =========================================================================
+    const MASTER_POOL = {
+      // --- KSICHT Core Set (P1..P10) ---
+      P1:  { name: 'P1 · Hydrofobní klín', shape: 'Pentomino P', cells: mkCells([[0,0,'L','F','F'],[0,1,'V','F','F'],[0,2,'I','F','F'],[1,0,'G','S','H'],[1,1,'Q','P','H']]) },
+      P2:  { name: 'P2 · Membránové L',    shape: 'Tetromino L', cells: mkCells([[0,0,'I','F','F'],[0,1,'M','F','F'],[0,2,'S','P','H'],[1,2,'N','P','H']]) },
+      P3:  { name: 'P3 · Fibrilární zip',  shape: 'Tetromino Z', cells: mkCells([[0,0,'V','F','F'],[0,1,'I','F','F'],[1,1,'Q','P','H'],[1,2,'E','NEG','H']]) },
+      P4:  { name: 'P4 · Cysteinový roh',  shape: 'Triomino V',  cells: mkCells([[0,0,'F','F','F'],[0,1,'T','P','H'],[1,0,'C','S','H']]) },
+      P5:  { name: 'P5 · Bazické L',       shape: 'Tetromino L', cells: mkCells([[0,0,'A','F','F'],[0,1,'P','S','H'],[1,1,'N','P','H'],[2,1,'K','POS','H']]) },
+      P6:  { name: 'P6 · Jádrový blok',    shape: 'Pentomino P', cells: mkCells([[0,0,'L','F','F'],[1,0,'V','F','F'],[1,1,'I','F','F'],[2,0,'S','P','H'],[2,1,'C','S','H']]) },
+      P7:  { name: 'P7 · Kyselé T',        shape: 'Tetromino T', cells: mkCells([[0,0,'M','F','F'],[1,0,'V','F','F'],[1,1,'D','NEG','H'],[2,0,'Q','P','H']]) },
+      P8:  { name: 'P8 · Argininový roh',  shape: 'Triomino V',  cells: mkCells([[0,0,'F','F','F'],[1,0,'R','POS','H'],[1,1,'T','P','H']]) },
+      P9:  { name: 'P9 · Povrchové T',     shape: 'Tetromino T', cells: mkCells([[0,0,'Q','P','H'],[0,1,'N','P','H'],[0,2,'S','P','H'],[1,1,'L','F','F']]) },
+      P10: { name: 'P10 · Kyselé Z',       shape: 'Tetromino Z', cells: mkCells([[0,0,'D','NEG','H'],[1,0,'A','F','F'],[1,1,'N','P','H'],[2,1,'E','NEG','H']]) },
+
+      // --- L1 Mini-globule (12 AK) ---
+      M1: { name: 'M1 · Amfipatické O', shape: 'Tetromino O', cells: mkCells([[1,0,'S','P','H'],[0,0,'K','POS','H'],[1,1,'L','F','F'],[0,1,'V','F','F']]) },
+      M2: { name: 'M2 · Cysteinové Z',  shape: 'Tetromino Z', cells: mkCells([[2,1,'N','P','H'],[1,1,'E','NEG','H'],[1,0,'I','F','F'],[0,0,'C','S','H']]) },
+      M3: { name: 'M3 · Cysteinové S',  shape: 'Tetromino S', cells: mkCells([[1,2,'D','NEG','H'],[1,1,'T','P','H'],[0,1,'F','F','F'],[0,0,'C','S','H']]) },
+
+      // --- L2 Amfipatická páska (16 AK) ---
+      R1: { name: 'R1 · Bazický blok',  shape: 'Pentomino P', cells: mkCells([[1,2,'S','P','H'],[1,1,'K','POS','H'],[1,0,'Q','P','H'],[0,2,'L','F','F'],[0,1,'V','F','F']]) },
+      R2: { name: 'R2 · Kyselý schod',  shape: 'Tetromino Z', cells: mkCells([[1,0,'D','NEG','H'],[0,0,'N','P','H'],[2,1,'I','F','F'],[1,1,'A','F','F']]) },
+      R3: { name: 'R3 · Hydrofobní L',  shape: 'Tetromino L', cells: mkCells([[1,1,'R','POS','H'],[0,0,'F','F','F'],[1,0,'M','F','F'],[2,0,'L','F','F']]) },
+      R4: { name: 'R4 · Kyselý roh',    shape: 'Triomino V',  cells: mkCells([[1,1,'E','NEG','H'],[1,0,'T','P','H'],[0,0,'V','F','F']]) },
+
+      // --- L6 Cysteinová proteáza: polární tunel + C* v aktivním místě (24 AK) ---
+      T1: { name: 'T1 · Jádrové O',      shape: 'Tetromino O', cells: mkCells([[1,0,'S','P','H'],[0,0,'N','P','H'],[1,1,'L','F','F'],[0,1,'V','F','F']]) },
+      T2: { name: 'T2 · Povrchové T',    shape: 'Tetromino T', cells: mkCells([[2,1,'K','POS','H'],[1,1,'Q','P','H'],[1,0,'I','F','F'],[0,0,'G','S','H']]) },
+      T3: { name: 'T3 · Aktivní C* L',   shape: 'Tetromino L', cells: mkCells([[0,2,'T','P','H'],[1,2,'R','POS','H'],[0,1,'S','P','H'],[0,0,'C','S','H']]) },
+      T4: { name: 'T4 · Hydrofobní Z',   shape: 'Tetromino Z', cells: mkCells([[1,0,'F','F','F'],[1,1,'M','F','F'],[0,1,'A','F','F'],[0,2,'K','POS','H']]) },
+      T5: { name: 'T5 · Kyselé Z',       shape: 'Tetromino Z', cells: mkCells([[2,1,'E','NEG','H'],[1,1,'L','F','F'],[1,0,'N','P','H'],[0,0,'T','P','H']]) },
+      T6: { name: 'T6 · Katalytické D',  shape: 'Tetromino L', cells: mkCells([[0,1,'V','F','F'],[0,0,'P','S','H'],[1,0,'D','NEG','H'],[2,0,'E','NEG','H']]) },
+
+      // --- L7 Dvou-doménový modul: kostky za sebou (24 AK, 12x2) ---
+      D1: { name: 'D1 · Doména A1',  shape: 'Pentomino P', cells: mkCells([[1,2,'S','P','H'],[1,1,'K','POS','H'],[1,0,'N','P','H'],[0,2,'G','S','H'],[0,1,'L','F','F']]) },
+      D2: { name: 'D2 · Doména A2',  shape: 'Tetromino Z', cells: mkCells([[1,0,'D','NEG','H'],[0,0,'Q','P','H'],[2,1,'V','F','F'],[1,1,'I','F','F']]) },
+      D3: { name: 'D3 · Kloub C1',   shape: 'Triomino V',  cells: mkCells([[1,1,'C','S','H'],[0,0,'F','F','F'],[1,0,'T','P','H']]) },
+      D4: { name: 'D4 · Kloub C2',   shape: 'Tetromino O', cells: mkCells([[1,1,'C','S','H'],[1,0,'R','POS','H'],[0,1,'P','S','H'],[0,0,'A','F','F']]) },
+      D5: { name: 'D5 · Doména B1',  shape: 'Pentomino P', cells: mkCells([[2,0,'E','NEG','H'],[1,0,'S','P','H'],[0,0,'Q','P','H'],[2,1,'M','F','F'],[1,1,'L','F','F']]) },
+      D6: { name: 'D6 · Doména B2',  shape: 'Triomino V',  cells: mkCells([[1,0,'K','POS','H'],[0,1,'V','F','F'],[0,0,'N','P','H']]) },
+
+      // --- L8 Velký membránový transportér (28 AK, 7x4) ---
+      X1: { name: 'X1 · Levý okraj',    shape: 'Tetromino L', cells: mkCells([[2,0,'S','P','H'],[1,0,'K','POS','H'],[0,0,'N','P','H'],[2,1,'L','F','F']]) },
+      X2: { name: 'X2 · Lipidový Z',    shape: 'Tetromino Z', cells: mkCells([[1,1,'V','F','F'],[1,0,'D','NEG','H'],[0,2,'I','F','F'],[0,1,'F','F','F']]) },
+      X3: { name: 'X3 · Senzor C*',     shape: 'Tetromino L', cells: mkCells([[0,2,'T','P','H'],[1,2,'Q','P','H'],[0,1,'R','POS','H'],[0,0,'C','S','H']]) },
+      X4: { name: 'X4 · Polární kanál', shape: 'Tetromino L', cells: mkCells([[2,0,'S','P','H'],[1,0,'D','NEG','H'],[0,1,'K','POS','H'],[0,0,'N','P','H']]) },
+      X5: { name: 'X5 · Dolní brána',   shape: 'Tetromino L', cells: mkCells([[0,0,'Q','P','H'],[2,1,'G','S','H'],[1,1,'E','NEG','H'],[0,1,'T','P','H']]) },
+      X6: { name: 'X6 · Pravý lipid 1', shape: 'Tetromino L', cells: mkCells([[0,2,'E','NEG','H'],[1,2,'R','POS','H'],[0,1,'M','F','F'],[0,0,'A','F','F']]) },
+      X7: { name: 'X7 · Pravý lipid 2', shape: 'Tetromino L', cells: mkCells([[0,0,'L','F','F'],[0,1,'V','F','F'],[1,2,'P','S','H'],[0,2,'S','P','H']]) },
+    };
+
+    // =========================================================================
+    // 8 LEVELS (12 AK -> 28 AK, Easy -> Expert)
+    // =========================================================================
+    const LEVELS = {
+      mini: {
+        id: 'mini',
+        shortTitle: '1. Mini-globule',
+        diff: '⭐ Lehká',
+        sizeLabel: '12 AK · 3 dílky',
+        title: '🫧 1. Mini-globule (Rozehřívačka)',
+        desc: 'Malý rozpustný peptid ve vodě: schovej 4 hydrofobní zbytky (●) do jádra a vytvoř disulfidický můstek C*–C*!',
+        didactic: 'Ideální úvodní skládačka (3 dílky): malý hydrofobní střed 2×2 chrání před vodou 8 povrchových aminokyselin a dva cysteiny C* uzavírají strukturu disulfidickou vazbou.',
+        rows: 4, cols: 4,
+        envLabels: { top: '💧 Voda', bottom: '💧 Voda', left: '💧 Voda', right: '💧 Voda' },
+        board: (() => {
+          const b = {};
+          [[0,1,'H'],[0,2,'H'],[1,0,'H'],[1,1,'F'],[1,2,'F'],[1,3,'H'],[2,0,'H'],[2,1,'F'],[2,2,'F'],[2,3,'H'],[3,1,'H'],[3,2,'H']]
+            .forEach(([r,c,env]) => b[`${r},${c}`] = { env, zone: env === 'F' ? 'lipid' : 'water' });
+          return b;
+        })(),
+        pieces: ['M1', 'M2', 'M3'],
+        solution: { M1: { rot: 1, dr: 0, dc: 1 }, M2: { rot: 2, dr: 1, dc: 0 }, M3: { rot: 3, dr: 1, dc: 2 } }
+      },
+      ribbon: {
+        id: 'ribbon',
+        shortTitle: '2. Amfipatická páska',
+        diff: '⭐ Lehká',
+        sizeLabel: '16 AK · 4 dílky',
+        title: '📏 2. Amfipatická páska (Kostky za sebou)',
+        desc: 'Slož 4 dílky do dlouhého pásu 8×2: horní hrana směřuje do vody (H₂O), dolní tvoří souvislé hydrofobní rozhraní (F●).',
+        didactic: 'Amfipatické β-řetězce a α-helixy mají jednu stranu hydrofilní a druhou hydrofobní — takové „kostky za sebou“ se pak snadno přikládají na povrch membrány nebo k sobě navzájem.',
+        rows: 2, cols: 8,
+        envLabels: { top: '💧 Vodná strana (H₂O)', bottom: '🧈 Hydrofobní rozhraní (F●)', left: 'N →', right: '→ C' },
+        board: (() => {
+          const b = {};
+          for (let c = 0; c < 8; c++) {
+            b[`0,${c}`] = { env: 'H', zone: 'water' };
+            b[`1,${c}`] = { env: 'F', zone: 'lipid' };
+          }
+          return b;
+        })(),
+        pieces: ['R1', 'R2', 'R3', 'R4'],
+        solution: { R1: { rot: 2, dr: 0, dc: 0 }, R2: { rot: 1, dr: 0, dc: 2 }, R3: { rot: 3, dr: 0, dc: 4 }, R4: { rot: 2, dr: 0, dc: 6 } }
+      },
+      globular: {
+        id: 'globular',
+        shortTitle: '3. Globulární (KSICHT)',
+        diff: '⭐⭐ Střední',
+        sizeLabel: '20 AK · 5 dílků',
+        title: '🫧 3. Globulární enzym (KSICHT)',
+        desc: 'Okolo celého proteinu je voda. Slož 5 KSICHTích dílků tak, aby všech 8 hydrofobních AK (●) bylo uvnitř jádra (F●).',
+        didactic: 'Jednoznačné řešení (až na 180° otočení) vždy vytvoří solný můstek K+ (P5) ↔ D− (P7) a disulfidický můstek C* (P6) ↔ C* (P4).',
+        rows: 4, cols: 6,
+        envLabels: { top: '💧 Voda (cytoplazma)', bottom: '💧 Voda (cytoplazma)', left: '💧 Voda', right: '💧 Voda' },
+        board: (() => {
+          const b = {};
+          [[0,1,'H'],[0,2,'H'],[0,3,'H'],[0,4,'H'],
+           [1,0,'H'],[1,1,'F'],[1,2,'F'],[1,3,'F'],[1,4,'F'],[1,5,'H'],
+           [2,0,'H'],[2,1,'F'],[2,2,'F'],[2,3,'F'],[2,4,'F'],[2,5,'H'],
+           [3,1,'H'],[3,2,'H'],[3,3,'H'],[3,4,'H']]
+            .forEach(([r,c,env]) => b[`${r},${c}`] = { env, zone: env === 'F' ? 'lipid' : 'water' });
+          return b;
+        })(),
+        pieces: ['P4', 'P5', 'P6', 'P7', 'P10'],
+        solution: { P6: { rot: 0, dr: 1, dc: 2 }, P5: { rot: 3, dr: 0, dc: 1 }, P10: { rot: 2, dr: 1, dc: 0 }, P7: { rot: 3, dr: 0, dc: 3 }, P4: { rot: 0, dr: 2, dc: 4 } }
+      },
+      membrane: {
+        id: 'membrane',
+        shortTitle: '4. Membránový (KSICHT)',
+        diff: '⭐⭐ Střední',
+        sizeLabel: '20 AK · 5 dílků',
+        title: '🧱 4. Membránový kanál (KSICHT)',
+        desc: 'Boky v lipidové dvojvrstvě musí být hydrofobní (F●), hlavičky ve vodě hydrofilní — a středem vede hydrofilní pór!',
+        didactic: 'Centrální pór vždy vystýlá čtveřice S (P9) – D− (P10) – R+ (P8) – T (P8) se stabilizačním solným můstkem D−/R+ uvnitř kanálu.',
+        rows: 4, cols: 5,
+        envLabels: { top: '💧 Voda (vně buňky)', bottom: '💧 Voda (cytoplazma)', left: '🧈 Lipidová\ndvojvrstva', right: '🧈 Lipidová\ndvojvrstva' },
+        board: (() => {
+          const b = {};
+          for (let r = 0; r < 4; r++) for (let c = 0; c < 5; c++) {
+            if (r === 0 || r === 3) b[`${r},${c}`] = { env: 'H', zone: 'water' };
+            else if (c === 2) b[`${r},${c}`] = { env: 'H', zone: 'pore' };
+            else b[`${r},${c}`] = { env: 'F', zone: 'lipid' };
+          }
+          return b;
+        })(),
+        pieces: ['P2', 'P6', 'P8', 'P9', 'P10'],
+        solution: { P6: { rot: 0, dr: 1, dc: 0 }, P2: { rot: 1, dr: 1, dc: 3 }, P10: { rot: 3, dr: 0, dc: 2 }, P9: { rot: 0, dr: 0, dc: 0 }, P8: { rot: 1, dr: 2, dc: 2 } }
+      },
+      fibril: {
+        id: 'fibril',
+        shortTitle: '5. Fibrila (KSICHT)',
+        diff: '⭐⭐ Střední',
+        sizeLabel: '20 AK · 5 dílků',
+        title: '🧵 5. Dlouhá fibrila (KSICHT)',
+        desc: 'Středem vlákna prochází souvislá hydrofobní osa (8× F●), horní a dolní okraj chrání hydrofilní aminokyseliny.',
+        didactic: 'Hydrofobní osa („sterický zip“) drží fibrilární podjednotky u sebe (kolagen, keratin) a povrch stabilizuje solný můstek E− (P3) ↔ R+ (P8).',
+        rows: 3, cols: 8,
+        envLabels: { top: '💧 Povrch vlákna (H₂O)', bottom: '💧 Povrch vlákna (H₂O)', left: '← Osa\nvlákna', right: 'Osa →\nvlákna' },
+        board: (() => {
+          const b = {};
+          for (let c = 0; c < 8; c++) b[`1,${c}`] = { env: 'F', zone: 'lipid' };
+          for (let c = 1; c <= 6; c++) { b[`0,${c}`] = { env: 'H', zone: 'water' }; b[`2,${c}`] = { env: 'H', zone: 'water' }; }
+          return b;
+        })(),
+        pieces: ['P1', 'P3', 'P5', 'P8', 'P9'],
+        solution: { P1: { rot: 0, dr: 1, dc: 5 }, P5: { rot: 3, dr: 0, dc: 4 }, P3: { rot: 0, dr: 1, dc: 0 }, P9: { rot: 0, dr: 0, dc: 1 }, P8: { rot: 0, dr: 1, dc: 3 } }
+      },
+      tunnel_cys: {
+        id: 'tunnel_cys',
+        shortTitle: '6. Tunel + C* akt. místo',
+        diff: '⭐⭐⭐ Těžká',
+        sizeLabel: '24 AK · 6 dílků',
+        title: '⚗️ 6. Cysteinová proteáza (Polární tunel + C* v aktivním místě)',
+        desc: 'Z povrchu vede dovnitř hydrofobního jádra polární tunel a na jeho dně je aktivní místo — na fialové pole C* MUSÍ padnout katalytický cystein C*!',
+        didactic: 'Mnoho enzymů (např. cysteinové proteázy jako papain nebo kaspázy) má aktivní místo schované na dně polárního tunelu uvnitř hydrofobního těla proteinu. Katalytický cystein C* (dílek T3) zde sousedí s kyselinou asparagovou D− (T6)!',
+        rows: 4, cols: 7,
+        envLabels: { top: '💧 Voda · ↓ Vstup do polárního tunelu', bottom: '💧 Voda (cytoplazma)', left: '💧 Voda', right: '💧 Voda' },
+        board: (() => {
+          const b = {};
+          for (let c = 1; c <= 5; c++) {
+            b[`0,${c}`] = { env: 'H', zone: c === 3 ? 'pore' : 'water' };
+            b[`3,${c}`] = { env: 'H', zone: 'water' };
+          }
+          for (let r of [1, 2]) {
+            b[`${r},0`] = { env: 'H', zone: 'water' };
+            b[`${r},6`] = { env: 'H', zone: 'water' };
+            for (let c of [1, 2, 4, 5]) b[`${r},${c}`] = { env: 'F', zone: 'lipid' };
+          }
+          b['1,3'] = { env: 'H', zone: 'pore' };
+          b['2,3'] = { env: 'H', zone: 'active', reqAA: 'C' };
+          return b;
+        })(),
+        pieces: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6'],
+        solution: {
+          T1: { rot: 1, dr: 0, dc: 1 }, T2: { rot: 2, dr: 1, dc: 0 }, T3: { rot: 3, dr: 0, dc: 3 },
+          T4: { rot: 1, dr: 1, dc: 4 }, T5: { rot: 2, dr: 0, dc: 5 }, T6: { rot: 3, dr: 2, dc: 2 }
+        }
+      },
+      tandem: {
+        id: 'tandem',
+        shortTitle: '7. Dvou-doménový řetězec',
+        diff: '⭐⭐⭐ Těžká',
+        sizeLabel: '24 AK · 6 dílků',
+        title: '🔗 7. Tandemová dvou-doména (Bloky za sebou)',
+        desc: 'Dlouhý modulární řetězec 12×2: dva oddělené hydrofobní bloky (2× 4 F●) spojené hydrofilním kloubem uprostřed!',
+        didactic: 'Vícedoménové proteiny vznikají opakováním modulů za sebou (např. imunoglobulinové nebo ankyrinové domény) propojených ohebným polárním linkerem — zde navíc kloub zpevňuje disulfidický můstek C*–C* (D3–D4)!',
+        rows: 2, cols: 12,
+        envLabels: { top: '💧 Hydrofilní povrch obou domén (H₂O)', bottom: '🧈 Blok 1 (F●) · 💧 Kloub · 🧈 Blok 2 (F●)', left: 'N →', right: '→ C' },
+        board: (() => {
+          const b = {};
+          for (let c = 0; c < 12; c++) {
+            b[`0,${c}`] = { env: 'H', zone: 'water' };
+            const isF = (c >= 1 && c <= 4) || (c >= 7 && c <= 10);
+            b[`1,${c}`] = { env: isF ? 'F' : 'H', zone: isF ? 'lipid' : 'water' };
+          }
+          return b;
+        })(),
+        pieces: ['D1', 'D2', 'D3', 'D4', 'D5', 'D6'],
+        solution: {
+          D1: { rot: 2, dr: 0, dc: 0 }, D2: { rot: 1, dr: 0, dc: 2 }, D3: { rot: 3, dr: 0, dc: 4 },
+          D4: { rot: 2, dr: 0, dc: 6 }, D5: { rot: 1, dr: 0, dc: 8 }, D6: { rot: 2, dr: 0, dc: 10 }
+        }
+      },
+      transporter: {
+        id: 'transporter',
+        shortTitle: '8. Velký transportér',
+        diff: '⭐⭐⭐⭐ Expert',
+        sizeLabel: '28 AK · 7 dílků',
+        title: '🏛️ 8. Velký membránový transportér (Široký tunel + C* senzor)',
+        desc: '7 dílků do 7×4 komplexu! Boky drží v lipidové dvojvrstvě (F●), středem vede široký 3-sloupcový polární tunel a uprostřed sedí redoxní senzor C*!',
+        didactic: 'Velké membránové póry a transportéry (např. poriny nebo ABC transportéry) potřebují širokou polární dutinu pro průchod větších metabolitů a citlivé cysteinové zbytky (C*) uvnitř kanálu často fungují jako redoxní spínače.',
+        rows: 4, cols: 7,
+        envLabels: { top: '💧 Voda (extracelulární prostor)', bottom: '💧 Voda (cytoplazma)', left: '🧈 Lipidová\ndvojvrstva', right: '🧈 Lipidová\ndvojvrstva' },
+        board: (() => {
+          const b = {};
+          for (let r = 0; r < 4; r++) for (let c = 0; c < 7; c++) {
+            if (r === 0 || r === 3) b[`${r},${c}`] = { env: 'H', zone: 'water' };
+            else if (r === 2 && c === 3) b[`${r},${c}`] = { env: 'H', zone: 'active', reqAA: 'C' };
+            else if (c >= 2 && c <= 4) b[`${r},${c}`] = { env: 'H', zone: 'pore' };
+            else b[`${r},${c}`] = { env: 'F', zone: 'lipid' };
+          }
+          return b;
+        })(),
+        pieces: ['X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'X7'],
+        solution: {
+          X1: { rot: 1, dr: 0, dc: 0 }, X2: { rot: 2, dr: 1, dc: 0 }, X3: { rot: 3, dr: 0, dc: 3 },
+          X4: { rot: 2, dr: 1, dc: 3 }, X5: { rot: 1, dr: 2, dc: 0 }, X6: { rot: 3, dr: 0, dc: 5 },
+          X7: { rot: 1, dr: 1, dc: 5 }
+        }
+      }
+    };
+
+    const LEVEL_ORDER = ['mini', 'ribbon', 'globular', 'membrane', 'fibril', 'tunnel_cys', 'tandem', 'transporter'];
+
+    // Rotation-only transform
+    function transformCells(cells, rot) {
+      const pts = cells.map(cell => {
+        let nr = cell.r, nc = cell.c;
+        for (let i = 0; i < rot; i++) { const tmp = nr; nr = nc; nc = -tmp; }
+        return { ...cell, r: nr, c: nc };
+      });
+      const minR = Math.min(...pts.map(p => p.r));
+      const minC = Math.min(...pts.map(p => p.c));
+      return pts.map(p => ({ ...p, r: p.r - minR, c: p.c - minC }));
+    }
+
+    function getCellSize(lvl) {
+      if (lvl.cols >= 12) return 38;
+      if (lvl.cols >= 8) return 44;
+      if (lvl.cols >= 7) return 46;
+      return 52;
+    }
+
+    // =========================================================================
+    // VARIANT GENERATOR (Varianta A = klasická, B/C/D = předpřipravené, 🎲 = náhodná)
+    // =========================================================================
+    const BASE_VARIANTS = {};
+    LEVEL_ORDER.forEach(id => {
+      BASE_VARIANTS[id] = {
+        pieces: [...LEVELS[id].pieces],
+        solution: JSON.parse(JSON.stringify(LEVELS[id].solution)),
+      };
+    });
+
+    function mulberry32(seed) {
+      return function() {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function gridNeighbors(r, c) {
+      return [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]];
+    }
+
+    function partitionBoard(boardKeys, rng) {
+      function compSizes(rem) {
+        const vis = new Set(), out = [];
+        for (const k of rem) {
+          if (vis.has(k)) continue;
+          const q = [k]; vis.add(k); let sz = 0;
+          while (q.length) {
+            const cur = q.pop(); sz++;
+            const [r, c] = cur.split(',').map(Number);
+            for (const [nr, nc] of gridNeighbors(r, c)) {
+              const nk = `${nr},${nc}`;
+              if (rem.has(nk) && !vis.has(nk)) { vis.add(nk); q.push(nk); }
+            }
+          }
+          out.push(sz);
+        }
+        return out;
+      }
+
+      for (let attempt = 0; attempt < 160; attempt++) {
+        const rem = new Set(boardKeys);
+        const groups = [];
+        let failed = false;
+        while (rem.size > 0) {
+          if (rem.size <= 5) {
+            const cs = compSizes(rem);
+            if (cs.length === 1 && rem.size >= 3) { groups.push(Array.from(rem)); rem.clear(); break; }
+            failed = true; break;
+          }
+          const remArr = Array.from(rem);
+          remArr.sort((a, b) => {
+            const [ra, ca] = a.split(',').map(Number);
+            const [rb, cb] = b.split(',').map(Number);
+            const da = gridNeighbors(ra, ca).filter(([x, y]) => rem.has(`${x},${y}`)).length;
+            const db = gridNeighbors(rb, cb).filter(([x, y]) => rem.has(`${x},${y}`)).length;
+            return da - db;
+          });
+          const start = remArr[Math.floor(rng() * Math.min(3, remArr.length))];
+          const possible = [4, 4, 5, 3].filter(s => rem.size - s === 0 || rem.size - s >= 3);
+          const target = possible[Math.floor(rng() * possible.length)];
+          let chosen = null;
+          for (let g = 0; g < 12; g++) {
+            const p = new Set([start]);
+            while (p.size < target) {
+              const frontier = new Set();
+              for (const k of p) {
+                const [r, c] = k.split(',').map(Number);
+                for (const [nr, nc] of gridNeighbors(r, c)) {
+                  const nk = `${nr},${nc}`;
+                  if (rem.has(nk) && !p.has(nk)) frontier.add(nk);
+                }
+              }
+              if (frontier.size === 0) break;
+              const fArr = Array.from(frontier);
+              p.add(fArr[Math.floor(rng() * fArr.length)]);
+            }
+            if (p.size !== target) continue;
+            const nextRem = new Set([...rem].filter(k => !p.has(k)));
+            if (compSizes(nextRem).every(sz => sz >= 3)) { chosen = Array.from(p); break; }
+          }
+          if (!chosen) { failed = true; break; }
+          groups.push(chosen);
+          chosen.forEach(k => rem.delete(k));
+        }
+        if (!failed) return groups;
+      }
+      return null;
+    }
+
+    function buildGeneratedVariant(levelId, seed, prefix) {
+      const lvl = LEVELS[levelId];
+      const rng = mulberry32(seed);
+      const keys = Object.keys(lvl.board);
+      const groups = partitionBoard(keys, rng);
+      if (!groups) return BASE_VARIANTS[levelId];
+
+      const F_POOL = [['L','F'],['V','F'],['I','F'],['F','F'],['A','F'],['M','F']];
+      const H_POOL = [['S','P'],['T','P'],['N','P'],['Q','P'],['K','POS'],['R','POS'],['D','NEG'],['E','NEG'],['G','S'],['P','S']];
+      const owner = {};
+      groups.forEach((g, idx) => g.forEach(k => owner[k] = idx));
+
+      // Assign amino acids per cell
+      const cellAA = {};
+      keys.forEach((k, idx) => {
+        const b = lvl.board[k];
+        if (b.reqAA === 'C') {
+          cellAA[k] = { aa: 'C', cat: 'S', env: 'H' };
+        } else if (b.env === 'F') {
+          const [aa, cat] = F_POOL[Math.floor(rng() * F_POOL.length)];
+          cellAA[k] = { aa, cat, env: 'F' };
+        } else {
+          const [aa, cat] = H_POOL[Math.floor(rng() * H_POOL.length)];
+          cellAA[k] = { aa, cat, env: 'H' };
+        }
+      });
+
+      // Plant at least 1 guaranteed salt bridge (+ / −) across adjacent pieces on H cells
+      for (const k of keys) {
+        if (lvl.board[k].env !== 'H' || lvl.board[k].reqAA) continue;
+        const [r, c] = k.split(',').map(Number);
+        const nb = gridNeighbors(r, c).map(([nr, nc]) => `${nr},${nc}`)
+          .find(nk => lvl.board[nk] && lvl.board[nk].env === 'H' && !lvl.board[nk].reqAA && owner[nk] !== owner[k]);
+        if (nb) {
+          cellAA[k] = { aa: 'K', cat: 'POS', env: 'H' };
+          cellAA[nb] = { aa: 'D', cat: 'NEG', env: 'H' };
+          break;
+        }
+      }
+
+      const pieces = [];
+      const solution = {};
+      const shapeNames = { 3: 'Triomino', 4: 'Tetromino', 5: 'Pentomino' };
+
+      groups.forEach((g, idx) => {
+        const pid = `${prefix}${idx + 1}`;
+        const solvedCells = g.map(k => {
+          const [r, c] = k.split(',').map(Number);
+          return { r, c, ...cellAA[k] };
+        });
+        const dr = Math.min(...solvedCells.map(x => x.r));
+        const dc = Math.min(...solvedCells.map(x => x.c));
+        const targetRot = 1 + Math.floor(rng() * 3); // 1, 2, or 3 so player actually rotates!
+        const invRot = (4 - targetRot) % 4;
+        const baseCells = transformCells(solvedCells, invRot);
+
+        MASTER_POOL[pid] = {
+          name: `${pid} · ${shapeNames[g.length] || 'Blok'} (${g.length} AK)`,
+          shape: `${shapeNames[g.length] || 'Blok'} (${g.length})`,
+          cells: baseCells
+        };
+        pieces.push(pid);
+        solution[pid] = { rot: targetRot, dr, dc };
+      });
+
+      return { pieces, solution };
+    }
+
+    const VARIANT_SEEDS = { B: 1019, C: 2741, D: 4993 };
+    const activeVariant = {}; // levelId -> 'A' | 'B' | 'C' | 'D' | 'R'
+    let randomVariantCounter = 1;
+    LEVEL_ORDER.forEach(id => { activeVariant[id] = 'A'; });
+
+    function applyVariant(levelId, vKey, customSeed = null) {
+      activeVariant[levelId] = vKey;
+      const lvl = LEVELS[levelId];
+      let data;
+      if (vKey === 'A') {
+        data = BASE_VARIANTS[levelId];
+      } else {
+        const lvlHash = levelId.split('').reduce((acc, ch) => acc * 31 + ch.charCodeAt(0), 7);
+        const seed = customSeed || (VARIANT_SEEDS[vKey] + lvlHash * 13);
+        data = buildGeneratedVariant(levelId, seed, `V${vKey}`);
+      }
+      lvl.pieces = data.pieces;
+      lvl.solution = data.solution;
+      initLevelState(levelId);
+      selectedPieceId = lvl.pieces[0] || null;
+      hoverCell = null;
+      renderAll();
+    }
+
+    function selectVariant(vKey) {
+      applyVariant(currentLevelId, vKey);
+    }
+
+    function generateRandomVariant() {
+      randomVariantCounter++;
+      const seed = (Date.now() % 100000) + randomVariantCounter * 7919;
+      applyVariant(currentLevelId, 'R', seed);
+    }
+
+    function renderVariantBar() {
+      const container = document.getElementById('variant-buttons');
+      if (!container) return;
+      const cur = activeVariant[currentLevelId] || 'A';
+      const labels = [
+        { k: 'A', txt: 'Varianta A' },
+        { k: 'B', txt: 'Varianta B' },
+        { k: 'C', txt: 'Varianta C' },
+        { k: 'D', txt: 'Varianta D' },
+      ];
+      container.innerHTML = '';
+      labels.forEach(({ k, txt }) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.onclick = () => selectVariant(k);
+        b.className = cur === k
+          ? 'px-2 py-1 rounded-md text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] ring-1 ring-[var(--primary)]'
+          : 'px-2 py-1 rounded-md text-xs text-[var(--muted-foreground)] hover:bg-[var(--card)] border border-transparent hover:border-[var(--border)]';
+        b.textContent = txt;
+        container.appendChild(b);
+      });
+      if (cur === 'R') {
+        const badge = document.createElement('span');
+        badge.className = 'px-2 py-1 rounded-md text-xs font-semibold bg-amber-500/20 text-amber-600 dark:text-amber-400';
+        badge.textContent = `🎲 Vlastní #${randomVariantCounter}`;
+        container.appendChild(badge);
+      }
+    }
+
+    // STATE
+    let currentLevelId = 'mini';
+    let selectedPieceId = null;
+    const levelState = {};
+    let hoverCell = null;
+
+    function initLevelState(levelId) {
+      const rots = {};
+      LEVELS[levelId].pieces.forEach(pid => { rots[pid] = 0; });
+      levelState[levelId] = { placed: {}, rots };
+    }
+    LEVEL_ORDER.forEach(initLevelState);
+
+    function setViewMode(mode) {
+      const playEl = document.getElementById('view-play');
+      const printEl = document.getElementById('view-print');
+      const btnPlay = document.getElementById('btn-mode-play');
+      const btnPrint = document.getElementById('btn-mode-print');
+      if (mode === 'play') {
+        playEl.classList.remove('hidden'); printEl.classList.add('hidden');
+        btnPlay.className = 'px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]';
+        btnPrint.className = 'px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90';
+      } else {
+        playEl.classList.add('hidden'); printEl.classList.remove('hidden');
+        btnPrint.className = 'px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]';
+        btnPlay.className = 'px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90';
+        renderPrintSheet();
+      }
+    }
+
+    function selectLevel(levelId) {
+      currentLevelId = levelId;
+      hoverCell = null;
+      const st = levelState[levelId];
+      selectedPieceId = LEVELS[levelId].pieces.find(pid => !st.placed[pid]) || null;
+      renderAll();
+    }
+
+    function selectPiece(pid) {
+      const st = levelState[currentLevelId];
+      if (st.placed[pid]) {
+        st.rots[pid] = st.placed[pid].rot;
+        delete st.placed[pid];
+      }
+      selectedPieceId = pid;
+      renderAll();
+    }
+
+    function rotateSelected() {
+      if (!selectedPieceId) return;
+      levelState[currentLevelId].rots[selectedPieceId] = (levelState[currentLevelId].rots[selectedPieceId] + 1) % 4;
+      renderAll();
+    }
+
+    function resetLevel() {
+      initLevelState(currentLevelId);
+      selectedPieceId = LEVELS[currentLevelId].pieces[0];
+      hoverCell = null;
+      renderAll();
+    }
+
+    function hintOnePiece() {
+      const lvl = LEVELS[currentLevelId];
+      const st = levelState[currentLevelId];
+      const targetPid = lvl.pieces.find(pid => {
+        const p = st.placed[pid], s = lvl.solution[pid];
+        return !p || p.rot !== s.rot || p.dr !== s.dr || p.dc !== s.dc;
+      });
+      if (!targetPid) return;
+      const s = lvl.solution[targetPid];
+      const sCells = transformCells(MASTER_POOL[targetPid].cells, s.rot).map(c => `${c.r + s.dr},${c.c + s.dc}`);
+      Object.keys(st.placed).forEach(otherPid => {
+        if (otherPid === targetPid) return;
+        const op = st.placed[otherPid];
+        const oCells = transformCells(MASTER_POOL[otherPid].cells, op.rot).map(c => `${c.r + op.dr},${c.c + op.dc}`);
+        if (oCells.some(k => sCells.includes(k))) delete st.placed[otherPid];
+      });
+      st.placed[targetPid] = { ...s };
+      st.rots[targetPid] = s.rot;
+      selectedPieceId = lvl.pieces.find(pid => !st.placed[pid]) || null;
+      renderAll();
+    }
+
+    function showSolution() {
+      const lvl = LEVELS[currentLevelId];
+      const st = levelState[currentLevelId];
+      st.placed = {};
+      lvl.pieces.forEach(pid => {
+        st.placed[pid] = { ...lvl.solution[pid] };
+        st.rots[pid] = lvl.solution[pid].rot;
+      });
+      selectedPieceId = null;
+      renderAll();
+    }
+
+    function getOccupiedMap(levelId) {
+      const st = levelState[levelId];
+      const map = {};
+      Object.entries(st.placed).forEach(([pid, pos]) => {
+        transformCells(MASTER_POOL[pid].cells, pos.rot).forEach(cell => {
+          map[`${cell.r + pos.dr},${cell.c + pos.dc}`] = { pid, ...cell };
+        });
+      });
+      return map;
+    }
+
+    function testPlacement(levelId, cells, dr, dc, occ) {
+      const lvl = LEVELS[levelId];
+      const placedCoords = [];
+      let ok = true;
+      for (const cell of cells) {
+        const nr = cell.r + dr, nc = cell.c + dc;
+        const key = `${nr},${nc}`;
+        if (!lvl.board[key] || occ[key]) ok = false;
+        placedCoords.push({ ...cell, nr, nc });
+      }
+      return { ok, dr, dc, cells: placedCoords };
+    }
+
+    function findBestPlacement(levelId, pid, rot, targetR, targetC) {
+      const cells = transformCells(MASTER_POOL[pid].cells, rot);
+      const maxR = Math.max(...cells.map(c => c.r));
+      const maxC = Math.max(...cells.map(c => c.c));
+      const baseDr = targetR - Math.floor(maxR / 2);
+      const baseDc = targetC - Math.floor(maxC / 2);
+      const occ = getOccupiedMap(levelId);
+
+      const exact = testPlacement(levelId, cells, baseDr, baseDc, occ);
+      if (exact.ok) return exact;
+
+      const candidates = [];
+      for (let or = -2; or <= 2; or++) {
+        for (let oc = -2; oc <= 2; oc++) {
+          if (or === 0 && oc === 0) continue;
+          const res = testPlacement(levelId, cells, baseDr + or, baseDc + oc, occ);
+          if (res.ok) {
+            const coversCursor = res.cells.some(x => x.nr === targetR && x.nc === targetC);
+            const dist = Math.abs(or) + Math.abs(oc);
+            if (coversCursor || dist <= 1) candidates.push({ res, score: (coversCursor ? 0 : 10) + dist });
+          }
+        }
+      }
+      if (candidates.length > 0) {
+        candidates.sort((a, b) => a.score - b.score);
+        return candidates[0].res;
+      }
+      return exact;
+    }
+
+    function getCellFromPoint(clientX, clientY) {
+      const grid = document.getElementById('board-grid');
+      const rect = grid.getBoundingClientRect();
+      if (clientX < rect.left - 18 || clientX > rect.right + 18 || clientY < rect.top - 18 || clientY > rect.bottom + 18) return null;
+      const lvl = LEVELS[currentLevelId];
+      const step = getCellSize(lvl) + 4;
+      const c = Math.max(0, Math.min(lvl.cols - 1, Math.floor((clientX - rect.left) / step)));
+      const r = Math.max(0, Math.min(lvl.rows - 1, Math.floor((clientY - rect.top) / step)));
+      return { r, c };
+    }
+
+    function placeSelectedAt(r, c) {
+      if (!selectedPieceId) return false;
+      const lvl = LEVELS[currentLevelId];
+      const st = levelState[currentLevelId];
+      const rot = st.rots[selectedPieceId];
+      const check = findBestPlacement(currentLevelId, selectedPieceId, rot, r, c);
+      if (check.ok) {
+        st.placed[selectedPieceId] = { rot, dr: check.dr, dc: check.dc };
+        selectedPieceId = lvl.pieces.find(pid => !st.placed[pid]) || null;
+        renderAll();
+        return true;
+      }
+      return false;
+    }
+
+    function handleBoardClick(r, c) {
+      const st = levelState[currentLevelId];
+      const occ = getOccupiedMap(currentLevelId);
+      const key = `${r},${c}`;
+      if (selectedPieceId && !occ[key]) {
+        if (placeSelectedAt(r, c)) return;
+      }
+      if (occ[key]) {
+        const pid = occ[key].pid;
+        st.rots[pid] = st.placed[pid].rot;
+        delete st.placed[pid];
+        selectedPieceId = pid;
+        renderAll();
+      }
+    }
+
+    // Drag & Drop
+    let dragState = null;
+
+    function createDragGhostEl(pid, rot) {
+      let el = document.getElementById('floating-drag-ghost');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'floating-drag-ghost';
+        el.style.position = 'fixed';
+        el.style.pointerEvents = 'none';
+        el.style.zIndex = '9999';
+        el.style.transform = 'translate(-50%, -50%)';
+        document.body.appendChild(el);
+      }
+      el.innerHTML = renderMiniPiece(pid, rot, 34);
+      el.style.display = 'block';
+      return el;
+    }
+
+    function removeDragGhostEl() {
+      const el = document.getElementById('floating-drag-ghost');
+      if (el) el.style.display = 'none';
+    }
+
+    function startPieceDrag(pid, e, fromBoard = false) {
+      if (e.button !== 0) return;
+      dragState = { pid, startX: e.clientX, startY: e.clientY, active: false, fromBoard };
+    }
+
+    window.addEventListener('pointermove', (e) => {
+      if (!dragState) return;
+      if (!dragState.active && Math.hypot(e.clientX - dragState.startX, e.clientY - dragState.startY) > 6) {
+        dragState.active = true;
+        const st = levelState[currentLevelId];
+        if (st.placed[dragState.pid]) {
+          st.rots[dragState.pid] = st.placed[dragState.pid].rot;
+          delete st.placed[dragState.pid];
+        }
+        selectedPieceId = dragState.pid;
+        renderAll();
+      }
+      if (dragState.active) {
+        const st = levelState[currentLevelId];
+        const el = createDragGhostEl(dragState.pid, st.rots[dragState.pid]);
+        el.style.left = `${e.clientX}px`;
+        el.style.top = `${e.clientY}px`;
+        const cell = getCellFromPoint(e.clientX, e.clientY);
+        hoverCell = cell;
+        el.style.opacity = cell ? '0.25' : '0.92';
+        renderGhost();
+      }
+    });
+
+    window.addEventListener('pointerup', (e) => {
+      if (!dragState) return;
+      const wasActive = dragState.active;
+      const pid = dragState.pid;
+      dragState = null;
+      removeDragGhostEl();
+      if (wasActive) {
+        const cell = getCellFromPoint(e.clientX, e.clientY);
+        if (cell) { selectedPieceId = pid; placeSelectedAt(cell.r, cell.c); }
+        else { hoverCell = null; renderGhost(); }
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (document.getElementById('view-play').classList.contains('hidden')) return;
+      if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        rotateSelected();
+        if (dragState && dragState.active) createDragGhostEl(dragState.pid, levelState[currentLevelId].rots[dragState.pid]);
+      }
+    });
+
+    function renderAll() {
+      renderLevelSelector();
+      renderVariantBar();
+      renderBoard();
+      renderGhost();
+      renderTray();
+      renderStatus();
+    }
+
+    function renderLevelSelector() {
+      const container = document.getElementById('level-selector');
+      container.innerHTML = '';
+      let solvedCount = 0;
+
+      LEVEL_ORDER.forEach(id => {
+        const lvl = LEVELS[id];
+        const ev = evaluateLevel(id);
+        if (ev.isPerfect) solvedCount++;
+        const active = id === currentLevelId;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => selectLevel(id);
+        btn.className = active
+          ? 'text-left p-2.5 rounded-xl border-2 border-[var(--primary)] bg-[var(--card)] shadow-sm transition-all'
+          : 'text-left p-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] opacity-80 hover:opacity-100 transition-all';
+
+        const statusBadge = ev.isPerfect
+          ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold">✓</span>`
+          : `<span class="text-[10px] text-[var(--muted-foreground)]">${lvl.sizeLabel}</span>`;
+
+        btn.innerHTML = `
+          <div class="flex items-center justify-between gap-1">
+            <span class="text-[10px] font-semibold text-[var(--muted-foreground)]">${lvl.diff}</span>
+            ${statusBadge}
+          </div>
+          <div class="font-semibold text-xs mt-0.5 truncate">${lvl.shortTitle}</div>
+        `;
+        container.appendChild(btn);
+      });
+
+      document.getElementById('overall-progress').textContent = `${solvedCount} / ${LEVEL_ORDER.length} složeno`;
+
+      const lvl = LEVELS[currentLevelId];
+      const totalAK = Object.keys(lvl.board).length;
+      document.getElementById('level-title').textContent = lvl.title;
+      document.getElementById('level-diff-pill').textContent = `${lvl.diff} · ${totalAK} AK · ${lvl.pieces.length} dílků`;
+      document.getElementById('level-desc').textContent = lvl.desc;
+      document.getElementById('didactic-note').textContent = lvl.didactic;
+      document.getElementById('env-top-label').textContent = lvl.envLabels.top;
+      document.getElementById('env-bottom-label').textContent = lvl.envLabels.bottom;
+      document.getElementById('env-left-label').innerText = lvl.envLabels.left;
+      document.getElementById('env-right-label').innerText = lvl.envLabels.right;
+
+      const hasPore = Object.values(lvl.board).some(c => c.zone === 'pore');
+      const hasActive = Object.values(lvl.board).some(c => c.zone === 'active');
+      document.getElementById('legend-pore').classList.toggle('hidden', !hasPore);
+      document.getElementById('legend-active').classList.toggle('hidden', !hasActive);
+    }
+
+    function renderGhost() {
+      const layer = document.getElementById('ghost-layer');
+      layer.innerHTML = '';
+      if (!selectedPieceId || !hoverCell) return;
+
+      const lvl = LEVELS[currentLevelId];
+      const st = levelState[currentLevelId];
+      const cellSize = getCellSize(lvl);
+      const gap = 4;
+      const check = findBestPlacement(currentLevelId, selectedPieceId, st.rots[selectedPieceId], hoverCell.r, hoverCell.c);
+
+      check.cells.forEach(c => {
+        if (c.nr < 0 || c.nr >= lvl.rows || c.nc < 0 || c.nc >= lvl.cols) return;
+        const box = document.createElement('div');
+        box.style.position = 'absolute';
+        box.style.left = `${c.nc * (cellSize + gap)}px`;
+        box.style.top = `${c.nr * (cellSize + gap)}px`;
+        box.style.width = `${cellSize}px`;
+        box.style.height = `${cellSize}px`;
+        box.className = `rounded-lg flex items-center justify-center font-bold text-xs aa-${c.cat} border-2 ${
+          check.ok ? 'opacity-80 shadow-md ring-2 ring-emerald-500' : 'opacity-40 ring-2 ring-red-500'
+        }`;
+        box.textContent = aaLabel(c.aa, c.cat);
+        layer.appendChild(box);
+      });
+    }
+
+    function renderBoard() {
+      const lvl = LEVELS[currentLevelId];
+      const occ = getOccupiedMap(currentLevelId);
+      const grid = document.getElementById('board-grid');
+      const cellSize = getCellSize(lvl);
+
+      grid.style.gridTemplateColumns = `repeat(${lvl.cols}, ${cellSize}px)`;
+      grid.innerHTML = '';
+
+      for (let r = 0; r < lvl.rows; r++) {
+        for (let c = 0; c < lvl.cols; c++) {
+          const key = `${r},${c}`;
+          const bCell = lvl.board[key];
+          const el = document.createElement('div');
+          el.style.width = `${cellSize}px`;
+          el.style.height = `${cellSize}px`;
+
+          if (!bCell) {
+            el.className = 'opacity-0 pointer-events-none';
+            grid.appendChild(el);
+            continue;
+          }
+
+          const placed = occ[key];
+          el.className = 'relative rounded-lg flex flex-col items-center justify-center cursor-pointer select-none';
+
+          if (placed) {
+            const envOk = placed.env === bCell.env;
+            const reqOk = !bCell.reqAA || placed.aa === bCell.reqAA;
+            const pid = placed.pid;
+            const sameT = occ[`${r - 1},${c}`]?.pid === pid;
+            const sameB = occ[`${r + 1},${c}`]?.pid === pid;
+            const sameL = occ[`${r},${c - 1}`]?.pid === pid;
+            const sameR = occ[`${r},${c + 1}`]?.pid === pid;
+            const outer = '3px solid #111827';
+            const inner = '1px dotted rgba(17,24,39,0.35)';
+            el.classList.add(`aa-${placed.cat}`, 'shadow-sm');
+            el.style.borderTop = sameT ? inner : outer;
+            el.style.borderBottom = sameB ? inner : outer;
+            el.style.borderLeft = sameL ? inner : outer;
+            el.style.borderRight = sameR ? inner : outer;
+            el.style.borderTopLeftRadius = (!sameT && !sameL) ? '8px' : '2px';
+            el.style.borderTopRightRadius = (!sameT && !sameR) ? '8px' : '2px';
+            el.style.borderBottomLeftRadius = (!sameB && !sameL) ? '8px' : '2px';
+            el.style.borderBottomRightRadius = (!sameB && !sameR) ? '8px' : '2px';
+            if (!envOk || !reqOk) el.classList.add('cell-invalid-env');
+            el.innerHTML = `
+              <span class="font-bold ${cellSize <= 38 ? 'text-xs' : 'text-sm'} leading-none">${aaLabel(placed.aa, placed.cat)}</span>
+              <span class="text-[8.5px] opacity-80 font-mono leading-none mt-0.5">${placed.pid}</span>
+            `;
+            el.title = !reqOk
+              ? `Aktivní místo vyžaduje ${bCell.reqAA}*!`
+              : `${placed.pid}: ${aaLabel(placed.aa, placed.cat)} (${envOk ? 'správné prostředí' : 'NEVHODNÉ prostředí!'})`;
+            el.addEventListener('pointerdown', (e) => {
+              if (e.button === 0) startPieceDrag(pid, e, true);
+            });
+          } else {
+            el.classList.add(`cell-${bCell.zone}`);
+            const lbl = bCell.zone === 'active' ? 'C*' : (bCell.zone === 'lipid' ? 'F●' : (bCell.zone === 'pore' ? 'tunel' : 'H₂O'));
+            el.innerHTML = `<span class="${bCell.zone === 'active' ? 'text-xs font-extrabold text-purple-600 dark:text-purple-300' : 'text-[9.5px] opacity-55 font-semibold'}">${lbl}</span>`;
+          }
+
+          grid.appendChild(el);
+        }
+      }
+
+      const bondsLayer = document.getElementById('bonds-layer');
+      bondsLayer.innerHTML = '';
+      const ev = evaluateLevel(currentLevelId);
+      const gap = 4;
+      ev.bonds.forEach(bond => {
+        const x = ((bond.c1 + bond.c2) / 2 + 0.5) * cellSize + ((bond.c1 + bond.c2) / 2) * gap;
+        const y = ((bond.r1 + bond.r2) / 2 + 0.5) * cellSize + ((bond.r1 + bond.r2) / 2) * gap;
+        const badge = document.createElement('div');
+        badge.className = `bond-badge ${bond.type === 'SS' ? 'bg-purple-600 text-white' : 'bg-sky-600 text-white'}`;
+        badge.style.left = `${x}px`;
+        badge.style.top = `${y}px`;
+        badge.textContent = bond.type === 'SS' ? 'S–S' : '+/−';
+        bondsLayer.appendChild(badge);
+      });
+    }
+
+    (() => {
+      const grid = document.getElementById('board-grid');
+      grid.addEventListener('pointermove', (e) => {
+        if (dragState && dragState.active) return;
+        const cell = getCellFromPoint(e.clientX, e.clientY);
+        if (!cell) { if (hoverCell) { hoverCell = null; renderGhost(); } return; }
+        if (!hoverCell || hoverCell.r !== cell.r || hoverCell.c !== cell.c) {
+          hoverCell = cell;
+          renderGhost();
+        }
+      });
+      grid.addEventListener('pointerleave', () => { if (hoverCell) { hoverCell = null; renderGhost(); } });
+      grid.addEventListener('click', (e) => {
+        const cell = getCellFromPoint(e.clientX, e.clientY);
+        if (cell) handleBoardClick(cell.r, cell.c);
+      });
+      grid.addEventListener('contextmenu', (e) => { e.preventDefault(); rotateSelected(); });
+    })();
+
+    function renderMiniPiece(pid, rot, cellPx = 22) {
+      const cells = transformCells(MASTER_POOL[pid].cells, rot);
+      const maxR = Math.max(...cells.map(c => c.r));
+      const maxC = Math.max(...cells.map(c => c.c));
+      const map = {};
+      cells.forEach(c => map[`${c.r},${c.c}`] = c);
+
+      let html = `<div class="inline-grid gap-0.5" style="grid-template-columns: repeat(${maxC + 1}, ${cellPx}px);">`;
+      for (let r = 0; r <= maxR; r++) {
+        for (let c = 0; c <= maxC; c++) {
+          const cell = map[`${r},${c}`];
+          if (cell) {
+            html += `<div style="width:${cellPx}px;height:${cellPx}px;" class="rounded border aa-${cell.cat} flex items-center justify-center font-bold text-[10px] leading-none">${aaLabel(cell.aa, cell.cat)}</div>`;
+          } else {
+            html += `<div style="width:${cellPx}px;height:${cellPx}px;"></div>`;
+          }
+        }
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function renderTray() {
+      const lvl = LEVELS[currentLevelId];
+      const st = levelState[currentLevelId];
+      const tray = document.getElementById('piece-tray');
+      tray.innerHTML = '';
+
+      document.getElementById('active-piece-label').textContent =
+        selectedPieceId ? MASTER_POOL[selectedPieceId].name : 'žádný';
+
+      lvl.pieces.forEach(pid => {
+        const isPlaced = Boolean(st.placed[pid]);
+        const isSelected = pid === selectedPieceId;
+        const rot = st.rots[pid];
+
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.onclick = () => selectPiece(pid);
+        card.onpointerdown = (e) => startPieceDrag(pid, e, false);
+        card.oncontextmenu = (e) => { e.preventDefault(); selectPiece(pid); rotateSelected(); };
+        card.className = `piece-card cursor-grab active:cursor-grabbing text-left p-2 rounded-xl border flex flex-col justify-between gap-1.5 select-none touch-none ${
+          isSelected
+            ? 'border-2 border-[var(--primary)] bg-[var(--background)] shadow-md'
+            : isPlaced
+              ? 'border-[var(--border)] bg-[var(--background)] opacity-50'
+              : 'border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)]'
+        }`;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between w-full gap-1">
+            <span class="text-xs font-bold">${pid}</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)]">
+              ${isPlaced ? 'Na desce' : MASTER_POOL[pid].shape}
+            </span>
+          </div>
+          <div class="flex items-center justify-center py-1 min-h-[54px]">
+            ${renderMiniPiece(pid, rot, 22)}
+          </div>
+        `;
+        tray.appendChild(card);
+      });
+    }
+
+    function evaluateLevel(levelId) {
+      const lvl = LEVELS[levelId];
+      const total = Object.keys(lvl.board).length;
+      const occ = getOccupiedMap(levelId);
+      let filled = 0, correct = 0, wrongEnv = 0, wrongActive = 0;
+
+      Object.entries(occ).forEach(([key, cell]) => {
+        filled++;
+        const b = lvl.board[key];
+        const envOk = b.env === cell.env;
+        const reqOk = !b.reqAA || cell.aa === b.reqAA;
+        if (envOk && reqOk) correct++;
+        else {
+          if (!envOk) wrongEnv++;
+          if (!reqOk) wrongActive++;
+        }
+      });
+
+      const bonds = [];
+      Object.entries(occ).forEach(([key, a]) => {
+        const [r, c] = key.split(',').map(Number);
+        [[0, 1], [1, 0]].forEach(([dr, dc]) => {
+          const b = occ[`${r + dr},${c + dc}`];
+          if (!b || b.pid === a.pid) return;
+          if ((a.cat === 'POS' && b.cat === 'NEG') || (a.cat === 'NEG' && b.cat === 'POS')) {
+            bonds.push({ type: 'SALT', r1: r, c1: c, r2: r + dr, c2: c + dc, label: `${a.aa}–${b.aa}` });
+          } else if (a.aa === 'C' && b.aa === 'C') {
+            bonds.push({ type: 'SS', r1: r, c1: c, r2: r + dr, c2: c + dc, label: 'C–C' });
+          }
+        });
+      });
+
+      return { total, filled, correct, wrongEnv, wrongActive, bonds, isPerfect: filled === total && wrongEnv === 0 && wrongActive === 0 };
+    }
+
+    function renderStatus() {
+      const ev = evaluateLevel(currentLevelId);
+      document.getElementById('stat-filled').textContent = `${ev.filled} / ${ev.total}`;
+      document.getElementById('stat-correct').textContent = `${ev.correct} / ${ev.filled}`;
+      document.getElementById('stat-bonds').textContent = `${ev.bonds.length}`;
+
+      const badge = document.getElementById('status-badge');
+      const msg = document.getElementById('status-message');
+
+      if (ev.isPerfect) {
+        badge.textContent = '🎉 Stabilní protein složen!';
+        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400';
+        const bondText = ev.bonds.length > 0
+          ? ` Stabilizační můstky: ${ev.bonds.map(b => b.type === 'SS' ? 'disulfidický C–C' : `solný ${b.label}`).join(', ')}.`
+          : '';
+        msg.textContent = `Výborně! Všech ${ev.total} aminokyselin sedí na správném místě.${bondText}`;
+      } else if (ev.wrongActive > 0) {
+        badge.textContent = '⚗️ Chybí C* v aktivním místě!';
+        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-purple-500/20 text-purple-600 dark:text-purple-400';
+        msg.textContent = 'Na fialové pole aktivního místa (C*) musí přesně padnout katalytický cystein C*!';
+      } else if (ev.wrongEnv > 0) {
+        badge.textContent = `⚠️ ${ev.wrongEnv}× nevhodné prostředí`;
+        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-red-500/20 text-red-600 dark:text-red-400';
+        msg.textContent = 'Červeně orámované aminokyseliny jsou v nevhodném prostředí. Zkus dílek otočit pravým klikem nebo klávesou R!';
+      } else if (ev.filled > 0) {
+        badge.textContent = '⏳ Skládáš správně...';
+        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-amber-500/20 text-amber-600 dark:text-amber-400';
+        msg.textContent = 'Zatím všechny umístěné aminokyseliny sedí. Doplň zbývající dílky!';
+      } else {
+        badge.textContent = 'Připraveno ke skládání';
+        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)]';
+        msg.textContent = 'Přetáhni dílek z pravého panelu na desku (nebo klikni na dílek a pak na desku).';
+      }
+    }
+
+    function renderPrintSheet() {
+      const pGrid = document.getElementById('print-pieces-grid');
+      pGrid.innerHTML = '';
+      ['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10'].forEach(pid => {
+        const piece = MASTER_POOL[pid];
+        const box = document.createElement('div');
+        box.className = 'border border-dashed border-[var(--border)] rounded-lg p-2.5 flex flex-col items-center gap-2';
+        box.innerHTML = `
+          <div class="text-xs font-bold">${pid} <span class="font-normal text-[10px] text-[var(--muted-foreground)]">(${piece.shape})</span></div>
+          ${renderMiniPiece(pid, 0, 26)}
+        `;
+        pGrid.appendChild(box);
+      });
+
+      const bList = document.getElementById('print-boards-list');
+      bList.innerHTML = '';
+      ['globular', 'membrane', 'fibril'].forEach(id => {
+        const lvl = LEVELS[id];
+        const card = document.createElement('div');
+        card.className = 'border border-[var(--border)] rounded-xl p-3 flex flex-col items-center gap-2';
+        let gridHtml = `<div class="inline-grid gap-0.5" style="grid-template-columns: repeat(${lvl.cols}, 28px);">`;
+        for (let r = 0; r < lvl.rows; r++) {
+          for (let c = 0; c < lvl.cols; c++) {
+            const cell = lvl.board[`${r},${c}`];
+            if (!cell) gridHtml += `<div style="width:28px;height:28px;"></div>`;
+            else gridHtml += `<div style="width:28px;height:28px;" class="rounded cell-${cell.zone} flex items-center justify-center text-[9px] font-bold opacity-85">${cell.zone === 'lipid' ? 'F●' : cell.zone === 'pore' ? 'pór' : 'H₂O'}</div>`;
+          }
+        }
+        gridHtml += '</div>';
+
+        card.innerHTML = `
+          <div class="font-bold text-sm text-center">${lvl.title}</div>
+          <div class="text-[11px] text-[var(--muted-foreground)] text-center">Použij dílky: <strong>${lvl.pieces.join(', ')}</strong></div>
+          <div class="py-2">${gridHtml}</div>
+          <div class="text-[11px] text-[var(--muted-foreground)] text-center">${lvl.desc}</div>
+        `;
+        bList.appendChild(card);
+      });
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('foldngo-theme', isDark ? 'dark' : 'light');
+      const btn = document.getElementById('btn-theme');
+      if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+    }
+    if (localStorage.getItem('foldngo-theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+      const btn = document.getElementById('btn-theme');
+      if (btn) btn.textContent = '☀️';
+    }
+
+    selectLevel('mini');
+  </script>
+</body>
+</html>
