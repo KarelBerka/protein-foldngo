@@ -97,8 +97,8 @@
       gap: 2.5mm;
     }
     .print-cell {
-      width: 14mm;
-      height: 14mm;
+      width: var(--print-cell, 20mm);
+      height: var(--print-cell, 20mm);
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -124,13 +124,13 @@
     .print-piece-card {
       border: 0.75px dashed #94a3b8;
       border-radius: 2mm;
-      padding: 1.8mm 2mm 2.2mm;
+      padding: 1.5mm 2mm 2mm;
       background: #ffffff;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      gap: 1.5mm;
+      gap: 1.2mm;
       break-inside: avoid;
       page-break-inside: avoid;
     }
@@ -140,7 +140,7 @@
       height: 4mm;
     }
     .print-scale-bar span {
-      width: 14mm;
+      width: var(--print-cell, 20mm);
       height: 100%;
       box-sizing: border-box;
       border-right: 1px solid #0f172a;
@@ -422,7 +422,7 @@
       </div>
     </main>
 
-    <!-- PRINT VIEW (A4 Sheets — 1:1 14mm scale, all 8 boards + all 36 pieces) -->
+    <!-- PRINT VIEW (A4 Sheets — 1:1 20mm / 14mm scale, all 8 boards + all 36 pieces) -->
     <section id="view-print" class="hidden space-y-4">
       <div class="p-3.5 rounded-xl bg-[var(--card)] border border-[var(--border)] space-y-3 no-print">
         <div class="flex flex-wrap items-center justify-between gap-3">
@@ -449,9 +449,21 @@
             🖨️ Vytisknout / PDF
           </button>
         </div>
-        <p data-i18n="printScaleHint" class="text-xs text-[var(--muted-foreground)]">
-          Měřítko 1:1 — každé políčko má přesně 14 × 14 mm na deskách i na dílcích. Pro tisk na A4 nastavte měřítko 100 % (skutečná velikost).
-        </p>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[var(--border)] text-xs">
+          <div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="Cell size">
+            <span data-i18n="printSizeLabel" class="text-[var(--muted-foreground)] font-medium mr-1">Velikost dílků:</span>
+            <button type="button" data-size="20" onclick="setPrintCellSize(20)" data-i18n="printSize20"
+              class="print-size-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] ring-1 ring-[var(--primary)]">
+              20 mm (2 cm · Velké)
+            </button>
+            <button type="button" data-size="14" onclick="setPrintCellSize(14)" data-i18n="printSize14"
+              class="print-size-btn px-2.5 py-1 rounded-md text-xs text-[var(--muted-foreground)] hover:bg-[var(--background)] border border-transparent hover:border-[var(--border)]">
+              14 mm (Kompaktní)
+            </button>
+          </div>
+          <p id="print-scale-hint" class="text-xs text-[var(--muted-foreground)]"></p>
+        </div>
       </div>
 
       <div id="print-sheets-scroll" class="overflow-x-auto pb-2">
@@ -537,17 +549,19 @@
         printScopeClassic: "Klasická sada (3 desky + P1–P10)",
         printScopeBoards: "Jen podklady (8 desek)",
         printScopePieces: "Jen dílky (36)",
-        printScaleHint: "Měřítko 1:1 — každé políčko má přesně 14 × 14 mm na deskách i na dílcích. Pro tisk na A4 nastavte měřítko 100 % (skutečná velikost).",
+        printSizeLabel: "Velikost políčka:",
+        printSize20: "20 mm (2 cm · Velké)",
+        printSize14: "14 mm (Kompaktní)",
+        printScaleHint: (mm) => `Měřítko 1:1 — každé políčko má přesně ${mm} × ${mm} mm na deskách i na dílcích. Pro tisk na A4 nastavte měřítko 100 % (skutečná velikost).`,
         btnPrint: "🖨️ Vytisknout / PDF",
         printSheetPiecesCore: "Dílky k vystřižení — Základní sada P1–P10 (úrovně 3–5)",
-        printSheetPiecesCampaign1: "Dílky k vystřižení — Úrovně 1, 2 a 6 (M1–M3, R1–R4, T1–T6)",
-        printSheetPiecesCampaign2: "Dílky k vystřižení — Úrovně 7 a 8 (D1–D6, X1–X7)",
+        printSheetPiecesRange: (range, list) => `Dílky k vystřižení — Úrovně ${range} (${list})`,
+        printSheetPiecesSingle: (num, list) => `Dílky k vystřižení — Úroveň ${num} (${list})`,
         printSheetBoardsClassic: "Zadávací podklady — 3 klasické proteiny (úrovně 3–5)",
-        printSheetBoardsPage1: "Zadávací podklady — Úrovně 1–3",
-        printSheetBoardsPage2: "Zadávací podklady — Úrovně 4–6",
-        printSheetBoardsPage3: "Zadávací podklady — Úrovně 7–8",
+        printSheetBoardsRange: (range) => `Zadávací podklady — Úrovně ${range}`,
+        printSheetBoardsSingle: (num) => `Zadávací podklad — Úroveň ${num}`,
         printRotateOnlyRule: "✂️ Vystřihněte podél silné černé čáry · Dílky pouze otáčejte (nepřeklápějte naruby!)",
-        printScaleCheck: "Kontrola měřítka (5 × 14 mm = 70 mm)",
+        printScaleCheck: (n, mm) => `Kontrola měřítka (${n} × ${mm} mm = ${n * mm} mm)`,
         printLegendCompactTitle: "Kódování aminokyselin a zón (včetně značek pro ČB tisk)",
         printPageLabel: (i, n) => `A4 · Strana ${i} / ${n}`,
         printUsePieces: "Použij dílky:",
@@ -689,17 +703,19 @@
         printScopeClassic: "Classic set (3 boards + P1–P10)",
         printScopeBoards: "Boards only (8)",
         printScopePieces: "Pieces only (36)",
-        printScaleHint: "1:1 scale — every square is exactly 14 × 14 mm on both boards and pieces. For A4 printing, set scale to 100% (actual size).",
+        printSizeLabel: "Cell size:",
+        printSize20: "20 mm (2 cm · Large)",
+        printSize14: "14 mm (Compact)",
+        printScaleHint: (mm) => `1:1 scale — every square is exactly ${mm} × ${mm} mm on both boards and pieces. For A4 printing, set scale to 100% (actual size).`,
         btnPrint: "🖨️ Print / PDF",
         printSheetPiecesCore: "Cut-out pieces — Core set P1–P10 (levels 3–5)",
-        printSheetPiecesCampaign1: "Cut-out pieces — Levels 1, 2 & 6 (M1–M3, R1–R4, T1–T6)",
-        printSheetPiecesCampaign2: "Cut-out pieces — Levels 7 & 8 (D1–D6, X1–X7)",
+        printSheetPiecesRange: (range, list) => `Cut-out pieces — Levels ${range} (${list})`,
+        printSheetPiecesSingle: (num, list) => `Cut-out pieces — Level ${num} (${list})`,
         printSheetBoardsClassic: "Puzzle boards — 3 classic proteins (levels 3–5)",
-        printSheetBoardsPage1: "Puzzle boards — Levels 1–3",
-        printSheetBoardsPage2: "Puzzle boards — Levels 4–6",
-        printSheetBoardsPage3: "Puzzle boards — Levels 7–8",
+        printSheetBoardsRange: (range) => `Puzzle boards — Levels ${range}`,
+        printSheetBoardsSingle: (num) => `Puzzle board — Level ${num}`,
         printRotateOnlyRule: "✂️ Cut along the bold black outline · Rotate pieces only (do not flip upside down!)",
-        printScaleCheck: "Scale check (5 × 14 mm = 70 mm)",
+        printScaleCheck: (n, mm) => `Scale check (${n} × ${mm} mm = ${n * mm} mm)`,
         printLegendCompactTitle: "Amino acid & zone coding (includes B&W print symbols)",
         printPageLabel: (i, n) => `A4 · Page ${i} / ${n}`,
         printUsePieces: "Use pieces:",
@@ -841,17 +857,19 @@
         printScopeClassic: "Klassisch (3 Bretter + P1–P10)",
         printScopeBoards: "Nur Bretter (8)",
         printScopePieces: "Nur Teile (36)",
-        printScaleHint: "Maßstab 1:1 — jedes Feld misst exakt 14 × 14 mm auf Brettern und Teilen. Beim A4-Druck Maßstab 100 % (tatsächliche Größe) wählen.",
+        printSizeLabel: "Feldgröße:",
+        printSize20: "20 mm (2 cm · Groß)",
+        printSize14: "14 mm (Kompakt)",
+        printScaleHint: (mm) => `Maßstab 1:1 — jedes Feld misst exakt ${mm} × ${mm} mm auf Brettern und Teilen. Beim A4-Druck Maßstab 100 % (tatsächliche Größe) wählen.`,
         btnPrint: "🖨️ Drucken / PDF",
         printSheetPiecesCore: "Ausschneide-Teile — Basisset P1–P10 (Level 3–5)",
-        printSheetPiecesCampaign1: "Ausschneide-Teile — Level 1, 2 & 6 (M1–M3, R1–R4, T1–T6)",
-        printSheetPiecesCampaign2: "Ausschneide-Teile — Level 7 & 8 (D1–D6, X1–X7)",
+        printSheetPiecesRange: (range, list) => `Ausschneide-Teile — Level ${range} (${list})`,
+        printSheetPiecesSingle: (num, list) => `Ausschneide-Teile — Level ${num} (${list})`,
         printSheetBoardsClassic: "Aufgabenbretter — 3 klassische Proteine (Level 3–5)",
-        printSheetBoardsPage1: "Aufgabenbretter — Level 1–3",
-        printSheetBoardsPage2: "Aufgabenbretter — Level 4–6",
-        printSheetBoardsPage3: "Aufgabenbretter — Level 7–8",
+        printSheetBoardsRange: (range) => `Aufgabenbretter — Level ${range}`,
+        printSheetBoardsSingle: (num) => `Aufgabenbrett — Level ${num}`,
         printRotateOnlyRule: "✂️ Entlang der dicken schwarzen Linie ausschneiden · Teile nur drehen (nicht umdrehen!)",
-        printScaleCheck: "Maßstabskontrolle (5 × 14 mm = 70 mm)",
+        printScaleCheck: (n, mm) => `Maßstabskontrolle (${n} × ${mm} mm = ${n * mm} mm)`,
         printLegendCompactTitle: "Aminosäure- & Zonencodierung (inkl. Symbole für S/W-Druck)",
         printPageLabel: (i, n) => `A4 · Seite ${i} / ${n}`,
         printUsePieces: "Verwende Teile:",
@@ -993,17 +1011,19 @@
         printScopeClassic: "Classique (3 plateaux + P1–P10)",
         printScopeBoards: "Plateaux seuls (8)",
         printScopePieces: "Pièces seules (36)",
-        printScaleHint: "Échelle 1:1 — chaque case mesure exactement 14 × 14 mm sur les plateaux et les pièces. Pour l'impression A4, réglez l'échelle sur 100 % (taille réelle).",
+        printSizeLabel: "Taille des cases :",
+        printSize20: "20 mm (2 cm · Grand)",
+        printSize14: "14 mm (Compact)",
+        printScaleHint: (mm) => `Échelle 1:1 — chaque case mesure exactement ${mm} × ${mm} mm sur les plateaux et les pièces. Pour l'impression A4, réglez l'échelle sur 100 % (taille réelle).`,
         btnPrint: "🖨️ Imprimer / PDF",
         printSheetPiecesCore: "Pièces à découper — Jeu de base P1–P10 (niveaux 3–5)",
-        printSheetPiecesCampaign1: "Pièces à découper — Niveaux 1, 2 & 6 (M1–M3, R1–R4, T1–T6)",
-        printSheetPiecesCampaign2: "Pièces à découper — Niveaux 7 & 8 (D1–D6, X1–X7)",
+        printSheetPiecesRange: (range, list) => `Pièces à découper — Niveaux ${range} (${list})`,
+        printSheetPiecesSingle: (num, list) => `Pièces à découper — Niveau ${num} (${list})`,
         printSheetBoardsClassic: "Plateaux défis — 3 protéines classiques (niveaux 3–5)",
-        printSheetBoardsPage1: "Plateaux défis — Niveaux 1–3",
-        printSheetBoardsPage2: "Plateaux défis — Niveaux 4–6",
-        printSheetBoardsPage3: "Plateaux défis — Niveaux 7–8",
+        printSheetBoardsRange: (range) => `Plateaux défis — Niveaux ${range}`,
+        printSheetBoardsSingle: (num) => `Plateau défi — Niveau ${num}`,
         printRotateOnlyRule: "✂️ Découpez le long du contour noir épais · Faites pivoter uniquement (ne retournez pas !)",
-        printScaleCheck: "Contrôle d'échelle (5 × 14 mm = 70 mm)",
+        printScaleCheck: (n, mm) => `Contrôle d'échelle (${n} × ${mm} mm = ${n * mm} mm)`,
         printLegendCompactTitle: "Codage des acides aminés et zones (symboles N&B inclus)",
         printPageLabel: (i, n) => `A4 · Page ${i} / ${n}`,
         printUsePieces: "Utilisez les pièces :",
@@ -2229,6 +2249,7 @@
     }
 
     let printScope = 'all'; // 'all' | 'classic' | 'boards' | 'pieces'
+    let printCellMm = 20;   // 20 (Large 2cm Ubongo standard) | 14 (Compact)
 
     function setPrintScope(scope) {
       if (!['all', 'classic', 'boards', 'pieces'].includes(scope)) return;
@@ -2242,8 +2263,27 @@
       renderPrintSheet();
     }
 
+    function setPrintCellSize(mm) {
+      const val = Number(mm);
+      if (val !== 20 && val !== 14) return;
+      printCellMm = val;
+      document.querySelectorAll('.print-size-btn').forEach(btn => {
+        const active = Number(btn.getAttribute('data-size')) === printCellMm;
+        btn.className = active
+          ? 'print-size-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] ring-1 ring-[var(--primary)]'
+          : 'print-size-btn px-2.5 py-1 rounded-md text-xs text-[var(--muted-foreground)] hover:bg-[var(--background)] border border-transparent hover:border-[var(--border)]';
+      });
+      updatePrintScaleHint();
+      renderPrintSheet();
+    }
+
+    function updatePrintScaleHint() {
+      const el = document.getElementById('print-scale-hint');
+      if (el) el.textContent = dict().printScaleHint(printCellMm);
+    }
+
     function renderPrintPiece(pid) {
-      // Landscape-orient (rotate-only, never mirror) so every piece fits cleanly in <= 2x3 (28mm x 42mm)
+      // Landscape-orient (rotate-only, never mirror) so every piece fits cleanly in <= 2x3
       let cells = transformCells(MASTER_POOL[pid].cells, 0);
       let maxR = Math.max(...cells.map(c => c.r));
       let maxC = Math.max(...cells.map(c => c.c));
@@ -2255,9 +2295,12 @@
       const map = {};
       cells.forEach(c => { map[`${c.r},${c.c}`] = c; });
 
-      const outer = '2px solid #0f172a';
-      const inner = '0.75px dashed rgba(15, 23, 42, 0.45)';
-      let html = `<div class="print-piece-grid" style="grid-template-columns: repeat(${maxC + 1}, 14mm);">`;
+      const isLarge = printCellMm >= 20;
+      const aaFs = isLarge ? '15pt' : '11pt';
+      const idFs = isLarge ? '8pt' : '6.5pt';
+      const outer = isLarge ? '2.2px solid #0f172a' : '2px solid #0f172a';
+      const inner = '0.85px dashed rgba(15, 23, 42, 0.45)';
+      let html = `<div class="print-piece-grid" style="grid-template-columns: repeat(${maxC + 1}, ${printCellMm}mm);">`;
       for (let r = 0; r <= maxR; r++) {
         for (let c = 0; c <= maxC; c++) {
           const cell = map[`${r},${c}`];
@@ -2271,8 +2314,8 @@
           const bR = map[`${r},${c + 1}`] ? inner : outer;
           html += `
             <div class="print-cell aa-${cell.cat}" style="border-top:${bT};border-bottom:${bB};border-left:${bL};border-right:${bR};">
-              <span style="font-size:11pt;font-weight:800;line-height:1;">${aaLabel(cell.aa, cell.cat)}</span>
-              <span style="font-size:6.5pt;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;opacity:0.8;margin-top:0.8mm;line-height:1;">${pid}</span>
+              <span style="font-size:${aaFs};font-weight:800;line-height:1;">${aaLabel(cell.aa, cell.cat)}</span>
+              <span style="font-size:${idFs};font-family:ui-monospace,SFMono-Regular,Menlo,monospace;opacity:0.82;margin-top:1mm;line-height:1;">${pid}</span>
             </div>
           `;
         }
@@ -2281,34 +2324,31 @@
       return html;
     }
 
-    function renderPrintPieceCard(pid) {
+    function renderPrintPieceCard(pid, compact = false) {
+      const minH = printCellMm * 2 + (compact ? 0 : 0.5);
+      const padStyle = compact ? 'padding:1mm 1.8mm 1.2mm;gap:0.8mm;' : '';
       return `
-        <div class="print-piece-card">
-          <div style="font-size:7.5pt;line-height:1.15;text-align:center;color:#0f172a;">
+        <div class="print-piece-card" style="${padStyle}">
+          <div style="font-size:7.3pt;line-height:1.1;text-align:center;color:#0f172a;">
             <strong>${getPieceName(pid)}</strong>
             <span style="color:#475569;">(${getPieceShape(pid)})</span>
           </div>
-          <div style="display:flex;align-items:center;justify-content:center;min-height:29mm;">
+          <div style="display:flex;align-items:center;justify-content:center;min-height:${minH}mm;">
             ${renderPrintPiece(pid)}
           </div>
         </div>
       `;
     }
 
-    function renderPrintBoardCard(id) {
+    function renderPrintBoardGrid(boardMap, rows, cols) {
       const d = dict();
-      const lvl = LEVELS[id];
-      const ltxt = getLevelText(id);
-      const classicPieces = BASE_VARIANTS[id].pieces;
-      const totalAA = Object.keys(lvl.board).length;
-      const isWide = lvl.cols >= 10;
-
-      const outer = '1.8px solid #1e293b';
+      const isLarge = printCellMm >= 20;
+      const outer = isLarge ? '2px solid #1e293b' : '1.8px solid #1e293b';
       const innerFor = (zone) => {
-        if (zone === 'lipid') return '0.75px dashed rgba(180, 83, 9, 0.55)';
-        if (zone === 'pore') return '0.75px dashed rgba(4, 120, 87, 0.55)';
-        if (zone === 'active') return '1.4px dashed #7e22ce';
-        return '0.75px dashed rgba(2, 132, 199, 0.5)';
+        if (zone === 'lipid') return '0.8px dashed rgba(180, 83, 9, 0.55)';
+        if (zone === 'pore') return '0.8px dashed rgba(4, 120, 87, 0.55)';
+        if (zone === 'active') return '1.6px dashed #7e22ce';
+        return '0.8px dashed rgba(2, 132, 199, 0.5)';
       };
       const bgFor = (zone) => {
         if (zone === 'lipid') return 'rgba(245, 158, 11, 0.18)';
@@ -2317,28 +2357,28 @@
         return 'rgba(56, 189, 248, 0.14)';
       };
 
-      let gridHtml = `<div class="print-board-grid" style="grid-template-columns: repeat(${lvl.cols}, 14mm);">`;
-      for (let r = 0; r < lvl.rows; r++) {
-        for (let c = 0; c < lvl.cols; c++) {
-          const cell = lvl.board[`${r},${c}`];
+      let gridHtml = `<div class="print-board-grid" style="grid-template-columns: repeat(${cols}, ${printCellMm}mm);">`;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const cell = boardMap[`${r},${c}`];
           if (!cell) {
             gridHtml += `<div class="print-cell" style="visibility:hidden;"></div>`;
             continue;
           }
           const inStyle = innerFor(cell.zone);
-          const bT = lvl.board[`${r - 1},${c}`] ? inStyle : outer;
-          const bB = lvl.board[`${r + 1},${c}`] ? inStyle : outer;
-          const bL = lvl.board[`${r},${c - 1}`] ? inStyle : outer;
-          const bR = lvl.board[`${r},${c + 1}`] ? inStyle : outer;
+          const bT = boardMap[`${r - 1},${c}`] ? inStyle : outer;
+          const bB = boardMap[`${r + 1},${c}`] ? inStyle : outer;
+          const bL = boardMap[`${r},${c - 1}`] ? inStyle : outer;
+          const bR = boardMap[`${r},${c + 1}`] ? inStyle : outer;
           let labelHtml;
           if (cell.zone === 'active') {
-            labelHtml = `<span style="font-size:10.5pt;font-weight:800;color:#6b21a8;">C*</span>`;
+            labelHtml = `<span style="font-size:${isLarge ? '14pt' : '10.5pt'};font-weight:800;color:#6b21a8;">C*</span>`;
           } else if (cell.zone === 'lipid') {
-            labelHtml = `<span style="font-size:8.5pt;font-weight:700;color:#78350f;">F●</span>`;
+            labelHtml = `<span style="font-size:${isLarge ? '11.5pt' : '8.5pt'};font-weight:700;color:#78350f;">F●</span>`;
           } else if (cell.zone === 'pore') {
-            labelHtml = `<span style="font-size:7.5pt;font-weight:700;color:#065f46;">${d.cellPore}</span>`;
+            labelHtml = `<span style="font-size:${isLarge ? '10pt' : '7.5pt'};font-weight:700;color:#065f46;">${d.cellPore}</span>`;
           } else {
-            labelHtml = `<span style="font-size:8pt;font-weight:600;color:#0369a1;">H₂O</span>`;
+            labelHtml = `<span style="font-size:${isLarge ? '10.5pt' : '8pt'};font-weight:600;color:#0369a1;">H₂O</span>`;
           }
           gridHtml += `
             <div class="print-cell" style="background:${bgFor(cell.zone)};border-top:${bT};border-bottom:${bB};border-left:${bL};border-right:${bR};">
@@ -2348,13 +2388,25 @@
         }
       }
       gridHtml += '</div>';
+      return gridHtml;
+    }
 
-      const sideStyle = isWide
-        ? 'font-size:7pt;font-weight:600;color:#475569;white-space:nowrap;line-height:1.15;'
+    function renderPrintBoardCard(id) {
+      const d = dict();
+      const lvl = LEVELS[id];
+      const ltxt = getLevelText(id);
+      const classicPieces = BASE_VARIANTS[id].pieces;
+      const totalAA = Object.keys(lvl.board).length;
+      const gridWidthMm = lvl.cols * printCellMm;
+      const isTightWidth = gridWidthMm >= 155;
+
+      const gridHtml = renderPrintBoardGrid(lvl.board, lvl.rows, lvl.cols);
+      const sideStyle = isTightWidth
+        ? 'font-size:6.8pt;font-weight:600;color:#475569;line-height:1.15;max-width:12mm;white-space:pre-line;'
         : 'font-size:7.5pt;font-weight:600;color:#475569;line-height:1.2;max-width:22mm;white-space:pre-line;';
 
       return `
-        <div class="print-board-card" style="${isWide ? 'padding:2mm 1.5mm;' : ''}">
+        <div class="print-board-card" style="${isTightWidth ? 'padding:2mm 1.2mm;' : ''}">
           <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:1.5mm;margin-bottom:1.5mm;">
             <div style="display:flex;align-items:center;gap:1.5mm;flex-wrap:wrap;">
               <span style="font-size:9.5pt;font-weight:800;color:#0f172a;">${ltxt.title}</span>
@@ -2367,7 +2419,7 @@
 
           <div style="display:flex;flex-direction:column;align-items:center;gap:1mm;padding:0.8mm 0;">
             <div style="font-size:7.5pt;font-weight:600;color:#475569;">${ltxt.envLabels.top}</div>
-            <div style="display:flex;align-items:center;justify-content:center;gap:${isWide ? '1.2mm' : '2.5mm'};">
+            <div style="display:flex;align-items:center;justify-content:center;gap:${isTightWidth ? '1mm' : '2.5mm'};">
               <div style="${sideStyle}text-align:right;">${ltxt.envLabels.left}</div>
               ${gridHtml}
               <div style="${sideStyle}text-align:left;">${ltxt.envLabels.right}</div>
@@ -2377,6 +2429,64 @@
 
           <div style="font-size:7.5pt;color:#334155;text-align:center;line-height:1.3;margin-top:1mm;">
             ${ltxt.desc}
+          </div>
+        </div>
+      `;
+    }
+
+    // Special 90° CW vertical rendering for L7 Tandem (12x2 = 240mm x 40mm at 20mm) — pure rotation preserves chirality!
+    function renderPrintVerticalTandemCard() {
+      const d = dict();
+      const lvl = LEVELS.tandem;
+      const ltxt = getLevelText('tandem');
+      const classicPieces = BASE_VARIANTS.tandem.pieces;
+      const totalAA = Object.keys(lvl.board).length;
+
+      // Rotate 90° CW: (r, c) -> (nr = c, nc = lvl.rows - 1 - r)
+      const rotBoard = {};
+      Object.entries(lvl.board).forEach(([k, val]) => {
+        const [r, c] = k.split(',').map(Number);
+        rotBoard[`${c},${lvl.rows - 1 - r}`] = val;
+      });
+      const gridHtml = renderPrintBoardGrid(rotBoard, lvl.cols, lvl.rows);
+
+      return `
+        <div class="print-board-card" style="display:flex;gap:5mm;align-items:stretch;padding:2.5mm 3mm;">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1mm;flex-shrink:0;">
+            <div style="font-size:7.5pt;font-weight:700;color:#475569;">N ↓</div>
+            <div style="display:flex;align-items:center;gap:1.5mm;">
+              <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:7.5pt;font-weight:600;color:#475569;text-align:center;">${ltxt.envLabels.bottom}</div>
+              ${gridHtml}
+              <div style="writing-mode:vertical-rl;font-size:7.5pt;font-weight:600;color:#475569;text-align:center;">${ltxt.envLabels.top}</div>
+            </div>
+            <div style="font-size:7.5pt;font-weight:700;color:#475569;">↓ C</div>
+          </div>
+
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:3mm;padding:2mm 0;">
+            <div style="display:flex;flex-direction:column;gap:2.5mm;">
+              <div>
+                <div style="font-size:11pt;font-weight:800;color:#0f172a;line-height:1.2;">${ltxt.title}</div>
+                <div style="margin-top:1.5mm;display:flex;flex-wrap:wrap;align-items:center;gap:2mm;">
+                  <span style="font-size:7.5pt;font-weight:600;padding:0.5mm 2mm;border-radius:999px;background:#e2e8f0;color:#1e293b;">${getLevelDiff(lvl)} · ${totalAA} ${d.aaUnit} · ${formatPieces(classicPieces.length)}</span>
+                </div>
+              </div>
+              <div style="font-size:8.5pt;color:#0f172a;padding:2mm 2.5mm;border-radius:2mm;background:#f8fafc;border:0.75px solid #cbd5e1;">
+                ${d.printUsePieces} <strong>${classicPieces.join(', ')}</strong>
+              </div>
+              <p style="font-size:8.5pt;color:#334155;line-height:1.45;margin:0;">${ltxt.desc}</p>
+              <div style="padding:2.5mm;border-radius:2mm;background:#f8fafc;border:0.75px solid #e2e8f0;">
+                <div style="font-size:8pt;font-weight:700;color:#0f172a;margin-bottom:1mm;">🔬 ${d.didacticHeading}</div>
+                <p style="font-size:7.8pt;color:#475569;line-height:1.45;margin:0;">${ltxt.didactic}</p>
+              </div>
+            </div>
+            <div style="border:0.75px solid #cbd5e1;border-radius:2mm;padding:2mm;background:#f8fafc;font-size:7.2pt;display:flex;flex-direction:column;gap:1.5mm;">
+              <div style="font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#475569;">${d.printLegendCompactTitle}</div>
+              <div style="display:flex;align-items:center;gap:1.5mm;"><span class="aa-F" style="width:7mm;height:5mm;border-radius:1mm;border:1px solid #b45309;display:inline-flex;align-items:center;justify-content:center;font-weight:800;">L●</span> <strong>${d.aaHydrophobic}</strong> · L, V, I, F, A, M</div>
+              <div style="display:flex;align-items:center;gap:1.5mm;"><span class="aa-P" style="width:7mm;height:5mm;border-radius:1mm;border:1px solid #047857;display:inline-flex;align-items:center;justify-content:center;font-weight:800;">S</span> <strong>${d.aaPolar}</strong> · S, T, N, Q</div>
+              <div style="display:flex;align-items:center;gap:1.5mm;"><span class="aa-POS" style="width:7mm;height:5mm;border-radius:1mm;border:1px solid #1d4ed8;display:inline-flex;align-items:center;justify-content:center;font-weight:800;">K+</span> <strong>${d.aaPositive}</strong> · K, R (+/−)</div>
+              <div style="display:flex;align-items:center;gap:1.5mm;"><span class="aa-NEG" style="width:7mm;height:5mm;border-radius:1mm;border:1px solid #b91c1c;display:inline-flex;align-items:center;justify-content:center;font-weight:800;">D−</span> <strong>${d.aaNegative}</strong> · D, E (+/−)</div>
+              <div style="display:flex;align-items:center;gap:1.5mm;"><span class="aa-S" style="width:7mm;height:5mm;border-radius:1mm;border:1px solid #7e22ce;display:inline-flex;align-items:center;justify-content:center;font-weight:800;">C*</span> <strong>${d.aaSpecial}</strong> · C* (S–S), G°, P°</div>
+            </div>
           </div>
         </div>
       `;
@@ -2426,10 +2536,10 @@
     function renderPrintSheetHeader(title, pageIdx, totalPages, subtitle = '') {
       const d = dict();
       return `
-        <div style="border-bottom:1.5px solid #0f172a;padding-bottom:1.5mm;display:flex;align-items:baseline;justify-content:space-between;gap:2mm;">
+        <div style="border-bottom:1.5px solid #0f172a;padding-bottom:1.2mm;display:flex;align-items:baseline;justify-content:space-between;gap:2mm;">
           <div>
             <div style="font-size:9.8pt;font-weight:800;color:#0f172a;line-height:1.15;">🧬 Protein Fold'n'Go — ${title}</div>
-            ${subtitle ? `<div style="font-size:7.5pt;color:#475569;margin-top:0.6mm;">${subtitle}</div>` : ''}
+            ${subtitle ? `<div style="font-size:7.3pt;color:#475569;margin-top:0.5mm;">${subtitle}</div>` : ''}
           </div>
           <div style="font-size:7.5pt;font-weight:700;color:#334155;white-space:nowrap;">${d.printPageLabel(pageIdx, totalPages)}</div>
         </div>
@@ -2438,10 +2548,11 @@
 
     function renderPrintSheetFooter(showScale = false, showFullAck = false) {
       const d = dict();
+      const segs = printCellMm >= 20 ? 4 : 5;
       const scaleBlock = showScale ? `
-        <div style="display:flex;align-items:center;gap:2.5mm;">
-          <div class="print-scale-bar"><span></span><span></span><span></span><span></span><span></span></div>
-          <span style="font-size:7pt;font-weight:600;color:#334155;">${d.printScaleCheck}</span>
+        <div style="display:flex;align-items:center;gap:2mm;white-space:nowrap;">
+          <div class="print-scale-bar">${'<span></span>'.repeat(segs)}</div>
+          <span style="font-size:6.5pt;font-weight:600;color:#334155;">${d.printScaleCheck(segs, printCellMm)}</span>
         </div>
       ` : `
         <div style="font-size:7pt;color:#475569;">
@@ -2456,23 +2567,34 @@
       ` : '';
 
       return `
-        <div style="border-top:0.75px solid #cbd5e1;padding-top:1.5mm;">
-          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2mm;">
+        <div style="border-top:0.75px solid #cbd5e1;padding-top:1mm;">
+          <div style="display:flex;flex-wrap:${showScale ? 'nowrap' : 'wrap'};align-items:center;justify-content:space-between;gap:2mm;">
             ${scaleBlock}
-            <div style="font-size:7pt;color:#475569;">karelberka.github.io/protein-foldngo</div>
+            <div style="font-size:6.5pt;color:#475569;white-space:nowrap;">karelberka.github.io/protein-foldngo</div>
           </div>
           ${ackLine}
         </div>
       `;
     }
 
-    function renderPrintPieceGroup(titleText, pids, cols = 3) {
+    function renderPrintPieceGroup(titleText, pids, cols = 2, compact = false) {
       return `
-        <div style="space-y:1.5mm;">
-          <div style="font-size:8.5pt;font-weight:800;color:#0f172a;margin-bottom:1.5mm;">${titleText}</div>
-          <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:2mm;">
-            ${pids.map(renderPrintPieceCard).join('')}
+        <div>
+          <div style="font-size:${compact ? '7.8pt' : '8.2pt'};font-weight:800;color:#0f172a;margin-bottom:${compact ? '0.8mm' : '1.2mm'};">${titleText}</div>
+          <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:${compact ? '1.2mm' : '1.8mm'};">
+            ${pids.map(pid => renderPrintPieceCard(pid, compact)).join('')}
           </div>
+        </div>
+      `;
+    }
+
+    function renderPrintDidacticBox(levelId) {
+      const d = dict();
+      const ltxt = getLevelText(levelId);
+      return `
+        <div style="border:0.75px solid #cbd5e1;border-radius:2.5mm;padding:2.5mm 3mm;background:#f8fafc;">
+          <div style="font-size:8pt;font-weight:700;color:#0f172a;margin-bottom:1mm;">🔬 ${d.didacticHeading} — ${ltxt.shortTitle}</div>
+          <p style="font-size:7.8pt;color:#334155;line-height:1.45;margin:0;">${ltxt.didactic}</p>
         </div>
       `;
     }
@@ -2481,6 +2603,8 @@
       const d = dict();
       const container = document.getElementById('print-sheets-container');
       if (!container) return;
+      container.style.setProperty('--print-cell', `${printCellMm}mm`);
+      updatePrintScaleHint();
 
       const sheets = [];
       const includeCorePieces = printScope === 'all' || printScope === 'classic' || printScope === 'pieces';
@@ -2488,105 +2612,254 @@
       const includeAllBoards = printScope === 'all' || printScope === 'boards';
       const includeClassicBoards = printScope === 'classic';
 
-      // 1. Core pieces sheet: P1-P10 (2x5 symmetric grid at exact 14mm cells)
-      if (includeCorePieces) {
-        sheets.push((idx, total) => `
-          <div class="print-sheet">
-            <div style="display:flex;flex-direction:column;gap:2.5mm;">
-              ${renderPrintSheetHeader(d.printSheetPiecesCore, idx, total, d.printRotateOnlyRule)}
-              ${renderPrintCompactLegend(false)}
-              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2.2mm;margin-top:0.5mm;">
-                ${['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10'].map(renderPrintPieceCard).join('')}
+      if (printCellMm >= 20) {
+        // =====================================================================
+        // LARGE 20 mm (2.0 cm × 2.0 cm) UBONGO STANDARD A4 PACKING
+        // =====================================================================
+        if (includeCorePieces) {
+          // 10 core pieces in 2x5 grid fill ~95% of Page 1 at 20mm!
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesCore, idx, total, d.printRotateOnlyRule)}
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1.8mm;">
+                  ${['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10'].map(pid => renderPrintPieceCard(pid, false)).join('')}
+                </div>
               </div>
+              ${renderPrintSheetFooter(true, idx === total)}
             </div>
-            ${renderPrintSheetFooter(true, idx === total)}
-          </div>
-        `);
-      }
+          `);
+        }
 
-      // 2. Campaign pieces sheet A: L1 (M1-M3), L2 (R1-R4), L6 (T1-T6)
-      if (includeCampaignPieces) {
-        sheets.push((idx, total) => `
-          <div class="print-sheet">
-            <div style="display:flex;flex-direction:column;gap:3mm;">
-              ${renderPrintSheetHeader(d.printSheetPiecesCampaign1, idx, total, d.printRotateOnlyRule)}
-              ${renderPrintPieceGroup(`${getLevelText('mini').title} — M1–M3`, ['M1','M2','M3'], 3)}
-              ${renderPrintPieceGroup(`${getLevelText('ribbon').title} — R1–R4`, ['R1','R2','R3','R4'], 2)}
-              ${renderPrintPieceGroup(`${getLevelText('tunnel_cys').title} — T1–T6`, ['T1','T2','T3','T4','T5','T6'], 3)}
+        if (includeCampaignPieces) {
+          // Pieces Sheet 2: L1 (M1-M3) + L2 (R1-R4) + Legend
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2.5mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesRange('1–2', 'M1–M3, R1–R4'), idx, total, d.printRotateOnlyRule)}
+                ${renderPrintCompactLegend(false)}
+                ${renderPrintPieceGroup(`${getLevelText('mini').title} — M1–M3`, ['M1','M2','M3'], 2, false)}
+                ${renderPrintPieceGroup(`${getLevelText('ribbon').title} — R1–R4`, ['R1','R2','R3','R4'], 2, false)}
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
             </div>
-            ${renderPrintSheetFooter(true, idx === total)}
-          </div>
-        `);
+          `);
 
-        // 3. Campaign pieces sheet B: L7 (D1-D6), L8 (X1-X7)
-        sheets.push((idx, total) => `
-          <div class="print-sheet">
-            <div style="display:flex;flex-direction:column;gap:3.5mm;">
-              ${renderPrintSheetHeader(d.printSheetPiecesCampaign2, idx, total, d.printRotateOnlyRule)}
-              ${renderPrintPieceGroup(`${getLevelText('tandem').title} — D1–D6`, ['D1','D2','D3','D4','D5','D6'], 3)}
-              ${renderPrintPieceGroup(`${getLevelText('transporter').title} — X1–X7`, ['X1','X2','X3','X4','X5','X6','X7'], 3)}
-              ${renderPrintCompactLegend(true)}
+          // Pieces Sheet 3: L6 (T1-T6) + L7 (D1-D6, compact 5-row fit at exact 20mm!)
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:1.4mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesRange('6–7', 'T1–T6, D1–D6'), idx, total, d.printRotateOnlyRule)}
+                ${renderPrintPieceGroup(`${getLevelText('tunnel_cys').title} — T1–T6`, ['T1','T2','T3','T4','T5','T6'], 2, true)}
+                <div>
+                  <div style="font-size:7.8pt;font-weight:800;color:#0f172a;margin-bottom:0.8mm;">${getLevelText('tandem').title} — D1–D6</div>
+                  <div style="display:flex;flex-direction:column;gap:1.2mm;">
+                    <div style="display:grid;grid-template-columns:1.35fr 1.35fr 1fr;gap:1.2mm;">
+                      ${['D1','D2','D3'].map(pid => renderPrintPieceCard(pid, true)).join('')}
+                    </div>
+                    <div style="display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:1.2mm;">
+                      ${['D5','D4','D6'].map(pid => renderPrintPieceCard(pid, true)).join('')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
             </div>
-            ${renderPrintSheetFooter(true, idx === total)}
-          </div>
-        `);
-      }
+          `);
 
-      // 4. Boards sheets
-      if (includeClassicBoards) {
-        sheets.push((idx, total) => `
-          <div class="print-sheet">
-            <div style="display:flex;flex-direction:column;gap:2.5mm;">
-              ${renderPrintSheetHeader(d.printSheetBoardsClassic, idx, total)}
-              ${renderPrintBoardCard('globular')}
-              ${renderPrintBoardCard('membrane')}
-              ${renderPrintBoardCard('fibril')}
+          // Pieces Sheet 4: L8 (X1-X7) + Legend
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2.5mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesSingle('8', 'X1–X7'), idx, total, d.printRotateOnlyRule)}
+                ${renderPrintPieceGroup(`${getLevelText('transporter').title} — X1–X7`, ['X1','X2','X3','X4','X5','X6','X7'], 2, false)}
+                ${renderPrintCompactLegend(true)}
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
             </div>
-            ${renderPrintSheetFooter(false, true)}
-          </div>
-        `);
-      }
+          `);
+        }
 
-      if (includeAllBoards) {
-        // Boards Page 1: Levels 1, 2, 3
-        sheets.push((idx, total) => `
-          <div class="print-sheet">
-            <div style="display:flex;flex-direction:column;gap:2.5mm;">
-              ${renderPrintSheetHeader(d.printSheetBoardsPage1, idx, total)}
-              ${renderPrintCompactLegend(true)}
-              ${renderPrintBoardCard('mini')}
-              ${renderPrintBoardCard('ribbon')}
-              ${renderPrintBoardCard('globular')}
+        if (includeClassicBoards) {
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('3–4'), idx, total)}
+                ${renderPrintCompactLegend(true)}
+                ${renderPrintBoardCard('globular')}
+                ${renderPrintBoardCard('membrane')}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
             </div>
-            ${renderPrintSheetFooter(false, idx === total)}
-          </div>
-        `);
+          `);
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsSingle('5'), idx, total)}
+                ${renderPrintBoardCard('fibril')}
+                ${renderPrintDidacticBox('fibril')}
+                ${renderPrintCompactLegend(true)}
+              </div>
+              ${renderPrintSheetFooter(false, true)}
+            </div>
+          `);
+        }
 
-        // Boards Page 2: Levels 4, 5, 6
-        sheets.push((idx, total) => `
-          <div class="print-sheet">
-            <div style="display:flex;flex-direction:column;gap:3mm;">
-              ${renderPrintSheetHeader(d.printSheetBoardsPage2, idx, total)}
-              ${renderPrintBoardCard('membrane')}
-              ${renderPrintBoardCard('fibril')}
-              ${renderPrintBoardCard('tunnel_cys')}
+        if (includeAllBoards) {
+          // Boards 1-2
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('1–2'), idx, total)}
+                ${renderPrintCompactLegend(true)}
+                ${renderPrintBoardCard('mini')}
+                ${renderPrintBoardCard('ribbon')}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
             </div>
-            ${renderPrintSheetFooter(false, idx === total)}
-          </div>
-        `);
+          `);
+          // Boards 3-4
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('3–4'), idx, total)}
+                ${renderPrintBoardCard('globular')}
+                ${renderPrintBoardCard('membrane')}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
+            </div>
+          `);
+          // Boards 5-6
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('5–6'), idx, total)}
+                ${renderPrintBoardCard('fibril')}
+                ${renderPrintBoardCard('tunnel_cys')}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
+            </div>
+          `);
+          // Board 7 (vertical 240mm x 40mm + didactic & legend panel)
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsSingle('7'), idx, total)}
+                ${renderPrintVerticalTandemCard()}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
+            </div>
+          `);
+          // Board 8 + didactic + full legend + acknowledgement footer
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsSingle('8'), idx, total)}
+                ${renderPrintBoardCard('transporter')}
+                ${renderPrintDidacticBox('transporter')}
+                ${renderPrintCompactLegend(true)}
+              </div>
+              ${renderPrintSheetFooter(false, true)}
+            </div>
+          `);
+        }
+      } else {
+        // =====================================================================
+        // COMPACT 14 mm (1.4 cm × 1.4 cm) A4 PACKING (6 pages total / 2 classic)
+        // =====================================================================
+        if (includeCorePieces) {
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2.5mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesCore, idx, total, d.printRotateOnlyRule)}
+                ${renderPrintCompactLegend(false)}
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2.2mm;margin-top:0.5mm;">
+                  ${['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10'].map(pid => renderPrintPieceCard(pid, false)).join('')}
+                </div>
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
+            </div>
+          `);
+        }
 
-        // Boards Page 3: Levels 7, 8 + Reference Legend + Acknowledgement Footer
-        sheets.push((idx, total) => `
-          <div class="print-sheet">
-            <div style="display:flex;flex-direction:column;gap:3.5mm;">
-              ${renderPrintSheetHeader(d.printSheetBoardsPage3, idx, total)}
-              ${renderPrintBoardCard('tandem')}
-              ${renderPrintBoardCard('transporter')}
-              ${renderPrintCompactLegend(true)}
+        if (includeCampaignPieces) {
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesRange('1, 2, 6', 'M1–M3, R1–R4, T1–T6'), idx, total, d.printRotateOnlyRule)}
+                ${renderPrintPieceGroup(`${getLevelText('mini').title} — M1–M3`, ['M1','M2','M3'], 3)}
+                ${renderPrintPieceGroup(`${getLevelText('ribbon').title} — R1–R4`, ['R1','R2','R3','R4'], 2)}
+                ${renderPrintPieceGroup(`${getLevelText('tunnel_cys').title} — T1–T6`, ['T1','T2','T3','T4','T5','T6'], 3)}
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
             </div>
-            ${renderPrintSheetFooter(false, true)}
-          </div>
-        `);
+          `);
+
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3.5mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesRange('7–8', 'D1–D6, X1–X7'), idx, total, d.printRotateOnlyRule)}
+                ${renderPrintPieceGroup(`${getLevelText('tandem').title} — D1–D6`, ['D1','D2','D3','D4','D5','D6'], 3)}
+                ${renderPrintPieceGroup(`${getLevelText('transporter').title} — X1–X7`, ['X1','X2','X3','X4','X5','X6','X7'], 3)}
+                ${renderPrintCompactLegend(true)}
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
+            </div>
+          `);
+        }
+
+        if (includeClassicBoards) {
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsClassic, idx, total)}
+                ${renderPrintBoardCard('globular')}
+                ${renderPrintBoardCard('membrane')}
+                ${renderPrintBoardCard('fibril')}
+              </div>
+              ${renderPrintSheetFooter(false, true)}
+            </div>
+          `);
+        }
+
+        if (includeAllBoards) {
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('1–3'), idx, total)}
+                ${renderPrintCompactLegend(true)}
+                ${renderPrintBoardCard('mini')}
+                ${renderPrintBoardCard('ribbon')}
+                ${renderPrintBoardCard('globular')}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
+            </div>
+          `);
+
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('4–6'), idx, total)}
+                ${renderPrintBoardCard('membrane')}
+                ${renderPrintBoardCard('fibril')}
+                ${renderPrintBoardCard('tunnel_cys')}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
+            </div>
+          `);
+
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('7–8'), idx, total)}
+                ${renderPrintBoardCard('tandem')}
+                ${renderPrintBoardCard('transporter')}
+                ${renderPrintCompactLegend(true)}
+              </div>
+              ${renderPrintSheetFooter(false, true)}
+            </div>
+          `);
+        }
       }
 
       const totalPages = sheets.length;
@@ -2618,6 +2891,7 @@
         const key = el.getAttribute('data-i18n-html');
         if (typeof d[key] === 'string') el.innerHTML = d[key];
       });
+      updatePrintScaleHint();
 
       document.querySelectorAll('#lang-switcher .lang-btn').forEach(btn => {
         const active = btn.getAttribute('data-lang') === currentLang;
@@ -2661,6 +2935,10 @@
     selectLevel('mini');
     (() => {
       const params = new URLSearchParams(window.location.search);
+      const sizeParam = Number(params.get('size'));
+      if (sizeParam === 14 || sizeParam === 20) {
+        setPrintCellSize(sizeParam);
+      }
       const scopeParam = params.get('scope');
       if (scopeParam && ['all', 'classic', 'boards', 'pieces'].includes(scopeParam)) {
         setPrintScope(scopeParam);

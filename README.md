@@ -19,7 +19,7 @@ Interaktivní biochemická skládačka ve stylu deskové hry **Ubongo**, ve kter
 - **4 jazykové verze:** čeština (`CZ`), angličtina (`EN`), němčina (`DE`) a francouzština (`FR`).
 - **4 předpřipravené varianty (A–D) + generátor `🎲 Jiná kombinace`** pro nekonečnou znovuhratelnost u každého typu proteinu.
 - **Pouze otáčení (bez zrcadlového překlápění)** — přetahování myší (Drag & Drop), magnetické přicvakávání, pravý klik / klávesa `R` pro otočení.
-- **Tisková A4 šablona pro výuku v měřítku 1:1 (`14 × 14 mm`)** — všech 8 podkladů a všech 36 dílků k vystřižení (včetně výběru rozsahu tisku, kontrolního měřítka `70 mm` a značek `●`, `+`, `−`, `*`, `°` pro černobílý tisk).
+- **Tisková A4 šablona pro výuku v měřítku 1:1 (`20 × 20 mm` velké dílky / `14 × 14 mm` kompaktní)** — všech 8 podkladů a všech 36 dílků k vystřižení (včetně výběru rozsahu tisku, kontrolního pravítka `80 mm` / `70 mm` a značek `●`, `+`, `−`, `*`, `°` pro černobílý tisk).
 
 ## Barevné a symbolické kódování aminokyselin
 
