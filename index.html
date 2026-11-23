@@ -92,21 +92,28 @@
     <!-- Header -->
     <header class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[var(--border)]">
       <div>
-        <h1 class="text-xl font-bold tracking-tight flex items-center gap-2">
-          <span>🧬</span> Protein Fold'n'Go <span class="text-sm font-normal text-[var(--muted-foreground)]">(Proteinové Ubongo)</span>
-          <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+        <h1 class="text-xl font-bold tracking-tight flex items-center gap-2 flex-wrap">
+          <span>🧬</span> Protein Fold'n'Go <span data-i18n="headerSubtitle" class="text-sm font-normal text-[var(--muted-foreground)]">(Proteinové Ubongo)</span>
+          <span data-i18n="headerMetaPill" class="text-xs font-medium px-2 py-0.5 rounded-full bg-[var(--secondary)] text-[var(--secondary-foreground)]">
             8 úrovní · 12–28 AK
           </span>
           <span id="overall-progress" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
             0 / 8 složeno
           </span>
         </h1>
-        <p class="text-xs text-[var(--muted-foreground)] mt-1">
+        <p data-i18n="headerTagline" class="text-xs text-[var(--muted-foreground)] mt-1">
           Skládej proteiny od jednoduchých peptidů po enzymy s polárním tunelem, aktivním místem C* a velké membránové transportéry.
         </p>
       </div>
-      <div class="flex items-center gap-2 no-print">
-        <button id="btn-mode-play" onclick="setViewMode('play')"
+      <div class="flex flex-wrap items-center gap-2 no-print">
+        <div id="lang-switcher" role="group" aria-label="Language"
+          class="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--card)] p-0.5 text-xs font-semibold">
+          <button type="button" data-lang="cs" onclick="setLanguage('cs')" class="lang-btn px-2 py-1 rounded-md transition-colors">CZ</button>
+          <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-2 py-1 rounded-md transition-colors">EN</button>
+          <button type="button" data-lang="de" onclick="setLanguage('de')" class="lang-btn px-2 py-1 rounded-md transition-colors">DE</button>
+          <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-2 py-1 rounded-md transition-colors">FR</button>
+        </div>
+        <button id="btn-mode-play" onclick="setViewMode('play')" data-i18n="modePlay"
           class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]">
           Interaktivní hra
         </button>
@@ -114,9 +121,9 @@
           class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90">
           🌙
         </button>
-        <button id="btn-mode-print" onclick="setViewMode('print')"
+        <button id="btn-mode-print" onclick="setViewMode('print')" data-i18n="modePrint"
           class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90">
-          🖨️ Tisková šablona (KSICHT)
+          🖨️ Tisková šablona
         </button>
       </div>
     </header>
@@ -124,10 +131,10 @@
     <!-- Legend -->
     <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-        <span class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
+        <span data-i18n="legendTitle" class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
           Kódování aminokyselin (barvy + značky pro černobílý tisk)
         </span>
-        <span class="text-xs text-[var(--muted-foreground)]">
+        <span data-i18n-html="legendControls" class="text-xs text-[var(--muted-foreground)]">
           Přetáhni myší nebo klikni · Pravý klik / <kbd class="px-1.5 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> = otočit o 90°
         </span>
       </div>
@@ -135,36 +142,36 @@
         <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)]">
           <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-F shrink-0">L●</span>
           <div>
-            <div class="font-semibold">Hydrofobní (●)</div>
+            <div data-i18n="aaHydrophobic" class="font-semibold">Hydrofobní (●)</div>
             <div class="text-[var(--muted-foreground)]">L, V, I, F, A, M</div>
           </div>
         </div>
         <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)]">
           <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-P shrink-0">S</span>
           <div>
-            <div class="font-semibold">Polární</div>
-            <div class="text-[var(--muted-foreground)]">S, T, N, Q (voda/tunel)</div>
+            <div data-i18n="aaPolar" class="font-semibold">Polární</div>
+            <div data-i18n="aaPolarSub" class="text-[var(--muted-foreground)]">S, T, N, Q (voda/tunel)</div>
           </div>
         </div>
         <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)]">
           <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-POS shrink-0">K+</span>
           <div>
-            <div class="font-semibold">Kladné (+)</div>
-            <div class="text-[var(--muted-foreground)]">K, R (solný můstek)</div>
+            <div data-i18n="aaPositive" class="font-semibold">Kladné (+)</div>
+            <div data-i18n="aaPositiveSub" class="text-[var(--muted-foreground)]">K, R (solný můstek)</div>
           </div>
         </div>
         <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)]">
           <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-NEG shrink-0">D−</span>
           <div>
-            <div class="font-semibold">Záporné (−)</div>
-            <div class="text-[var(--muted-foreground)]">D, E (solný můstek)</div>
+            <div data-i18n="aaNegative" class="font-semibold">Záporné (−)</div>
+            <div data-i18n="aaNegativeSub" class="text-[var(--muted-foreground)]">D, E (solný můstek)</div>
           </div>
         </div>
         <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)] col-span-2 sm:col-span-1">
           <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-S shrink-0">C*</span>
           <div>
-            <div class="font-semibold">Speciální (* / °)</div>
-            <div class="text-[var(--muted-foreground)]">C* (S–S / akt. místo), G°, P°</div>
+            <div data-i18n="aaSpecial" class="font-semibold">Speciální (* / °)</div>
+            <div data-i18n="aaSpecialSub" class="text-[var(--muted-foreground)]">C* (S–S / akt. místo), G°, P°</div>
           </div>
         </div>
       </div>
@@ -189,15 +196,15 @@
               <p id="level-desc" class="text-xs text-[var(--muted-foreground)] mt-0.5"></p>
             </div>
             <div class="flex items-center gap-1.5">
-              <button onclick="hintOnePiece()"
+              <button onclick="hintOnePiece()" data-i18n="btnHint"
                 class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-90">
                 💡 Nápověda
               </button>
-              <button onclick="showSolution()"
+              <button onclick="showSolution()" data-i18n="btnSolution"
                 class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-90">
                 ✨ Řešení
               </button>
-              <button onclick="resetLevel()"
+              <button onclick="resetLevel()" data-i18n="btnReset"
                 class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] hover:opacity-90">
                 ↺ Reset
               </button>
@@ -207,10 +214,10 @@
           <!-- Variant Switcher -->
           <div class="flex flex-wrap items-center justify-between gap-2 py-2 px-2.5 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs">
             <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="text-[var(--muted-foreground)] font-medium mr-1">Kombinace dílků:</span>
+              <span data-i18n="variantLabel" class="text-[var(--muted-foreground)] font-medium mr-1">Kombinace dílků:</span>
               <div id="variant-buttons" class="flex items-center gap-1 flex-wrap"></div>
             </div>
-            <button onclick="generateRandomVariant()"
+            <button onclick="generateRandomVariant()" data-i18n="btnRandomVariant"
               class="px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 shrink-0">
               🎲 Jiná kombinace
             </button>
@@ -234,36 +241,36 @@
           <!-- Zone Legend -->
           <div class="flex flex-wrap items-center justify-center gap-3 pt-2 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)]">
             <span class="flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded cell-water inline-block"></span> Voda (H₂O)
+              <span class="w-4 h-4 rounded cell-water inline-block"></span> <span data-i18n="zoneWater">Voda (H₂O)</span>
             </span>
             <span class="flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded cell-lipid inline-block"></span> Hydrofobní jádro / lipidy (F●)
+              <span class="w-4 h-4 rounded cell-lipid inline-block"></span> <span data-i18n="zoneLipid">Hydrofobní jádro / lipidy (F●)</span>
             </span>
             <span id="legend-pore" class="flex items-center gap-1.5 hidden">
-              <span class="w-4 h-4 rounded cell-pore inline-block"></span> Polární pór / tunel
+              <span class="w-4 h-4 rounded cell-pore inline-block"></span> <span data-i18n="zonePore">Polární pór / tunel</span>
             </span>
             <span id="legend-active" class="flex items-center gap-1.5 hidden">
-              <span class="w-4 h-4 rounded cell-active inline-block"></span> Aktivní místo (vyžaduje <strong>C*</strong>!)
+              <span class="w-4 h-4 rounded cell-active inline-block"></span> <span data-i18n-html="zoneActive">Aktivní místo (vyžaduje <strong>C*</strong>!)</span>
             </span>
           </div>
 
           <!-- Status -->
           <div class="rounded-lg border border-[var(--border)] p-3 text-xs space-y-2 bg-[var(--background)]">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="font-semibold">Biochemické hodnocení struktury</span>
+              <span data-i18n="evalTitle" class="font-semibold">Biochemické hodnocení struktury</span>
               <span id="status-badge" class="px-2 py-0.5 rounded-full font-semibold"></span>
             </div>
             <div class="grid grid-cols-3 gap-2 text-center">
               <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)]">
-                <div class="text-[var(--muted-foreground)]">Vyplněno</div>
+                <div data-i18n="statFilled" class="text-[var(--muted-foreground)]">Vyplněno</div>
                 <div id="stat-filled" class="text-sm font-bold tabular-nums">0 / 0</div>
               </div>
               <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)]">
-                <div class="text-[var(--muted-foreground)]">Správně umístěno</div>
+                <div data-i18n="statCorrect" class="text-[var(--muted-foreground)]">Správně umístěno</div>
                 <div id="stat-correct" class="text-sm font-bold tabular-nums">0 / 0</div>
               </div>
               <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)]">
-                <div class="text-[var(--muted-foreground)]">Stabilizační můstky</div>
+                <div data-i18n="statBonds" class="text-[var(--muted-foreground)]">Stabilizační můstky</div>
                 <div id="stat-bonds" class="text-sm font-bold tabular-nums">0</div>
               </div>
             </div>
@@ -275,10 +282,10 @@
         <div class="lg:col-span-5 bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-4">
           <div class="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-[var(--background)] border border-[var(--border)]">
             <div class="text-xs">
-              <span class="text-[var(--muted-foreground)]">Vybraný:</span>
+              <span data-i18n="traySelected" class="text-[var(--muted-foreground)]">Vybraný:</span>
               <span id="active-piece-label" class="font-bold ml-1">žádný</span>
             </div>
-            <button onclick="rotateSelected()"
+            <button onclick="rotateSelected()" data-i18n="btnRotate"
               class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
               ↻ Otočit (R)
             </button>
@@ -288,7 +295,7 @@
 
           <div class="p-3 rounded-lg border border-[var(--border)] bg-[var(--background)] text-xs space-y-1.5">
             <div class="font-semibold flex items-center gap-1.5">
-              <span>🔬</span> Biochemický kontext
+              <span>🔬</span> <span data-i18n="didacticHeading">Biochemický kontext</span>
             </div>
             <p id="didactic-note" class="text-[var(--muted-foreground)] leading-relaxed"></p>
           </div>
@@ -297,32 +304,703 @@
       </div>
     </main>
 
-    <!-- PRINT VIEW (KSICHT A4 Sheet) -->
+    <!-- PRINT VIEW (A4 Sheet) -->
     <section id="view-print" class="hidden space-y-6">
       <div class="flex items-center justify-between gap-3 p-3 rounded-xl bg-[var(--card)] border border-[var(--border)] no-print">
-        <div class="text-xs">
-          <strong>Tisková šablona (KSICHT A4):</strong> 10 univerzálních dílků P1–P10 a 3 KSICHTí desky (Globulární enzym, Membránový kanál, Dlouhá fibrila).
+        <div data-i18n-html="printBanner" class="text-xs">
+          <strong>Tisková šablona (A4):</strong> 10 univerzálních dílků P1–P10 a 3 klasické desky (Globulární enzym, Membránový kanál, Dlouhá fibrila).
         </div>
-        <button onclick="window.print()"
+        <button onclick="window.print()" data-i18n="btnPrint"
           class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] shrink-0">
           🖨️ Vytisknout / PDF
         </button>
       </div>
 
       <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
-        <h2 class="font-bold text-base">1. KSICHTí sada 10 peptidových dílků P1–P10 (pouze otáčet!)</h2>
+        <h2 data-i18n="printSectionPieces" class="font-bold text-base">1. Základní sada 10 peptidových dílků P1–P10 (pouze otáčet!)</h2>
         <div id="print-pieces-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2"></div>
       </div>
 
       <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-5 print-break">
-        <h2 class="font-bold text-base">2. Zadávací karty — 3 KSICHTí proteiny</h2>
+        <h2 data-i18n="printSectionBoards" class="font-bold text-base">2. Zadávací karty — 3 klasické proteiny</h2>
         <div id="print-boards-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
       </div>
     </section>
 
+    <!-- Footer -->
+    <footer class="pt-5 mt-6 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)] space-y-2.5">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span class="font-semibold text-[var(--foreground)]">🧬 Protein Fold'n'Go</span>
+          <span>·</span>
+          <span>
+            <span data-i18n="footerAuthorLabel">Autor:</span>
+            <a href="https://karelberka.github.io/" target="_blank" rel="noopener noreferrer"
+               class="font-medium text-[var(--primary)] hover:underline">Karel Berka</a>
+          </span>
+        </div>
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span data-i18n="footerMoreGames">Další biochemické hry:</span>
+          <a id="footer-biodobble-link" href="https://karelberka.github.io/bio-dobble/" target="_blank" rel="noopener noreferrer"
+             class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-85 transition-opacity">
+            🧬 BioDobble
+          </a>
+        </div>
+      </div>
+      <p class="text-[11px] leading-relaxed opacity-90">
+        This work was supported in part by complimentary access to
+        <a href="https://antigravity.google/" target="_blank" rel="noopener noreferrer"
+           class="text-[var(--primary)] hover:underline font-medium">Google Antigravity</a>
+        and Gemini 4 Argon, Carbon, Neon and Hydrogen to accelerate scientific workflows.
+      </p>
+    </footer>
+
   </div>
 
   <script>
+    const VALID_LANGS = ['cs', 'en', 'de', 'fr'];
+
+    const I18N = {
+      cs: {
+        pageTitle: "Protein Fold'n'Go — Proteinové Ubongo",
+        metaDesc: "Interaktivní biochemická skládačka ve stylu Ubongo: skládej globulární proteiny, membránové kanály, fibrily i enzymy s polárním tunelem a aktivním místem C*.",
+        headerSubtitle: "(Proteinové Ubongo)",
+        headerMetaPill: "8 úrovní · 12–28 AK",
+        headerTagline: "Skládej proteiny od jednoduchých peptidů po enzymy s polárním tunelem, aktivním místem C* a velké membránové transportéry.",
+        modePlay: "Interaktivní hra",
+        modePrint: "🖨️ Tisková šablona",
+        themeToggleTitle: "Přepnout světlý / tmavý režim",
+        legendTitle: "Kódování aminokyselin (barvy + značky pro černobílý tisk)",
+        legendControls: 'Přetáhni myší nebo klikni · Pravý klik / <kbd class="px-1.5 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> = otočit o 90°',
+        aaHydrophobic: "Hydrofobní (●)",
+        aaPolar: "Polární",
+        aaPolarSub: "S, T, N, Q (voda/tunel)",
+        aaPositive: "Kladné (+)",
+        aaPositiveSub: "K, R (solný můstek)",
+        aaNegative: "Záporné (−)",
+        aaNegativeSub: "D, E (solný můstek)",
+        aaSpecial: "Speciální (* / °)",
+        aaSpecialSub: "C* (S–S / akt. místo), G°, P°",
+        btnHint: "💡 Nápověda",
+        btnSolution: "✨ Řešení",
+        btnReset: "↺ Reset",
+        variantLabel: "Kombinace dílků:",
+        variantPrefix: "Varianta",
+        btnRandomVariant: "🎲 Jiná kombinace",
+        customVariant: "🎲 Vlastní",
+        zoneWater: "Voda (H₂O)",
+        zoneLipid: "Hydrofobní jádro / lipidy (F●)",
+        zonePore: "Polární pór / tunel",
+        zoneActive: "Aktivní místo (vyžaduje <strong>C*</strong>!)",
+        evalTitle: "Biochemické hodnocení struktury",
+        statFilled: "Vyplněno",
+        statCorrect: "Správně umístěno",
+        statBonds: "Stabilizační můstky",
+        traySelected: "Vybraný:",
+        trayNone: "žádný",
+        trayOnBoard: "Na desce",
+        btnRotate: "↻ Otočit (R)",
+        didacticHeading: "Biochemický kontext",
+        printBanner: "<strong>Tisková šablona (A4):</strong> 10 univerzálních dílků P1–P10 a 3 klasické desky (Globulární enzym, Membránový kanál, Dlouhá fibrila).",
+        btnPrint: "🖨️ Vytisknout / PDF",
+        printSectionPieces: "1. Základní sada 10 peptidových dílků P1–P10 (pouze otáčet!)",
+        printSectionBoards: "2. Zadávací karty — 3 klasické proteiny",
+        printUsePieces: "Použij dílky:",
+        cellTunnel: "tunel",
+        cellPore: "pór",
+        tooltipReqActive: (aa) => `Aktivní místo vyžaduje ${aa}*!`,
+        tooltipGoodEnv: "správné prostředí",
+        tooltipBadEnv: "NEVHODNÉ prostředí!",
+        progressSolved: (solved, total) => `${solved} / ${total} složeno`,
+        statusPerfectBadge: "🎉 Stabilní protein složen!",
+        statusPerfectMsg: (total, bondText) => `Výborně! Všech ${total} aminokyselin sedí na správném místě.${bondText}`,
+        statusBondPrefix: (list) => ` Stabilizační můstky: ${list}.`,
+        bondSS: "disulfidický C–C",
+        bondSalt: (label) => `solný ${label}`,
+        statusMissingActiveBadge: "⚗️ Chybí C* v aktivním místě!",
+        statusMissingActiveMsg: "Na fialové pole aktivního místa (C*) musí přesně padnout katalytický cystein C*!",
+        statusWrongEnvBadge: (n) => `⚠️ ${n}× nevhodné prostředí`,
+        statusWrongEnvMsg: "Červeně orámované aminokyseliny jsou v nevhodném prostředí. Zkus dílek otočit pravým klikem nebo klávesou R!",
+        statusInProgressBadge: "⏳ Skládáš správně...",
+        statusInProgressMsg: "Zatím všechny umístěné aminokyseliny sedí. Doplň zbývající dílky!",
+        statusReadyBadge: "Připraveno ke skládání",
+        statusReadyMsg: "Přetáhni dílek z pravého panelu na desku (nebo klikni na dílek a pak na desku).",
+        aaUnit: "AK",
+        blockWord: "Blok",
+        tetrominoWord: "Tetromino",
+        footerAuthorLabel: "Autor:",
+        footerMoreGames: "Další biochemické hry:",
+        diff: { easy: "⭐ Lehká", medium: "⭐⭐ Střední", hard: "⭐⭐⭐ Těžká", expert: "⭐⭐⭐⭐ Expert" },
+        pieces: {
+          P1: "Hydrofobní klín", P2: "Membránové L", P3: "Fibrilární zip", P4: "Cysteinový roh", P5: "Bazické L",
+          P6: "Jádrový blok", P7: "Kyselé T", P8: "Argininový roh", P9: "Povrchové T", P10: "Kyselé Z",
+          M1: "Amfipatické O", M2: "Cysteinové Z", M3: "Cysteinové S",
+          R1: "Bazický blok", R2: "Kyselý schod", R3: "Hydrofobní L", R4: "Kyselý roh",
+          T1: "Jádrové O", T2: "Povrchové T", T3: "Aktivní C* L", T4: "Hydrofobní Z", T5: "Kyselé Z", T6: "Katalytické D",
+          D1: "Doména A1", D2: "Doména A2", D3: "Kloub C1", D4: "Kloub C2", D5: "Doména B1", D6: "Doména B2",
+          X1: "Levý okraj", X2: "Lipidový Z", X3: "Senzor C*", X4: "Polární kanál", X5: "Dolní brána", X6: "Pravý lipid 1", X7: "Pravý lipid 2"
+        },
+        levels: {
+          mini: {
+            shortTitle: "1. Mini-globule",
+            title: "🫧 1. Mini-globule (Rozehřívačka)",
+            desc: "Malý rozpustný peptid ve vodě: schovej 4 hydrofobní zbytky (●) do jádra a vytvoř disulfidický můstek C*–C*!",
+            didactic: "Ideální úvodní skládačka (3 dílky): malý hydrofobní střed 2×2 chrání před vodou 8 povrchových aminokyselin a dva cysteiny C* uzavírají strukturu disulfidickou vazbou.",
+            envLabels: { top: "💧 Voda", bottom: "💧 Voda", left: "💧 Voda", right: "💧 Voda" }
+          },
+          ribbon: {
+            shortTitle: "2. Amfipatická páska",
+            title: "📏 2. Amfipatická páska (Kostky za sebou)",
+            desc: "Slož 4 dílky do dlouhého pásu 8×2: horní hrana směřuje do vody (H₂O), dolní tvoří souvislé hydrofobní rozhraní (F●).",
+            didactic: "Amfipatické β-řetězce a α-helixy mají jednu stranu hydrofilní a druhou hydrofobní — takové „kostky za sebou“ se pak snadno přikládají na povrch membrány nebo k sobě navzájem.",
+            envLabels: { top: "💧 Vodná strana (H₂O)", bottom: "🧈 Hydrofobní rozhraní (F●)", left: "N →", right: "→ C" }
+          },
+          globular: {
+            shortTitle: "3. Globulární enzym",
+            title: "🫧 3. Globulární enzym",
+            desc: "Okolo celého proteinu je voda. Slož 5 peptidových dílků tak, aby všech 8 hydrofobních AK (●) bylo uvnitř jádra (F●).",
+            didactic: "Jednoznačné řešení (až na 180° otočení) vždy vytvoří solný můstek K+ (P5) ↔ D− (P7) a disulfidický můstek C* (P6) ↔ C* (P4).",
+            envLabels: { top: "💧 Voda (cytoplazma)", bottom: "💧 Voda (cytoplazma)", left: "💧 Voda", right: "💧 Voda" }
+          },
+          membrane: {
+            shortTitle: "4. Membránový kanál",
+            title: "🧱 4. Membránový kanál",
+            desc: "Boky v lipidové dvojvrstvě musí být hydrofobní (F●), hlavičky ve vodě hydrofilní — a středem vede hydrofilní pór!",
+            didactic: "Centrální pór vždy vystýlá čtveřice S (P9) – D− (P10) – R+ (P8) – T (P8) se stabilizačním solným můstkem D−/R+ uvnitř kanálu.",
+            envLabels: { top: "💧 Voda (vně buňky)", bottom: "💧 Voda (cytoplazma)", left: "🧈 Lipidová\ndvojvrstva", right: "🧈 Lipidová\ndvojvrstva" }
+          },
+          fibril: {
+            shortTitle: "5. Dlouhá fibrila",
+            title: "🧵 5. Dlouhá fibrila",
+            desc: "Středem vlákna prochází souvislá hydrofobní osa (8× F●), horní a dolní okraj chrání hydrofilní aminokyseliny.",
+            didactic: "Hydrofobní osa („sterický zip“) drží fibrilární podjednotky u sebe (kolagen, keratin) a povrch stabilizuje solný můstek E− (P3) ↔ R+ (P8).",
+            envLabels: { top: "💧 Povrch vlákna (H₂O)", bottom: "💧 Povrch vlákna (H₂O)", left: "← Osa\nvlákna", right: "Osa →\nvlákna" }
+          },
+          tunnel_cys: {
+            shortTitle: "6. Tunel + C* akt. místo",
+            title: "⚗️ 6. Cysteinová proteáza (Polární tunel + C* v aktivním místě)",
+            desc: "Z povrchu vede dovnitř hydrofobního jádra polární tunel a na jeho dně je aktivní místo — na fialové pole C* MUSÍ padnout katalytický cystein C*!",
+            didactic: "Mnoho enzymů (např. cysteinové proteázy jako papain nebo kaspázy) má aktivní místo schované na dně polárního tunelu uvnitř hydrofobního těla proteinu. Katalytický cystein C* (dílek T3) zde sousedí s kyselinou asparagovou D− (T6)!",
+            envLabels: { top: "💧 Voda · ↓ Vstup do polárního tunelu", bottom: "💧 Voda (cytoplazma)", left: "💧 Voda", right: "💧 Voda" }
+          },
+          tandem: {
+            shortTitle: "7. Dvou-doménový řetězec",
+            title: "🔗 7. Tandemová dvou-doména (Bloky za sebou)",
+            desc: "Dlouhý modulární řetězec 12×2: dva oddělené hydrofobní bloky (2× 4 F●) spojené hydrofilním kloubem uprostřed!",
+            didactic: "Vícedoménové proteiny vznikají opakováním modulů za sebou (např. imunoglobulinové nebo ankyrinové domény) propojených ohebným polárním linkerem — zde navíc kloub zpevňuje disulfidický můstek C*–C* (D3–D4)!",
+            envLabels: { top: "💧 Hydrofilní povrch obou domén (H₂O)", bottom: "🧈 Blok 1 (F●) · 💧 Kloub · 🧈 Blok 2 (F●)", left: "N →", right: "→ C" }
+          },
+          transporter: {
+            shortTitle: "8. Velký transportér",
+            title: "🏛️ 8. Velký membránový transportér (Široký tunel + C* senzor)",
+            desc: "7 dílků do 7×4 komplexu! Boky drží v lipidové dvojvrstvě (F●), středem vede široký 3-sloupcový polární tunel a uprostřed sedí redoxní senzor C*!",
+            didactic: "Velké membránové póry a transportéry (např. poriny nebo ABC transportéry) potřebují širokou polární dutinu pro průchod větších metabolitů a citlivé cysteinové zbytky (C*) uvnitř kanálu často fungují jako redoxní spínače.",
+            envLabels: { top: "💧 Voda (extracelulární prostor)", bottom: "💧 Voda (cytoplazma)", left: "🧈 Lipidová\ndvojvrstva", right: "🧈 Lipidová\ndvojvrstva" }
+          }
+        }
+      },
+
+      en: {
+        pageTitle: "Protein Fold'n'Go — Protein Ubongo",
+        metaDesc: "Interactive Ubongo-style biochemistry puzzle: fold globular proteins, membrane channels, fibrils, and enzymes with a polar tunnel and C* active site.",
+        headerSubtitle: "(Protein Ubongo)",
+        headerMetaPill: "8 levels · 12–28 AA",
+        headerTagline: "Fold proteins from simple peptides to enzymes with a polar tunnel, a C* active site, and large membrane transporters.",
+        modePlay: "Interactive Game",
+        modePrint: "🖨️ Printable Template",
+        themeToggleTitle: "Toggle light / dark theme",
+        legendTitle: "Amino acid coding (colors + symbols for B&W printing)",
+        legendControls: 'Drag or click · Right-click / <kbd class="px-1.5 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> = rotate 90°',
+        aaHydrophobic: "Hydrophobic (●)",
+        aaPolar: "Polar",
+        aaPolarSub: "S, T, N, Q (water/tunnel)",
+        aaPositive: "Positive (+)",
+        aaPositiveSub: "K, R (salt bridge)",
+        aaNegative: "Negative (−)",
+        aaNegativeSub: "D, E (salt bridge)",
+        aaSpecial: "Special (* / °)",
+        aaSpecialSub: "C* (S–S / active site), G°, P°",
+        btnHint: "💡 Hint",
+        btnSolution: "✨ Solution",
+        btnReset: "↺ Reset",
+        variantLabel: "Piece set:",
+        variantPrefix: "Variant",
+        btnRandomVariant: "🎲 Random set",
+        customVariant: "🎲 Custom",
+        zoneWater: "Water (H₂O)",
+        zoneLipid: "Hydrophobic core / lipids (F●)",
+        zonePore: "Polar pore / tunnel",
+        zoneActive: "Active site (requires <strong>C*</strong>!)",
+        evalTitle: "Biochemical structure evaluation",
+        statFilled: "Filled",
+        statCorrect: "Correctly placed",
+        statBonds: "Stabilizing bridges",
+        traySelected: "Selected:",
+        trayNone: "none",
+        trayOnBoard: "On board",
+        btnRotate: "↻ Rotate (R)",
+        didacticHeading: "Biochemical context",
+        printBanner: "<strong>Printable template (A4):</strong> 10 universal pieces P1–P10 and 3 classic boards (Globular Enzyme, Membrane Channel, Long Fibril).",
+        btnPrint: "🖨️ Print / PDF",
+        printSectionPieces: "1. Core set of 10 peptide pieces P1–P10 (rotate only!)",
+        printSectionBoards: "2. Puzzle boards — 3 classic proteins",
+        printUsePieces: "Use pieces:",
+        cellTunnel: "tunnel",
+        cellPore: "pore",
+        tooltipReqActive: (aa) => `Active site requires ${aa}*!`,
+        tooltipGoodEnv: "favorable environment",
+        tooltipBadEnv: "UNFAVORABLE environment!",
+        progressSolved: (solved, total) => `${solved} / ${total} folded`,
+        statusPerfectBadge: "🎉 Stable protein folded!",
+        statusPerfectMsg: (total, bondText) => `Great job! All ${total} amino acids are placed correctly.${bondText}`,
+        statusBondPrefix: (list) => ` Stabilizing bridges: ${list}.`,
+        bondSS: "disulfide C–C",
+        bondSalt: (label) => `salt bridge ${label}`,
+        statusMissingActiveBadge: "⚗️ Missing C* in active site!",
+        statusMissingActiveMsg: "The catalytic cysteine C* must be placed directly on the purple active-site cell (C*)!",
+        statusWrongEnvBadge: (n) => `⚠️ ${n}× wrong environment`,
+        statusWrongEnvMsg: "Red-outlined amino acids are in an unfavorable environment. Try rotating the piece with right-click or the R key!",
+        statusInProgressBadge: "⏳ Folding nicely...",
+        statusInProgressMsg: "All placed amino acids fit well so far. Place the remaining pieces!",
+        statusReadyBadge: "Ready to fold",
+        statusReadyMsg: "Drag a piece from the right panel onto the board (or click a piece and then click the board).",
+        aaUnit: "AA",
+        blockWord: "Block",
+        tetrominoWord: "Tetromino",
+        footerAuthorLabel: "Author:",
+        footerMoreGames: "More biochemistry games:",
+        diff: { easy: "⭐ Easy", medium: "⭐⭐ Medium", hard: "⭐⭐⭐ Hard", expert: "⭐⭐⭐⭐ Expert" },
+        pieces: {
+          P1: "Hydrophobic Wedge", P2: "Membrane L", P3: "Fibrillar Zipper", P4: "Cysteine Corner", P5: "Basic L",
+          P6: "Core Block", P7: "Acidic T", P8: "Arginine Corner", P9: "Surface T", P10: "Acidic Z",
+          M1: "Amphipathic O", M2: "Cysteine Z", M3: "Cysteine S",
+          R1: "Basic Block", R2: "Acidic Step", R3: "Hydrophobic L", R4: "Acidic Corner",
+          T1: "Core O", T2: "Surface T", T3: "Active C* L", T4: "Hydrophobic Z", T5: "Acidic Z", T6: "Catalytic D",
+          D1: "Domain A1", D2: "Domain A2", D3: "Hinge C1", D4: "Hinge C2", D5: "Domain B1", D6: "Domain B2",
+          X1: "Left Rim", X2: "Lipid Z", X3: "C* Sensor", X4: "Polar Channel", X5: "Lower Gate", X6: "Right Lipid 1", X7: "Right Lipid 2"
+        },
+        levels: {
+          mini: {
+            shortTitle: "1. Mini-globule",
+            title: "🫧 1. Mini-globule (Warm-up)",
+            desc: "A small water-soluble peptide: bury all 4 hydrophobic residues (●) in the core and form a C*–C* disulfide bridge!",
+            didactic: "An ideal introductory puzzle (3 pieces): 8 surface amino acids shield the small 2×2 hydrophobic core from water, while two cysteines (C*) lock the fold with a disulfide bond.",
+            envLabels: { top: "💧 Water", bottom: "💧 Water", left: "💧 Water", right: "💧 Water" }
+          },
+          ribbon: {
+            shortTitle: "2. Amphipathic Ribbon",
+            title: "📏 2. Amphipathic Ribbon (Blocks in a Row)",
+            desc: "Assemble 4 pieces into an 8×2 strip: the top edge faces water (H₂O), while the bottom forms a continuous hydrophobic interface (F●).",
+            didactic: "Amphipathic β-strands and α-helices have one hydrophilic face and one hydrophobic face — allowing them to rest on a membrane surface or pack neatly against each other.",
+            envLabels: { top: "💧 Aqueous face (H₂O)", bottom: "🧈 Hydrophobic interface (F●)", left: "N →", right: "→ C" }
+          },
+          globular: {
+            shortTitle: "3. Globular Enzyme",
+            title: "🫧 3. Globular Enzyme",
+            desc: "Water surrounds the entire protein. Arrange 5 peptide pieces so that all 8 hydrophobic amino acids (●) are buried inside the core (F●).",
+            didactic: "The unique solution (up to a 180° rotation) always forms a K+ (P5) ↔ D− (P7) salt bridge and a C* (P6) ↔ C* (P4) disulfide bridge.",
+            envLabels: { top: "💧 Water (cytoplasm)", bottom: "💧 Water (cytoplasm)", left: "💧 Water", right: "💧 Water" }
+          },
+          membrane: {
+            shortTitle: "4. Membrane Channel",
+            title: "🧱 4. Membrane Channel",
+            desc: "The sides embedded in the lipid bilayer must be hydrophobic (F●), the caps in water hydrophilic — with a hydrophilic pore running through the center!",
+            didactic: "The central pore is always lined by S (P9) – D− (P10) – R+ (P8) – T (P8), stabilized by an internal D−/R+ salt bridge inside the channel.",
+            envLabels: { top: "💧 Water (extracellular)", bottom: "💧 Water (cytoplasm)", left: "🧈 Lipid\nbilayer", right: "🧈 Lipid\nbilayer" }
+          },
+          fibril: {
+            shortTitle: "5. Long Fibril",
+            title: "🧵 5. Long Fibril",
+            desc: "A continuous hydrophobic spine (8× F●) runs along the core of the fiber, while hydrophilic amino acids protect the top and bottom surfaces.",
+            didactic: "A hydrophobic core (\"steric zipper\") holds fibrillar subunits together (as in collagen or keratin), while an E− (P3) ↔ R+ (P8) salt bridge stabilizes the surface.",
+            envLabels: { top: "💧 Fiber surface (H₂O)", bottom: "💧 Fiber surface (H₂O)", left: "← Fiber\naxis", right: "Fiber →\naxis" }
+          },
+          tunnel_cys: {
+            shortTitle: "6. Tunnel + C* Active Site",
+            title: "⚗️ 6. Cysteine Protease (Polar Tunnel + C* Active Site)",
+            desc: "A polar tunnel leads from the surface into the hydrophobic core to an active site — the catalytic cysteine C* MUST land on the purple C* cell!",
+            didactic: "Many enzymes (such as cysteine proteases like papain or caspases) bury their active site at the bottom of a polar tunnel inside the hydrophobic protein body. Here, the catalytic cysteine C* (piece T3) sits right next to aspartate D− (T6)!",
+            envLabels: { top: "💧 Water · ↓ Polar tunnel entrance", bottom: "💧 Water (cytoplasm)", left: "💧 Water", right: "💧 Water" }
+          },
+          tandem: {
+            shortTitle: "7. Two-Domain Chain",
+            title: "🔗 7. Tandem Two-Domain (Blocks in a Row)",
+            desc: "A long 12×2 modular chain: two separate hydrophobic blocks (2× 4 F●) joined by a hydrophilic hinge in the middle!",
+            didactic: "Multi-domain proteins are built from repeating modules in tandem (e.g., immunoglobulin or ankyrin domains) connected by a flexible polar linker — here reinforced by a C*–C* disulfide bridge (D3–D4)!",
+            envLabels: { top: "💧 Hydrophilic surface of both domains (H₂O)", bottom: "🧈 Block 1 (F●) · 💧 Hinge · 🧈 Block 2 (F●)", left: "N →", right: "→ C" }
+          },
+          transporter: {
+            shortTitle: "8. Large Transporter",
+            title: "🏛️ 8. Large Membrane Transporter (Wide Tunnel + C* Sensor)",
+            desc: "7 pieces forming a 7×4 complex! The flanks anchor in the lipid bilayer (F●), a wide 3-column polar tunnel runs through the middle, and a C* redox sensor sits at its center!",
+            didactic: "Large membrane pores and transporters (e.g., porins or ABC transporters) need a wide polar cavity to pass larger metabolites, and reactive cysteines (C*) inside the channel often act as redox switches.",
+            envLabels: { top: "💧 Water (extracellular space)", bottom: "💧 Water (cytoplasm)", left: "🧈 Lipid\nbilayer", right: "🧈 Lipid\nbilayer" }
+          }
+        }
+      },
+
+      de: {
+        pageTitle: "Protein Fold'n'Go — Protein-Ubongo",
+        metaDesc: "Interaktives Biochemie-Puzzle im Ubongo-Stil: Falte globuläre Proteine, Membrankanäle, Fibrillen sowie Enzyme mit polarem Tunnel und aktivem Zentrum C*.",
+        headerSubtitle: "(Protein-Ubongo)",
+        headerMetaPill: "8 Level · 12–28 AS",
+        headerTagline: "Falte Proteine von einfachen Peptiden bis zu Enzymen mit polarem Tunnel, aktivem Zentrum C* und großen Membrantransportern.",
+        modePlay: "Interaktives Spiel",
+        modePrint: "🖨️ Druckvorlage",
+        themeToggleTitle: "Hellen / dunklen Modus umschalten",
+        legendTitle: "Aminosäure-Codierung (Farben + Symbole für S/W-Druck)",
+        legendControls: 'Ziehen oder klicken · Rechtsklick / <kbd class="px-1.5 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> = um 90° drehen',
+        aaHydrophobic: "Hydrophob (●)",
+        aaPolar: "Polar",
+        aaPolarSub: "S, T, N, Q (Wasser/Tunnel)",
+        aaPositive: "Positiv (+)",
+        aaPositiveSub: "K, R (Salzbrücke)",
+        aaNegative: "Negativ (−)",
+        aaNegativeSub: "D, E (Salzbrücke)",
+        aaSpecial: "Speziell (* / °)",
+        aaSpecialSub: "C* (S–S / akt. Zentrum), G°, P°",
+        btnHint: "💡 Hinweis",
+        btnSolution: "✨ Lösung",
+        btnReset: "↺ Zurücksetzen",
+        variantLabel: "Teile-Kombination:",
+        variantPrefix: "Variante",
+        btnRandomVariant: "🎲 Neue Kombination",
+        customVariant: "🎲 Zufällig",
+        zoneWater: "Wasser (H₂O)",
+        zoneLipid: "Hydrophober Kern / Lipide (F●)",
+        zonePore: "Polarer Kanal / Tunnel",
+        zoneActive: "Aktives Zentrum (erfordert <strong>C*</strong>!)",
+        evalTitle: "Biochemische Strukturbewertung",
+        statFilled: "Ausgefüllt",
+        statCorrect: "Korrekt platziert",
+        statBonds: "Stabilisierende Brücken",
+        traySelected: "Ausgewählt:",
+        trayNone: "keines",
+        trayOnBoard: "Auf dem Brett",
+        btnRotate: "↻ Drehen (R)",
+        didacticHeading: "Biochemischer Kontext",
+        printBanner: "<strong>Druckvorlage (A4):</strong> 10 universelle Teile P1–P10 und 3 klassische Bretter (Globuläres Enzym, Membrankanal, Lange Fibrille).",
+        btnPrint: "🖨️ Drucken / PDF",
+        printSectionPieces: "1. Basisset aus 10 Peptid-Teilen P1–P10 (nur drehen!)",
+        printSectionBoards: "2. Aufgabenkarten — 3 klassische Proteine",
+        printUsePieces: "Verwende Teile:",
+        cellTunnel: "Tunnel",
+        cellPore: "Pore",
+        tooltipReqActive: (aa) => `Aktives Zentrum erfordert ${aa}*!`,
+        tooltipGoodEnv: "passende Umgebung",
+        tooltipBadEnv: "UNGÜNSTIGE Umgebung!",
+        progressSolved: (solved, total) => `${solved} / ${total} gefaltet`,
+        statusPerfectBadge: "🎉 Stabiles Protein gefaltet!",
+        statusPerfectMsg: (total, bondText) => `Ausgezeichnet! Alle ${total} Aminosäuren sitzen am richtigen Platz.${bondText}`,
+        statusBondPrefix: (list) => ` Stabilisierende Brücken: ${list}.`,
+        bondSS: "Disulfidbrücke C–C",
+        bondSalt: (label) => `Salzbrücke ${label}`,
+        statusMissingActiveBadge: "⚗️ C* im aktiven Zentrum fehlt!",
+        statusMissingActiveMsg: "Auf das violette Feld des aktiven Zentrums (C*) muss genau das katalytische Cystein C* gesetzt werden!",
+        statusWrongEnvBadge: (n) => `⚠️ ${n}× falsche Umgebung`,
+        statusWrongEnvMsg: "Rot umrandete Aminosäuren liegen in einer ungünstigen Umgebung. Drehe das Teil per Rechtsklick oder Taste R!",
+        statusInProgressBadge: "⏳ Sieht gut aus...",
+        statusInProgressMsg: "Bisher passen alle platzierten Aminosäuren. Ergänze die übrigen Teile!",
+        statusReadyBadge: "Bereit zum Falten",
+        statusReadyMsg: "Ziehe ein Teil aus dem rechten Bereich auf das Brett (oder klicke auf ein Teil und dann auf das Brett).",
+        aaUnit: "AS",
+        blockWord: "Block",
+        tetrominoWord: "Tetromino",
+        footerAuthorLabel: "Autor:",
+        footerMoreGames: "Weitere Biochemie-Spiele:",
+        diff: { easy: "⭐ Leicht", medium: "⭐⭐ Mittel", hard: "⭐⭐⭐ Schwer", expert: "⭐⭐⭐⭐ Experte" },
+        pieces: {
+          P1: "Hydrophober Keil", P2: "Membran-L", P3: "Fibrillen-Zip", P4: "Cystein-Ecke", P5: "Basisches L",
+          P6: "Kernblock", P7: "Saures T", P8: "Arginin-Ecke", P9: "Oberflächen-T", P10: "Saures Z",
+          M1: "Amphipathisches O", M2: "Cystein-Z", M3: "Cystein-S",
+          R1: "Basischer Block", R2: "Saure Stufe", R3: "Hydrophobes L", R4: "Saure Ecke",
+          T1: "Kern-O", T2: "Oberflächen-T", T3: "Aktives C*-L", T4: "Hydrophobes Z", T5: "Saures Z", T6: "Katalytisches D",
+          D1: "Domäne A1", D2: "Domäne A2", D3: "Gelenk C1", D4: "Gelenk C2", D5: "Domäne B1", D6: "Domäne B2",
+          X1: "Linker Rand", X2: "Lipid-Z", X3: "C*-Sensor", X4: "Polarer Kanal", X5: "Unteres Tor", X6: "Rechtes Lipid 1", X7: "Rechtes Lipid 2"
+        },
+        levels: {
+          mini: {
+            shortTitle: "1. Mini-Globule",
+            title: "🫧 1. Mini-Globule (Aufwärmübung)",
+            desc: "Ein kleines wasserlösliches Peptid: Verstecke alle 4 hydrophoben Reste (●) im Kern und bilde eine Disulfidbrücke C*–C*!",
+            didactic: "Ein ideales Einstiegsrätsel (3 Teile): 8 Oberflächen-Aminosäuren schützen den kleinen 2×2-Hydrophobkern vor Wasser, und zwei Cysteine (C*) schließen die Struktur über eine Disulfidbindung.",
+            envLabels: { top: "💧 Wasser", bottom: "💧 Wasser", left: "💧 Wasser", right: "💧 Wasser" }
+          },
+          ribbon: {
+            shortTitle: "2. Amphipathisches Band",
+            title: "📏 2. Amphipathisches Band (Blöcke in Reihe)",
+            desc: "Füge 4 Teile zu einem 8×2-Streifen zusammen: Die obere Kante zeigt ins Wasser (H₂O), die untere bildet eine durchgehende hydrophobe Grenzfläche (F●).",
+            didactic: "Amphipathische β-Stränge und α-Helices besitzen eine hydrophile und eine hydrophobe Seite – so lagern sie sich leicht an Membranoberflächen oder aneinander an.",
+            envLabels: { top: "💧 Wässrige Seite (H₂O)", bottom: "🧈 Hydrophobe Grenzfläche (F●)", left: "N →", right: "→ C" }
+          },
+          globular: {
+            shortTitle: "3. Globuläres Enzym",
+            title: "🫧 3. Globuläres Enzym",
+            desc: "Das gesamte Protein ist von Wasser umgeben. Ordne 5 Peptid-Teile so an, dass alle 8 hydrophoben Aminosäuren (●) im Inneren des Kerns (F●) liegen.",
+            didactic: "Die eindeutige Lösung (bis auf eine 180°-Drehung) bildet stets eine Salzbrücke K+ (P5) ↔ D− (P7) sowie eine Disulfidbrücke C* (P6) ↔ C* (P4).",
+            envLabels: { top: "💧 Wasser (Zytoplasma)", bottom: "💧 Wasser (Zytoplasma)", left: "💧 Wasser", right: "💧 Wasser" }
+          },
+          membrane: {
+            shortTitle: "4. Membrankanal",
+            title: "🧱 4. Membrankanal",
+            desc: "Die Seiten in der Lipiddoppelschicht müssen hydrophob (F●) sein, die Ränder im Wasser hydrophil – und durch die Mitte verläuft eine hydrophile Pore!",
+            didactic: "Die zentrale Pore wird stets von S (P9) – D− (P10) – R+ (P8) – T (P8) ausgekleidet und durch eine D−/R+-Salzbrücke im Inneren des Kanals stabilisiert.",
+            envLabels: { top: "💧 Wasser (extrazellulär)", bottom: "💧 Wasser (Zytoplasma)", left: "🧈 Lipid-\ndoppelschicht", right: "🧈 Lipid-\ndoppelschicht" }
+          },
+          fibril: {
+            shortTitle: "5. Lange Fibrille",
+            title: "🧵 5. Lange Fibrille",
+            desc: "Durch die Mitte der Faser zieht sich eine durchgehende hydrophobe Achse (8× F●), während hydrophile Aminosäuren Ober- und Unterseite schützen.",
+            didactic: "Die hydrophobe Achse („sterischer Reißverschluss“) hält fibrilläre Untereinheiten zusammen (wie bei Kollagen oder Keratin), und eine Salzbrücke E− (P3) ↔ R+ (P8) stabilisiert die Oberfläche.",
+            envLabels: { top: "💧 Faseroberfläche (H₂O)", bottom: "💧 Faseroberfläche (H₂O)", left: "← Faser-\nachse", right: "Faser- →\nachse" }
+          },
+          tunnel_cys: {
+            shortTitle: "6. Tunnel + akt. Zentrum C*",
+            title: "⚗️ 6. Cysteinprotease (Polarer Tunnel + aktives Zentrum C*)",
+            desc: "Von der Oberfläche führt ein polarer Tunnel ins hydrophobe Innere zum aktiven Zentrum – auf das violette Feld C* MUSS das katalytische Cystein C*!",
+            didactic: "Viele Enzyme (z. B. Cysteinproteasen wie Papain oder Caspasen) verbergen ihr aktives Zentrum am Grund eines polaren Tunnels im hydrophoben Proteinkern. Hier liegt das katalytische Cystein C* (Teil T3) direkt neben Aspartat D− (T6)!",
+            envLabels: { top: "💧 Wasser · ↓ Eingang zum polaren Tunnel", bottom: "💧 Wasser (Zytoplasma)", left: "💧 Wasser", right: "💧 Wasser" }
+          },
+          tandem: {
+            shortTitle: "7. Zweidomänen-Kette",
+            title: "🔗 7. Tandem-Zweidomäne (Blöcke in Reihe)",
+            desc: "Eine lange modulare 12×2-Kette: zwei getrennte hydrophobe Blöcke (2× 4 F●), verbunden durch ein hydrophiles Gelenk in der Mitte!",
+            didactic: "Multidomänen-Proteine entstehen durch hintereinander geschaltete Module (z. B. Immunglobulin- oder Ankyrin-Domänen), die ein flexibler polarer Linker verbindet – hier zusätzlich stabilisiert durch eine Disulfidbrücke C*–C* (D3–D4)!",
+            envLabels: { top: "💧 Hydrophile Oberfläche beider Domänen (H₂O)", bottom: "🧈 Block 1 (F●) · 💧 Gelenk · 🧈 Block 2 (F●)", left: "N →", right: "→ C" }
+          },
+          transporter: {
+            shortTitle: "8. Großer Transporter",
+            title: "🏛️ 8. Großer Membrantransporter (Breiter Tunnel + C*-Sensor)",
+            desc: "7 Teile für einen 7×4-Komplex! Die Flanken verankern sich in der Lipiddoppelschicht (F●), in der Mitte verläuft ein breiter 3-spaltiger polarer Tunnel mit einem Redox-Sensor C* im Zentrum!",
+            didactic: "Große Membranporen und Transporter (z. B. Porine oder ABC-Transporter) benötigen einen weiten polaren Kanal für größere Metabolite; empfindliche Cysteine (C*) im Kanal dienen oft als Redox-Schalter.",
+            envLabels: { top: "💧 Wasser (Extrazellulärraum)", bottom: "💧 Wasser (Zytoplasma)", left: "🧈 Lipid-\ndoppelschicht", right: "🧈 Lipid-\ndoppelschicht" }
+          }
+        }
+      },
+
+      fr: {
+        pageTitle: "Protein Fold'n'Go — Ubongo des protéines",
+        metaDesc: "Puzzle interactif de biochimie de style Ubongo : pliez des protéines globulaires, des canaux membranaires, des fibrilles et des enzymes avec tunnel polaire et site actif C*.",
+        headerSubtitle: "(Ubongo des protéines)",
+        headerMetaPill: "8 niveaux · 12–28 AA",
+        headerTagline: "Pliez des protéines, des peptides simples aux enzymes à tunnel polaire et site actif C*, jusqu'aux grands transporteurs membranaires.",
+        modePlay: "Jeu interactif",
+        modePrint: "🖨️ Modèle imprimable",
+        themeToggleTitle: "Basculer le thème clair / sombre",
+        legendTitle: "Codage des acides aminés (couleurs + symboles pour impression N&B)",
+        legendControls: 'Glisser ou cliquer · Clic droit / <kbd class="px-1.5 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> = pivoter de 90°',
+        aaHydrophobic: "Hydrophobe (●)",
+        aaPolar: "Polaire",
+        aaPolarSub: "S, T, N, Q (eau/tunnel)",
+        aaPositive: "Positif (+)",
+        aaPositiveSub: "K, R (pont salin)",
+        aaNegative: "Négatif (−)",
+        aaNegativeSub: "D, E (pont salin)",
+        aaSpecial: "Spécial (* / °)",
+        aaSpecialSub: "C* (S–S / site actif), G°, P°",
+        btnHint: "💡 Indice",
+        btnSolution: "✨ Solution",
+        btnReset: "↺ Réinitialiser",
+        variantLabel: "Jeu de pièces :",
+        variantPrefix: "Variante",
+        btnRandomVariant: "🎲 Autre combinaison",
+        customVariant: "🎲 Aléatoire",
+        zoneWater: "Eau (H₂O)",
+        zoneLipid: "Cœur hydrophobe / lipides (F●)",
+        zonePore: "Pore / tunnel polaire",
+        zoneActive: "Site actif (nécessite <strong>C*</strong> !)",
+        evalTitle: "Évaluation biochimique de la structure",
+        statFilled: "Rempli",
+        statCorrect: "Bien placés",
+        statBonds: "Ponts stabilisateurs",
+        traySelected: "Sélectionnée :",
+        trayNone: "aucune",
+        trayOnBoard: "Sur le plateau",
+        btnRotate: "↻ Pivoter (R)",
+        didacticHeading: "Contexte biochimique",
+        printBanner: "<strong>Modèle imprimable (A4) :</strong> 10 pièces universelles P1–P10 et 3 plateaux classiques (Enzyme globulaire, Canal membranaire, Longue fibrille).",
+        btnPrint: "🖨️ Imprimer / PDF",
+        printSectionPieces: "1. Jeu de base de 10 pièces peptidiques P1–P10 (rotation uniquement !)",
+        printSectionBoards: "2. Cartes défis — 3 protéines classiques",
+        printUsePieces: "Utilisez les pièces :",
+        cellTunnel: "tunnel",
+        cellPore: "pore",
+        tooltipReqActive: (aa) => `Le site actif nécessite ${aa}* !`,
+        tooltipGoodEnv: "environnement favorable",
+        tooltipBadEnv: "environnement DÉFAVORABLE !",
+        progressSolved: (solved, total) => `${solved} / ${total} pliées`,
+        statusPerfectBadge: "🎉 Protéine stable pliée !",
+        statusPerfectMsg: (total, bondText) => `Bravo ! Les ${total} acides aminés sont tous bien placés.${bondText}`,
+        statusBondPrefix: (list) => ` Ponts stabilisateurs : ${list}.`,
+        bondSS: "pont disulfure C–C",
+        bondSalt: (label) => `pont salin ${label}`,
+        statusMissingActiveBadge: "⚗️ C* manquant dans le site actif !",
+        statusMissingActiveMsg: "La cystéine catalytique C* doit être placée exactement sur la case violette du site actif (C*) !",
+        statusWrongEnvBadge: (n) => `⚠️ ${n}× mauvais environnement`,
+        statusWrongEnvMsg: "Les acides aminés encadrés de rouge sont dans un environnement défavorable. Essayez de pivoter la pièce par clic droit ou avec la touche R !",
+        statusInProgressBadge: "⏳ Bon début...",
+        statusInProgressMsg: "Tous les acides aminés placés conviennent pour l'instant. Complétez avec les pièces restantes !",
+        statusReadyBadge: "Prêt à plier",
+        statusReadyMsg: "Glissez une pièce du panneau de droite sur le plateau (ou cliquez sur une pièce puis sur le plateau).",
+        aaUnit: "AA",
+        blockWord: "Bloc",
+        tetrominoWord: "Tétromino",
+        footerAuthorLabel: "Auteur :",
+        footerMoreGames: "Autres jeux de biochimie :",
+        diff: { easy: "⭐ Facile", medium: "⭐⭐ Moyen", hard: "⭐⭐⭐ Difficile", expert: "⭐⭐⭐⭐ Expert" },
+        pieces: {
+          P1: "Coin hydrophobe", P2: "L membranaire", P3: "Zip fibrillaire", P4: "Coin cystéine", P5: "L basique",
+          P6: "Bloc central", P7: "T acide", P8: "Coin arginine", P9: "T de surface", P10: "Z acide",
+          M1: "O amphipathique", M2: "Z cystéine", M3: "S cystéine",
+          R1: "Bloc basique", R2: "Marche acide", R3: "L hydrophobe", R4: "Coin acide",
+          T1: "O central", T2: "T de surface", T3: "L actif C*", T4: "Z hydrophobe", T5: "Z acide", T6: "D catalytique",
+          D1: "Domaine A1", D2: "Domaine A2", D3: "Charnière C1", D4: "Charnière C2", D5: "Domaine B1", D6: "Domaine B2",
+          X1: "Bord gauche", X2: "Z lipidique", X3: "Capteur C*", X4: "Canal polaire", X5: "Porte inférieure", X6: "Lipide droit 1", X7: "Lipide droit 2"
+        },
+        levels: {
+          mini: {
+            shortTitle: "1. Mini-globule",
+            title: "🫧 1. Mini-globule (Échauffement)",
+            desc: "Un petit peptide hydrosoluble : enfouissez les 4 résidus hydrophobes (●) au cœur et formez un pont disulfure C*–C* !",
+            didactic: "Un puzzle d'initiation idéal (3 pièces) : 8 acides aminés de surface protègent le petit cœur hydrophobe 2×2 de l'eau, tandis que deux cystéines (C*) verrouillent le repliement par un pont disulfure.",
+            envLabels: { top: "💧 Eau", bottom: "💧 Eau", left: "💧 Eau", right: "💧 Eau" }
+          },
+          ribbon: {
+            shortTitle: "2. Ruban amphipathique",
+            title: "📏 2. Ruban amphipathique (Blocs en ligne)",
+            desc: "Assemblez 4 pièces en une bande 8×2 : le bord supérieur est tourné vers l'eau (H₂O), le bord inférieur forme une interface hydrophobe continue (F●).",
+            didactic: "Les brins β et hélices α amphipathiques possèdent une face hydrophile et une face hydrophobe, ce qui leur permet de s'ancrer à la surface d'une membrane ou de s'accoler entre eux.",
+            envLabels: { top: "💧 Face aqueuse (H₂O)", bottom: "🧈 Interface hydrophobe (F●)", left: "N →", right: "→ C" }
+          },
+          globular: {
+            shortTitle: "3. Enzyme globulaire",
+            title: "🫧 3. Enzyme globulaire",
+            desc: "L'eau entoure toute la protéine. Assemblez 5 pièces peptidiques de sorte que les 8 acides aminés hydrophobes (●) soient enfouis dans le cœur (F●).",
+            didactic: "La solution unique (à une rotation de 180° près) forme toujours un pont salin K+ (P5) ↔ D− (P7) et un pont disulfure C* (P6) ↔ C* (P4).",
+            envLabels: { top: "💧 Eau (cytoplasme)", bottom: "💧 Eau (cytoplasme)", left: "💧 Eau", right: "💧 Eau" }
+          },
+          membrane: {
+            shortTitle: "4. Canal membranaire",
+            title: "🧱 4. Canal membranaire",
+            desc: "Les flancs dans la bicouche lipidique doivent être hydrophobes (F●), les extrémités dans l'eau hydrophiles — avec un pore hydrophile au centre !",
+            didactic: "Le pore central est toujours tapissé par S (P9) – D− (P10) – R+ (P8) – T (P8), stabilisé par un pont salin D−/R+ à l'intérieur du canal.",
+            envLabels: { top: "💧 Eau (extracellulaire)", bottom: "💧 Eau (cytoplasme)", left: "🧈 Bicouche\nlipidique", right: "🧈 Bicouche\nlipidique" }
+          },
+          fibril: {
+            shortTitle: "5. Longue fibrille",
+            title: "🧵 5. Longue fibrille",
+            desc: "Un axe hydrophobe continu (8× F●) traverse le cœur de la fibre, tandis que des acides aminés hydrophiles protègent les bords supérieur et inférieur.",
+            didactic: "L'axe hydrophobe (« fermeture stérique ») maintient les sous-unités fibrillaires ensemble (collagène, kératine) et un pont salin E− (P3) ↔ R+ (P8) stabilise la surface.",
+            envLabels: { top: "💧 Surface de la fibre (H₂O)", bottom: "💧 Surface de la fibre (H₂O)", left: "← Axe de\nla fibre", right: "Axe de →\nla fibre" }
+          },
+          tunnel_cys: {
+            shortTitle: "6. Tunnel + site actif C*",
+            title: "⚗️ 6. Protéase à cystéine (Tunnel polaire + site actif C*)",
+            desc: "Un tunnel polaire mène de la surface au cœur hydrophobe jusqu'au site actif — la cystéine catalytique C* DOIT tomber sur la case violette C* !",
+            didactic: "De nombreuses enzymes (comme les protéases à cystéine telles que la papaïne ou les caspases) cachent leur site actif au fond d'un tunnel polaire dans le cœur hydrophobe. Ici, la cystéine catalytique C* (pièce T3) jouxte l'aspartate D− (T6) !",
+            envLabels: { top: "💧 Eau · ↓ Entrée du tunnel polaire", bottom: "💧 Eau (cytoplasme)", left: "💧 Eau", right: "💧 Eau" }
+          },
+          tandem: {
+            shortTitle: "7. Chaîne bi-domaine",
+            title: "🔗 7. Bi-domaine en tandem (Blocs en ligne)",
+            desc: "Une longue chaîne modulaire 12×2 : deux blocs hydrophobes séparés (2× 4 F●) reliés par une charnière hydrophile au milieu !",
+            didactic: "Les protéines multidomaines se forment par répétition de modules en tandem (ex. domaines immunoglobuline ou ankyrine) reliés par un lieur polaire flexible — ici renforcé par un pont disulfure C*–C* (D3–D4) !",
+            envLabels: { top: "💧 Surface hydrophile des deux domaines (H₂O)", bottom: "🧈 Bloc 1 (F●) · 💧 Charnière · 🧈 Bloc 2 (F●)", left: "N →", right: "→ C" }
+          },
+          transporter: {
+            shortTitle: "8. Grand transporteur",
+            title: "🏛️ 8. Grand transporteur membranaire (Large tunnel + capteur C*)",
+            desc: "7 pièces pour un complexe 7×4 ! Les flancs s'ancrent dans la bicouche lipidique (F●), un large tunnel polaire de 3 colonnes traverse le centre avec un capteur redox C* !",
+            didactic: "Les grands pores et transporteurs membranaires (porines, transporteurs ABC) requièrent une large cavité polaire pour le passage de gros métabolites, et les cystéines (C*) internes servent souvent d'interrupteurs redox.",
+            envLabels: { top: "💧 Eau (milieu extracellulaire)", bottom: "💧 Eau (cytoplasme)", left: "🧈 Bicouche\nlipidique", right: "🧈 Bicouche\nlipidique" }
+          }
+        }
+      }
+    };
+
+    let currentLang = 'cs';
+
+    function getLanguageFromURL() {
+      const hashRaw = window.location.hash || '';
+      if (hashRaw) {
+        let hashClean = hashRaw.replace(/^#\/?/, '').split('?')[0].split('/')[0].trim().toLowerCase();
+        if (hashClean.startsWith('lang=')) hashClean = hashClean.replace('lang=', '');
+        if (hashClean === 'cz') hashClean = 'cs';
+        if (VALID_LANGS.includes(hashClean)) return hashClean;
+      }
+      const params = new URLSearchParams(window.location.search);
+      let urlLang = params.get('lang');
+      if (!urlLang) {
+        for (const k of ['en', 'de', 'fr', 'cs', 'cz']) {
+          if (params.has(k)) { urlLang = k; break; }
+        }
+      }
+      if (urlLang) {
+        urlLang = urlLang.trim().toLowerCase();
+        if (urlLang === 'cz') urlLang = 'cs';
+        if (VALID_LANGS.includes(urlLang)) return urlLang;
+      }
+      const path = window.location.pathname.toLowerCase();
+      for (const lang of ['en', 'de', 'fr', 'cs', 'cz']) {
+        if (path.includes('/' + lang + '/') || path.endsWith('/' + lang)) {
+          return lang === 'cz' ? 'cs' : lang;
+        }
+      }
+      return null;
+    }
+
+    function resolveInitialLanguage() {
+      const urlLang = getLanguageFromURL();
+      if (urlLang) {
+        localStorage.setItem('foldngo-lang', urlLang);
+        return urlLang;
+      }
+      const stored = localStorage.getItem('foldngo-lang');
+      if (stored && VALID_LANGS.includes(stored)) return stored;
+      return 'cs';
+    }
+
+    function dict() {
+      return I18N[currentLang] || I18N.cs;
+    }
+
+    function formatPieces(n) {
+      if (currentLang === 'cs') return n === 1 ? '1 dílek' : (n >= 2 && n <= 4 ? `${n} dílky` : `${n} dílků`);
+      if (currentLang === 'en') return n === 1 ? '1 piece' : `${n} pieces`;
+      if (currentLang === 'de') return n === 1 ? '1 Teil' : `${n} Teile`;
+      return n === 1 ? '1 pièce' : `${n} pièces`;
+    }
+
+    function formatShapeWord(count) {
+      if (count === 3) return 'Triomino';
+      if (count === 4) return dict().tetrominoWord;
+      if (count === 5) return 'Pentomino';
+      return dict().blockWord;
+    }
+
+    function getPieceShape(pid) {
+      const p = MASTER_POOL[pid];
+      if (!p) return '';
+      if (p.genCount) return `${formatShapeWord(p.genCount)} (${p.genCount})`;
+      return p.shape.replace('Tetromino', dict().tetrominoWord);
+    }
+
+    function getPieceName(pid) {
+      const p = MASTER_POOL[pid];
+      if (!p) return pid;
+      if (p.genCount) return `${pid} · ${formatShapeWord(p.genCount)} (${p.genCount} ${dict().aaUnit})`;
+      const label = dict().pieces[pid] || p.name;
+      return `${pid} · ${label}`;
+    }
+
+    function getLevelText(id) {
+      return dict().levels[id];
+    }
+
+    function getLevelDiff(lvl) {
+      return dict().diff[lvl.diffKey];
+    }
+
     function aaLabel(aa, cat) {
       if (cat === 'F') return `${aa}●`;
       if (cat === 'POS') return `${aa}+`;
@@ -337,72 +1015,66 @@
     }
 
     // =========================================================================
-    // PIECE LIBRARY (P1-P10 KSICHT master set + specialized campaign pieces)
+    // PIECE LIBRARY (P1-P10 core set + specialized campaign pieces)
     // =========================================================================
     const MASTER_POOL = {
-      // --- KSICHT Core Set (P1..P10) ---
-      P1:  { name: 'P1 · Hydrofobní klín', shape: 'Pentomino P', cells: mkCells([[0,0,'L','F','F'],[0,1,'V','F','F'],[0,2,'I','F','F'],[1,0,'G','S','H'],[1,1,'Q','P','H']]) },
-      P2:  { name: 'P2 · Membránové L',    shape: 'Tetromino L', cells: mkCells([[0,0,'I','F','F'],[0,1,'M','F','F'],[0,2,'S','P','H'],[1,2,'N','P','H']]) },
-      P3:  { name: 'P3 · Fibrilární zip',  shape: 'Tetromino Z', cells: mkCells([[0,0,'V','F','F'],[0,1,'I','F','F'],[1,1,'Q','P','H'],[1,2,'E','NEG','H']]) },
-      P4:  { name: 'P4 · Cysteinový roh',  shape: 'Triomino V',  cells: mkCells([[0,0,'F','F','F'],[0,1,'T','P','H'],[1,0,'C','S','H']]) },
-      P5:  { name: 'P5 · Bazické L',       shape: 'Tetromino L', cells: mkCells([[0,0,'A','F','F'],[0,1,'P','S','H'],[1,1,'N','P','H'],[2,1,'K','POS','H']]) },
-      P6:  { name: 'P6 · Jádrový blok',    shape: 'Pentomino P', cells: mkCells([[0,0,'L','F','F'],[1,0,'V','F','F'],[1,1,'I','F','F'],[2,0,'S','P','H'],[2,1,'C','S','H']]) },
-      P7:  { name: 'P7 · Kyselé T',        shape: 'Tetromino T', cells: mkCells([[0,0,'M','F','F'],[1,0,'V','F','F'],[1,1,'D','NEG','H'],[2,0,'Q','P','H']]) },
-      P8:  { name: 'P8 · Argininový roh',  shape: 'Triomino V',  cells: mkCells([[0,0,'F','F','F'],[1,0,'R','POS','H'],[1,1,'T','P','H']]) },
-      P9:  { name: 'P9 · Povrchové T',     shape: 'Tetromino T', cells: mkCells([[0,0,'Q','P','H'],[0,1,'N','P','H'],[0,2,'S','P','H'],[1,1,'L','F','F']]) },
-      P10: { name: 'P10 · Kyselé Z',       shape: 'Tetromino Z', cells: mkCells([[0,0,'D','NEG','H'],[1,0,'A','F','F'],[1,1,'N','P','H'],[2,1,'E','NEG','H']]) },
+      // --- Core Set (P1..P10) ---
+      P1:  { name: 'Hydrofobní klín', shape: 'Pentomino P', cells: mkCells([[0,0,'L','F','F'],[0,1,'V','F','F'],[0,2,'I','F','F'],[1,0,'G','S','H'],[1,1,'Q','P','H']]) },
+      P2:  { name: 'Membránové L',    shape: 'Tetromino L', cells: mkCells([[0,0,'I','F','F'],[0,1,'M','F','F'],[0,2,'S','P','H'],[1,2,'N','P','H']]) },
+      P3:  { name: 'Fibrilární zip',  shape: 'Tetromino Z', cells: mkCells([[0,0,'V','F','F'],[0,1,'I','F','F'],[1,1,'Q','P','H'],[1,2,'E','NEG','H']]) },
+      P4:  { name: 'Cysteinový roh',  shape: 'Triomino V',  cells: mkCells([[0,0,'F','F','F'],[0,1,'T','P','H'],[1,0,'C','S','H']]) },
+      P5:  { name: 'Bazické L',       shape: 'Tetromino L', cells: mkCells([[0,0,'A','F','F'],[0,1,'P','S','H'],[1,1,'N','P','H'],[2,1,'K','POS','H']]) },
+      P6:  { name: 'Jádrový blok',    shape: 'Pentomino P', cells: mkCells([[0,0,'L','F','F'],[1,0,'V','F','F'],[1,1,'I','F','F'],[2,0,'S','P','H'],[2,1,'C','S','H']]) },
+      P7:  { name: 'Kyselé T',        shape: 'Tetromino T', cells: mkCells([[0,0,'M','F','F'],[1,0,'V','F','F'],[1,1,'D','NEG','H'],[2,0,'Q','P','H']]) },
+      P8:  { name: 'Argininový roh',  shape: 'Triomino V',  cells: mkCells([[0,0,'F','F','F'],[1,0,'R','POS','H'],[1,1,'T','P','H']]) },
+      P9:  { name: 'Povrchové T',     shape: 'Tetromino T', cells: mkCells([[0,0,'Q','P','H'],[0,1,'N','P','H'],[0,2,'S','P','H'],[1,1,'L','F','F']]) },
+      P10: { name: 'Kyselé Z',        shape: 'Tetromino Z', cells: mkCells([[0,0,'D','NEG','H'],[1,0,'A','F','F'],[1,1,'N','P','H'],[2,1,'E','NEG','H']]) },
 
-      // --- L1 Mini-globule (12 AK) ---
-      M1: { name: 'M1 · Amfipatické O', shape: 'Tetromino O', cells: mkCells([[1,0,'S','P','H'],[0,0,'K','POS','H'],[1,1,'L','F','F'],[0,1,'V','F','F']]) },
-      M2: { name: 'M2 · Cysteinové Z',  shape: 'Tetromino Z', cells: mkCells([[2,1,'N','P','H'],[1,1,'E','NEG','H'],[1,0,'I','F','F'],[0,0,'C','S','H']]) },
-      M3: { name: 'M3 · Cysteinové S',  shape: 'Tetromino S', cells: mkCells([[1,2,'D','NEG','H'],[1,1,'T','P','H'],[0,1,'F','F','F'],[0,0,'C','S','H']]) },
+      // --- L1 Mini-globule (12 AA) ---
+      M1: { name: 'Amfipatické O', shape: 'Tetromino O', cells: mkCells([[1,0,'S','P','H'],[0,0,'K','POS','H'],[1,1,'L','F','F'],[0,1,'V','F','F']]) },
+      M2: { name: 'Cysteinové Z',  shape: 'Tetromino Z', cells: mkCells([[2,1,'N','P','H'],[1,1,'E','NEG','H'],[1,0,'I','F','F'],[0,0,'C','S','H']]) },
+      M3: { name: 'Cysteinové S',  shape: 'Tetromino S', cells: mkCells([[1,2,'D','NEG','H'],[1,1,'T','P','H'],[0,1,'F','F','F'],[0,0,'C','S','H']]) },
 
-      // --- L2 Amfipatická páska (16 AK) ---
-      R1: { name: 'R1 · Bazický blok',  shape: 'Pentomino P', cells: mkCells([[1,2,'S','P','H'],[1,1,'K','POS','H'],[1,0,'Q','P','H'],[0,2,'L','F','F'],[0,1,'V','F','F']]) },
-      R2: { name: 'R2 · Kyselý schod',  shape: 'Tetromino Z', cells: mkCells([[1,0,'D','NEG','H'],[0,0,'N','P','H'],[2,1,'I','F','F'],[1,1,'A','F','F']]) },
-      R3: { name: 'R3 · Hydrofobní L',  shape: 'Tetromino L', cells: mkCells([[1,1,'R','POS','H'],[0,0,'F','F','F'],[1,0,'M','F','F'],[2,0,'L','F','F']]) },
-      R4: { name: 'R4 · Kyselý roh',    shape: 'Triomino V',  cells: mkCells([[1,1,'E','NEG','H'],[1,0,'T','P','H'],[0,0,'V','F','F']]) },
+      // --- L2 Amphipathic Ribbon (16 AA) ---
+      R1: { name: 'Bazický blok',  shape: 'Pentomino P', cells: mkCells([[1,2,'S','P','H'],[1,1,'K','POS','H'],[1,0,'Q','P','H'],[0,2,'L','F','F'],[0,1,'V','F','F']]) },
+      R2: { name: 'Kyselý schod',  shape: 'Tetromino Z', cells: mkCells([[1,0,'D','NEG','H'],[0,0,'N','P','H'],[2,1,'I','F','F'],[1,1,'A','F','F']]) },
+      R3: { name: 'Hydrofobní L',  shape: 'Tetromino L', cells: mkCells([[1,1,'R','POS','H'],[0,0,'F','F','F'],[1,0,'M','F','F'],[2,0,'L','F','F']]) },
+      R4: { name: 'Kyselý roh',    shape: 'Triomino V',  cells: mkCells([[1,1,'E','NEG','H'],[1,0,'T','P','H'],[0,0,'V','F','F']]) },
 
-      // --- L6 Cysteinová proteáza: polární tunel + C* v aktivním místě (24 AK) ---
-      T1: { name: 'T1 · Jádrové O',      shape: 'Tetromino O', cells: mkCells([[1,0,'S','P','H'],[0,0,'N','P','H'],[1,1,'L','F','F'],[0,1,'V','F','F']]) },
-      T2: { name: 'T2 · Povrchové T',    shape: 'Tetromino T', cells: mkCells([[2,1,'K','POS','H'],[1,1,'Q','P','H'],[1,0,'I','F','F'],[0,0,'G','S','H']]) },
-      T3: { name: 'T3 · Aktivní C* L',   shape: 'Tetromino L', cells: mkCells([[0,2,'T','P','H'],[1,2,'R','POS','H'],[0,1,'S','P','H'],[0,0,'C','S','H']]) },
-      T4: { name: 'T4 · Hydrofobní Z',   shape: 'Tetromino Z', cells: mkCells([[1,0,'F','F','F'],[1,1,'M','F','F'],[0,1,'A','F','F'],[0,2,'K','POS','H']]) },
-      T5: { name: 'T5 · Kyselé Z',       shape: 'Tetromino Z', cells: mkCells([[2,1,'E','NEG','H'],[1,1,'L','F','F'],[1,0,'N','P','H'],[0,0,'T','P','H']]) },
-      T6: { name: 'T6 · Katalytické D',  shape: 'Tetromino L', cells: mkCells([[0,1,'V','F','F'],[0,0,'P','S','H'],[1,0,'D','NEG','H'],[2,0,'E','NEG','H']]) },
+      // --- L6 Cysteine Protease: polar tunnel + C* active site (24 AA) ---
+      T1: { name: 'Jádrové O',      shape: 'Tetromino O', cells: mkCells([[1,0,'S','P','H'],[0,0,'N','P','H'],[1,1,'L','F','F'],[0,1,'V','F','F']]) },
+      T2: { name: 'Povrchové T',    shape: 'Tetromino T', cells: mkCells([[2,1,'K','POS','H'],[1,1,'Q','P','H'],[1,0,'I','F','F'],[0,0,'G','S','H']]) },
+      T3: { name: 'Aktivní C* L',   shape: 'Tetromino L', cells: mkCells([[0,2,'T','P','H'],[1,2,'R','POS','H'],[0,1,'S','P','H'],[0,0,'C','S','H']]) },
+      T4: { name: 'Hydrofobní Z',   shape: 'Tetromino Z', cells: mkCells([[1,0,'F','F','F'],[1,1,'M','F','F'],[0,1,'A','F','F'],[0,2,'K','POS','H']]) },
+      T5: { name: 'Kyselé Z',       shape: 'Tetromino Z', cells: mkCells([[2,1,'E','NEG','H'],[1,1,'L','F','F'],[1,0,'N','P','H'],[0,0,'T','P','H']]) },
+      T6: { name: 'Katalytické D',  shape: 'Tetromino L', cells: mkCells([[0,1,'V','F','F'],[0,0,'P','S','H'],[1,0,'D','NEG','H'],[2,0,'E','NEG','H']]) },
 
-      // --- L7 Dvou-doménový modul: kostky za sebou (24 AK, 12x2) ---
-      D1: { name: 'D1 · Doména A1',  shape: 'Pentomino P', cells: mkCells([[1,2,'S','P','H'],[1,1,'K','POS','H'],[1,0,'N','P','H'],[0,2,'G','S','H'],[0,1,'L','F','F']]) },
-      D2: { name: 'D2 · Doména A2',  shape: 'Tetromino Z', cells: mkCells([[1,0,'D','NEG','H'],[0,0,'Q','P','H'],[2,1,'V','F','F'],[1,1,'I','F','F']]) },
-      D3: { name: 'D3 · Kloub C1',   shape: 'Triomino V',  cells: mkCells([[1,1,'C','S','H'],[0,0,'F','F','F'],[1,0,'T','P','H']]) },
-      D4: { name: 'D4 · Kloub C2',   shape: 'Tetromino O', cells: mkCells([[1,1,'C','S','H'],[1,0,'R','POS','H'],[0,1,'P','S','H'],[0,0,'A','F','F']]) },
-      D5: { name: 'D5 · Doména B1',  shape: 'Pentomino P', cells: mkCells([[2,0,'E','NEG','H'],[1,0,'S','P','H'],[0,0,'Q','P','H'],[2,1,'M','F','F'],[1,1,'L','F','F']]) },
-      D6: { name: 'D6 · Doména B2',  shape: 'Triomino V',  cells: mkCells([[1,0,'K','POS','H'],[0,1,'V','F','F'],[0,0,'N','P','H']]) },
+      // --- L7 Tandem Two-Domain (24 AA, 12x2) ---
+      D1: { name: 'Doména A1',  shape: 'Pentomino P', cells: mkCells([[1,2,'S','P','H'],[1,1,'K','POS','H'],[1,0,'N','P','H'],[0,2,'G','S','H'],[0,1,'L','F','F']]) },
+      D2: { name: 'Doména A2',  shape: 'Tetromino Z', cells: mkCells([[1,0,'D','NEG','H'],[0,0,'Q','P','H'],[2,1,'V','F','F'],[1,1,'I','F','F']]) },
+      D3: { name: 'Kloub C1',   shape: 'Triomino V',  cells: mkCells([[1,1,'C','S','H'],[0,0,'F','F','F'],[1,0,'T','P','H']]) },
+      D4: { name: 'Kloub C2',   shape: 'Tetromino O', cells: mkCells([[1,1,'C','S','H'],[1,0,'R','POS','H'],[0,1,'P','S','H'],[0,0,'A','F','F']]) },
+      D5: { name: 'Doména B1',  shape: 'Pentomino P', cells: mkCells([[2,0,'E','NEG','H'],[1,0,'S','P','H'],[0,0,'Q','P','H'],[2,1,'M','F','F'],[1,1,'L','F','F']]) },
+      D6: { name: 'Doména B2',  shape: 'Triomino V',  cells: mkCells([[1,0,'K','POS','H'],[0,1,'V','F','F'],[0,0,'N','P','H']]) },
 
-      // --- L8 Velký membránový transportér (28 AK, 7x4) ---
-      X1: { name: 'X1 · Levý okraj',    shape: 'Tetromino L', cells: mkCells([[2,0,'S','P','H'],[1,0,'K','POS','H'],[0,0,'N','P','H'],[2,1,'L','F','F']]) },
-      X2: { name: 'X2 · Lipidový Z',    shape: 'Tetromino Z', cells: mkCells([[1,1,'V','F','F'],[1,0,'D','NEG','H'],[0,2,'I','F','F'],[0,1,'F','F','F']]) },
-      X3: { name: 'X3 · Senzor C*',     shape: 'Tetromino L', cells: mkCells([[0,2,'T','P','H'],[1,2,'Q','P','H'],[0,1,'R','POS','H'],[0,0,'C','S','H']]) },
-      X4: { name: 'X4 · Polární kanál', shape: 'Tetromino L', cells: mkCells([[2,0,'S','P','H'],[1,0,'D','NEG','H'],[0,1,'K','POS','H'],[0,0,'N','P','H']]) },
-      X5: { name: 'X5 · Dolní brána',   shape: 'Tetromino L', cells: mkCells([[0,0,'Q','P','H'],[2,1,'G','S','H'],[1,1,'E','NEG','H'],[0,1,'T','P','H']]) },
-      X6: { name: 'X6 · Pravý lipid 1', shape: 'Tetromino L', cells: mkCells([[0,2,'E','NEG','H'],[1,2,'R','POS','H'],[0,1,'M','F','F'],[0,0,'A','F','F']]) },
-      X7: { name: 'X7 · Pravý lipid 2', shape: 'Tetromino L', cells: mkCells([[0,0,'L','F','F'],[0,1,'V','F','F'],[1,2,'P','S','H'],[0,2,'S','P','H']]) },
+      // --- L8 Large Membrane Transporter (28 AA, 7x4) ---
+      X1: { name: 'Levý okraj',    shape: 'Tetromino L', cells: mkCells([[2,0,'S','P','H'],[1,0,'K','POS','H'],[0,0,'N','P','H'],[2,1,'L','F','F']]) },
+      X2: { name: 'Lipidový Z',    shape: 'Tetromino Z', cells: mkCells([[1,1,'V','F','F'],[1,0,'D','NEG','H'],[0,2,'I','F','F'],[0,1,'F','F','F']]) },
+      X3: { name: 'Senzor C*',     shape: 'Tetromino L', cells: mkCells([[0,2,'T','P','H'],[1,2,'Q','P','H'],[0,1,'R','POS','H'],[0,0,'C','S','H']]) },
+      X4: { name: 'Polární kanál', shape: 'Tetromino L', cells: mkCells([[2,0,'S','P','H'],[1,0,'D','NEG','H'],[0,1,'K','POS','H'],[0,0,'N','P','H']]) },
+      X5: { name: 'Dolní brána',   shape: 'Tetromino L', cells: mkCells([[0,0,'Q','P','H'],[2,1,'G','S','H'],[1,1,'E','NEG','H'],[0,1,'T','P','H']]) },
+      X6: { name: 'Pravý lipid 1', shape: 'Tetromino L', cells: mkCells([[0,2,'E','NEG','H'],[1,2,'R','POS','H'],[0,1,'M','F','F'],[0,0,'A','F','F']]) },
+      X7: { name: 'Pravý lipid 2', shape: 'Tetromino L', cells: mkCells([[0,0,'L','F','F'],[0,1,'V','F','F'],[1,2,'P','S','H'],[0,2,'S','P','H']]) },
     };
 
     // =========================================================================
-    // 8 LEVELS (12 AK -> 28 AK, Easy -> Expert)
+    // 8 LEVELS (12 AA -> 28 AA, Easy -> Expert)
     // =========================================================================
     const LEVELS = {
       mini: {
         id: 'mini',
-        shortTitle: '1. Mini-globule',
-        diff: '⭐ Lehká',
-        sizeLabel: '12 AK · 3 dílky',
-        title: '🫧 1. Mini-globule (Rozehřívačka)',
-        desc: 'Malý rozpustný peptid ve vodě: schovej 4 hydrofobní zbytky (●) do jádra a vytvoř disulfidický můstek C*–C*!',
-        didactic: 'Ideální úvodní skládačka (3 dílky): malý hydrofobní střed 2×2 chrání před vodou 8 povrchových aminokyselin a dva cysteiny C* uzavírají strukturu disulfidickou vazbou.',
+        diffKey: 'easy',
         rows: 4, cols: 4,
-        envLabels: { top: '💧 Voda', bottom: '💧 Voda', left: '💧 Voda', right: '💧 Voda' },
         board: (() => {
           const b = {};
           [[0,1,'H'],[0,2,'H'],[1,0,'H'],[1,1,'F'],[1,2,'F'],[1,3,'H'],[2,0,'H'],[2,1,'F'],[2,2,'F'],[2,3,'H'],[3,1,'H'],[3,2,'H']]
@@ -414,14 +1086,8 @@
       },
       ribbon: {
         id: 'ribbon',
-        shortTitle: '2. Amfipatická páska',
-        diff: '⭐ Lehká',
-        sizeLabel: '16 AK · 4 dílky',
-        title: '📏 2. Amfipatická páska (Kostky za sebou)',
-        desc: 'Slož 4 dílky do dlouhého pásu 8×2: horní hrana směřuje do vody (H₂O), dolní tvoří souvislé hydrofobní rozhraní (F●).',
-        didactic: 'Amfipatické β-řetězce a α-helixy mají jednu stranu hydrofilní a druhou hydrofobní — takové „kostky za sebou“ se pak snadno přikládají na povrch membrány nebo k sobě navzájem.',
+        diffKey: 'easy',
         rows: 2, cols: 8,
-        envLabels: { top: '💧 Vodná strana (H₂O)', bottom: '🧈 Hydrofobní rozhraní (F●)', left: 'N →', right: '→ C' },
         board: (() => {
           const b = {};
           for (let c = 0; c < 8; c++) {
@@ -435,14 +1101,8 @@
       },
       globular: {
         id: 'globular',
-        shortTitle: '3. Globulární (KSICHT)',
-        diff: '⭐⭐ Střední',
-        sizeLabel: '20 AK · 5 dílků',
-        title: '🫧 3. Globulární enzym (KSICHT)',
-        desc: 'Okolo celého proteinu je voda. Slož 5 KSICHTích dílků tak, aby všech 8 hydrofobních AK (●) bylo uvnitř jádra (F●).',
-        didactic: 'Jednoznačné řešení (až na 180° otočení) vždy vytvoří solný můstek K+ (P5) ↔ D− (P7) a disulfidický můstek C* (P6) ↔ C* (P4).',
+        diffKey: 'medium',
         rows: 4, cols: 6,
-        envLabels: { top: '💧 Voda (cytoplazma)', bottom: '💧 Voda (cytoplazma)', left: '💧 Voda', right: '💧 Voda' },
         board: (() => {
           const b = {};
           [[0,1,'H'],[0,2,'H'],[0,3,'H'],[0,4,'H'],
@@ -457,14 +1117,8 @@
       },
       membrane: {
         id: 'membrane',
-        shortTitle: '4. Membránový (KSICHT)',
-        diff: '⭐⭐ Střední',
-        sizeLabel: '20 AK · 5 dílků',
-        title: '🧱 4. Membránový kanál (KSICHT)',
-        desc: 'Boky v lipidové dvojvrstvě musí být hydrofobní (F●), hlavičky ve vodě hydrofilní — a středem vede hydrofilní pór!',
-        didactic: 'Centrální pór vždy vystýlá čtveřice S (P9) – D− (P10) – R+ (P8) – T (P8) se stabilizačním solným můstkem D−/R+ uvnitř kanálu.',
+        diffKey: 'medium',
         rows: 4, cols: 5,
-        envLabels: { top: '💧 Voda (vně buňky)', bottom: '💧 Voda (cytoplazma)', left: '🧈 Lipidová\ndvojvrstva', right: '🧈 Lipidová\ndvojvrstva' },
         board: (() => {
           const b = {};
           for (let r = 0; r < 4; r++) for (let c = 0; c < 5; c++) {
@@ -479,14 +1133,8 @@
       },
       fibril: {
         id: 'fibril',
-        shortTitle: '5. Fibrila (KSICHT)',
-        diff: '⭐⭐ Střední',
-        sizeLabel: '20 AK · 5 dílků',
-        title: '🧵 5. Dlouhá fibrila (KSICHT)',
-        desc: 'Středem vlákna prochází souvislá hydrofobní osa (8× F●), horní a dolní okraj chrání hydrofilní aminokyseliny.',
-        didactic: 'Hydrofobní osa („sterický zip“) drží fibrilární podjednotky u sebe (kolagen, keratin) a povrch stabilizuje solný můstek E− (P3) ↔ R+ (P8).',
+        diffKey: 'medium',
         rows: 3, cols: 8,
-        envLabels: { top: '💧 Povrch vlákna (H₂O)', bottom: '💧 Povrch vlákna (H₂O)', left: '← Osa\nvlákna', right: 'Osa →\nvlákna' },
         board: (() => {
           const b = {};
           for (let c = 0; c < 8; c++) b[`1,${c}`] = { env: 'F', zone: 'lipid' };
@@ -498,14 +1146,8 @@
       },
       tunnel_cys: {
         id: 'tunnel_cys',
-        shortTitle: '6. Tunel + C* akt. místo',
-        diff: '⭐⭐⭐ Těžká',
-        sizeLabel: '24 AK · 6 dílků',
-        title: '⚗️ 6. Cysteinová proteáza (Polární tunel + C* v aktivním místě)',
-        desc: 'Z povrchu vede dovnitř hydrofobního jádra polární tunel a na jeho dně je aktivní místo — na fialové pole C* MUSÍ padnout katalytický cystein C*!',
-        didactic: 'Mnoho enzymů (např. cysteinové proteázy jako papain nebo kaspázy) má aktivní místo schované na dně polárního tunelu uvnitř hydrofobního těla proteinu. Katalytický cystein C* (dílek T3) zde sousedí s kyselinou asparagovou D− (T6)!',
+        diffKey: 'hard',
         rows: 4, cols: 7,
-        envLabels: { top: '💧 Voda · ↓ Vstup do polárního tunelu', bottom: '💧 Voda (cytoplazma)', left: '💧 Voda', right: '💧 Voda' },
         board: (() => {
           const b = {};
           for (let c = 1; c <= 5; c++) {
@@ -529,14 +1171,8 @@
       },
       tandem: {
         id: 'tandem',
-        shortTitle: '7. Dvou-doménový řetězec',
-        diff: '⭐⭐⭐ Těžká',
-        sizeLabel: '24 AK · 6 dílků',
-        title: '🔗 7. Tandemová dvou-doména (Bloky za sebou)',
-        desc: 'Dlouhý modulární řetězec 12×2: dva oddělené hydrofobní bloky (2× 4 F●) spojené hydrofilním kloubem uprostřed!',
-        didactic: 'Vícedoménové proteiny vznikají opakováním modulů za sebou (např. imunoglobulinové nebo ankyrinové domény) propojených ohebným polárním linkerem — zde navíc kloub zpevňuje disulfidický můstek C*–C* (D3–D4)!',
+        diffKey: 'hard',
         rows: 2, cols: 12,
-        envLabels: { top: '💧 Hydrofilní povrch obou domén (H₂O)', bottom: '🧈 Blok 1 (F●) · 💧 Kloub · 🧈 Blok 2 (F●)', left: 'N →', right: '→ C' },
         board: (() => {
           const b = {};
           for (let c = 0; c < 12; c++) {
@@ -554,14 +1190,8 @@
       },
       transporter: {
         id: 'transporter',
-        shortTitle: '8. Velký transportér',
-        diff: '⭐⭐⭐⭐ Expert',
-        sizeLabel: '28 AK · 7 dílků',
-        title: '🏛️ 8. Velký membránový transportér (Široký tunel + C* senzor)',
-        desc: '7 dílků do 7×4 komplexu! Boky drží v lipidové dvojvrstvě (F●), středem vede široký 3-sloupcový polární tunel a uprostřed sedí redoxní senzor C*!',
-        didactic: 'Velké membránové póry a transportéry (např. poriny nebo ABC transportéry) potřebují širokou polární dutinu pro průchod větších metabolitů a citlivé cysteinové zbytky (C*) uvnitř kanálu často fungují jako redoxní spínače.',
+        diffKey: 'expert',
         rows: 4, cols: 7,
-        envLabels: { top: '💧 Voda (extracelulární prostor)', bottom: '💧 Voda (cytoplazma)', left: '🧈 Lipidová\ndvojvrstva', right: '🧈 Lipidová\ndvojvrstva' },
         board: (() => {
           const b = {};
           for (let r = 0; r < 4; r++) for (let c = 0; c < 7; c++) {
@@ -737,7 +1367,6 @@
 
       const pieces = [];
       const solution = {};
-      const shapeNames = { 3: 'Triomino', 4: 'Tetromino', 5: 'Pentomino' };
 
       groups.forEach((g, idx) => {
         const pid = `${prefix}${idx + 1}`;
@@ -752,8 +1381,7 @@
         const baseCells = transformCells(solvedCells, invRot);
 
         MASTER_POOL[pid] = {
-          name: `${pid} · ${shapeNames[g.length] || 'Blok'} (${g.length} AK)`,
-          shape: `${shapeNames[g.length] || 'Blok'} (${g.length})`,
+          genCount: g.length,
           cells: baseCells
         };
         pieces.push(pid);
@@ -801,27 +1429,23 @@
       const container = document.getElementById('variant-buttons');
       if (!container) return;
       const cur = activeVariant[currentLevelId] || 'A';
-      const labels = [
-        { k: 'A', txt: 'Varianta A' },
-        { k: 'B', txt: 'Varianta B' },
-        { k: 'C', txt: 'Varianta C' },
-        { k: 'D', txt: 'Varianta D' },
-      ];
+      const prefix = dict().variantPrefix;
+      const keys = ['A', 'B', 'C', 'D'];
       container.innerHTML = '';
-      labels.forEach(({ k, txt }) => {
+      keys.forEach((k) => {
         const b = document.createElement('button');
         b.type = 'button';
         b.onclick = () => selectVariant(k);
         b.className = cur === k
           ? 'px-2 py-1 rounded-md text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] ring-1 ring-[var(--primary)]'
           : 'px-2 py-1 rounded-md text-xs text-[var(--muted-foreground)] hover:bg-[var(--card)] border border-transparent hover:border-[var(--border)]';
-        b.textContent = txt;
+        b.textContent = `${prefix} ${k}`;
         container.appendChild(b);
       });
       if (cur === 'R') {
         const badge = document.createElement('span');
         badge.className = 'px-2 py-1 rounded-md text-xs font-semibold bg-amber-500/20 text-amber-600 dark:text-amber-400';
-        badge.textContent = `🎲 Vlastní #${randomVariantCounter}`;
+        badge.textContent = `${dict().customVariant} #${randomVariantCounter}`;
         container.appendChild(badge);
       }
     }
@@ -1108,6 +1732,7 @@
 
       LEVEL_ORDER.forEach(id => {
         const lvl = LEVELS[id];
+        const ltxt = getLevelText(id);
         const ev = evaluateLevel(id);
         if (ev.isPerfect) solvedCount++;
         const active = id === currentLevelId;
@@ -1119,32 +1744,34 @@
           ? 'text-left p-2.5 rounded-xl border-2 border-[var(--primary)] bg-[var(--card)] shadow-sm transition-all'
           : 'text-left p-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] opacity-80 hover:opacity-100 transition-all';
 
+        const sizeLabel = `${Object.keys(lvl.board).length} ${dict().aaUnit} · ${formatPieces(lvl.pieces.length)}`;
         const statusBadge = ev.isPerfect
           ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold">✓</span>`
-          : `<span class="text-[10px] text-[var(--muted-foreground)]">${lvl.sizeLabel}</span>`;
+          : `<span class="text-[10px] text-[var(--muted-foreground)]">${sizeLabel}</span>`;
 
         btn.innerHTML = `
           <div class="flex items-center justify-between gap-1">
-            <span class="text-[10px] font-semibold text-[var(--muted-foreground)]">${lvl.diff}</span>
+            <span class="text-[10px] font-semibold text-[var(--muted-foreground)]">${getLevelDiff(lvl)}</span>
             ${statusBadge}
           </div>
-          <div class="font-semibold text-xs mt-0.5 truncate">${lvl.shortTitle}</div>
+          <div class="font-semibold text-xs mt-0.5 truncate">${ltxt.shortTitle}</div>
         `;
         container.appendChild(btn);
       });
 
-      document.getElementById('overall-progress').textContent = `${solvedCount} / ${LEVEL_ORDER.length} složeno`;
+      document.getElementById('overall-progress').textContent = dict().progressSolved(solvedCount, LEVEL_ORDER.length);
 
       const lvl = LEVELS[currentLevelId];
+      const ltxt = getLevelText(currentLevelId);
       const totalAK = Object.keys(lvl.board).length;
-      document.getElementById('level-title').textContent = lvl.title;
-      document.getElementById('level-diff-pill').textContent = `${lvl.diff} · ${totalAK} AK · ${lvl.pieces.length} dílků`;
-      document.getElementById('level-desc').textContent = lvl.desc;
-      document.getElementById('didactic-note').textContent = lvl.didactic;
-      document.getElementById('env-top-label').textContent = lvl.envLabels.top;
-      document.getElementById('env-bottom-label').textContent = lvl.envLabels.bottom;
-      document.getElementById('env-left-label').innerText = lvl.envLabels.left;
-      document.getElementById('env-right-label').innerText = lvl.envLabels.right;
+      document.getElementById('level-title').textContent = ltxt.title;
+      document.getElementById('level-diff-pill').textContent = `${getLevelDiff(lvl)} · ${totalAK} ${dict().aaUnit} · ${formatPieces(lvl.pieces.length)}`;
+      document.getElementById('level-desc').textContent = ltxt.desc;
+      document.getElementById('didactic-note').textContent = ltxt.didactic;
+      document.getElementById('env-top-label').textContent = ltxt.envLabels.top;
+      document.getElementById('env-bottom-label').textContent = ltxt.envLabels.bottom;
+      document.getElementById('env-left-label').innerText = ltxt.envLabels.left;
+      document.getElementById('env-right-label').innerText = ltxt.envLabels.right;
 
       const hasPore = Object.values(lvl.board).some(c => c.zone === 'pore');
       const hasActive = Object.values(lvl.board).some(c => c.zone === 'active');
@@ -1230,14 +1857,14 @@
               <span class="text-[8.5px] opacity-80 font-mono leading-none mt-0.5">${placed.pid}</span>
             `;
             el.title = !reqOk
-              ? `Aktivní místo vyžaduje ${bCell.reqAA}*!`
-              : `${placed.pid}: ${aaLabel(placed.aa, placed.cat)} (${envOk ? 'správné prostředí' : 'NEVHODNÉ prostředí!'})`;
+              ? dict().tooltipReqActive(bCell.reqAA)
+              : `${placed.pid}: ${aaLabel(placed.aa, placed.cat)} (${envOk ? dict().tooltipGoodEnv : dict().tooltipBadEnv})`;
             el.addEventListener('pointerdown', (e) => {
               if (e.button === 0) startPieceDrag(pid, e, true);
             });
           } else {
             el.classList.add(`cell-${bCell.zone}`);
-            const lbl = bCell.zone === 'active' ? 'C*' : (bCell.zone === 'lipid' ? 'F●' : (bCell.zone === 'pore' ? 'tunel' : 'H₂O'));
+            const lbl = bCell.zone === 'active' ? 'C*' : (bCell.zone === 'lipid' ? 'F●' : (bCell.zone === 'pore' ? dict().cellTunnel : 'H₂O'));
             el.innerHTML = `<span class="${bCell.zone === 'active' ? 'text-xs font-extrabold text-purple-600 dark:text-purple-300' : 'text-[9.5px] opacity-55 font-semibold'}">${lbl}</span>`;
           }
 
@@ -1309,7 +1936,7 @@
       tray.innerHTML = '';
 
       document.getElementById('active-piece-label').textContent =
-        selectedPieceId ? MASTER_POOL[selectedPieceId].name : 'žádný';
+        selectedPieceId ? getPieceName(selectedPieceId) : dict().trayNone;
 
       lvl.pieces.forEach(pid => {
         const isPlaced = Boolean(st.placed[pid]);
@@ -1333,7 +1960,7 @@
           <div class="flex items-center justify-between w-full gap-1">
             <span class="text-xs font-bold">${pid}</span>
             <span class="text-[10px] px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)]">
-              ${isPlaced ? 'Na desce' : MASTER_POOL[pid].shape}
+              ${isPlaced ? dict().trayOnBoard : getPieceShape(pid)}
             </span>
           </div>
           <div class="flex items-center justify-center py-1 min-h-[54px]">
@@ -1381,6 +2008,7 @@
 
     function renderStatus() {
       const ev = evaluateLevel(currentLevelId);
+      const d = dict();
       document.getElementById('stat-filled').textContent = `${ev.filled} / ${ev.total}`;
       document.getElementById('stat-correct').textContent = `${ev.correct} / ${ev.filled}`;
       document.getElementById('stat-bonds').textContent = `${ev.bonds.length}`;
@@ -1389,40 +2017,40 @@
       const msg = document.getElementById('status-message');
 
       if (ev.isPerfect) {
-        badge.textContent = '🎉 Stabilní protein složen!';
+        badge.textContent = d.statusPerfectBadge;
         badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400';
         const bondText = ev.bonds.length > 0
-          ? ` Stabilizační můstky: ${ev.bonds.map(b => b.type === 'SS' ? 'disulfidický C–C' : `solný ${b.label}`).join(', ')}.`
+          ? d.statusBondPrefix(ev.bonds.map(b => b.type === 'SS' ? d.bondSS : d.bondSalt(b.label)).join(', '))
           : '';
-        msg.textContent = `Výborně! Všech ${ev.total} aminokyselin sedí na správném místě.${bondText}`;
+        msg.textContent = d.statusPerfectMsg(ev.total, bondText);
       } else if (ev.wrongActive > 0) {
-        badge.textContent = '⚗️ Chybí C* v aktivním místě!';
+        badge.textContent = d.statusMissingActiveBadge;
         badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-purple-500/20 text-purple-600 dark:text-purple-400';
-        msg.textContent = 'Na fialové pole aktivního místa (C*) musí přesně padnout katalytický cystein C*!';
+        msg.textContent = d.statusMissingActiveMsg;
       } else if (ev.wrongEnv > 0) {
-        badge.textContent = `⚠️ ${ev.wrongEnv}× nevhodné prostředí`;
+        badge.textContent = d.statusWrongEnvBadge(ev.wrongEnv);
         badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-red-500/20 text-red-600 dark:text-red-400';
-        msg.textContent = 'Červeně orámované aminokyseliny jsou v nevhodném prostředí. Zkus dílek otočit pravým klikem nebo klávesou R!';
+        msg.textContent = d.statusWrongEnvMsg;
       } else if (ev.filled > 0) {
-        badge.textContent = '⏳ Skládáš správně...';
+        badge.textContent = d.statusInProgressBadge;
         badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-amber-500/20 text-amber-600 dark:text-amber-400';
-        msg.textContent = 'Zatím všechny umístěné aminokyseliny sedí. Doplň zbývající dílky!';
+        msg.textContent = d.statusInProgressMsg;
       } else {
-        badge.textContent = 'Připraveno ke skládání';
+        badge.textContent = d.statusReadyBadge;
         badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)]';
-        msg.textContent = 'Přetáhni dílek z pravého panelu na desku (nebo klikni na dílek a pak na desku).';
+        msg.textContent = d.statusReadyMsg;
       }
     }
 
     function renderPrintSheet() {
+      const d = dict();
       const pGrid = document.getElementById('print-pieces-grid');
       pGrid.innerHTML = '';
       ['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10'].forEach(pid => {
-        const piece = MASTER_POOL[pid];
         const box = document.createElement('div');
         box.className = 'border border-dashed border-[var(--border)] rounded-lg p-2.5 flex flex-col items-center gap-2';
         box.innerHTML = `
-          <div class="text-xs font-bold">${pid} <span class="font-normal text-[10px] text-[var(--muted-foreground)]">(${piece.shape})</span></div>
+          <div class="text-xs font-bold">${pid} <span class="font-normal text-[10px] text-[var(--muted-foreground)]">(${getPieceShape(pid)})</span></div>
           ${renderMiniPiece(pid, 0, 26)}
         `;
         pGrid.appendChild(box);
@@ -1432,6 +2060,8 @@
       bList.innerHTML = '';
       ['globular', 'membrane', 'fibril'].forEach(id => {
         const lvl = LEVELS[id];
+        const ltxt = getLevelText(id);
+        const classicPieces = BASE_VARIANTS[id].pieces;
         const card = document.createElement('div');
         card.className = 'border border-[var(--border)] rounded-xl p-3 flex flex-col items-center gap-2';
         let gridHtml = `<div class="inline-grid gap-0.5" style="grid-template-columns: repeat(${lvl.cols}, 28px);">`;
@@ -1439,20 +2069,71 @@
           for (let c = 0; c < lvl.cols; c++) {
             const cell = lvl.board[`${r},${c}`];
             if (!cell) gridHtml += `<div style="width:28px;height:28px;"></div>`;
-            else gridHtml += `<div style="width:28px;height:28px;" class="rounded cell-${cell.zone} flex items-center justify-center text-[9px] font-bold opacity-85">${cell.zone === 'lipid' ? 'F●' : cell.zone === 'pore' ? 'pór' : 'H₂O'}</div>`;
+            else gridHtml += `<div style="width:28px;height:28px;" class="rounded cell-${cell.zone} flex items-center justify-center text-[9px] font-bold opacity-85">${cell.zone === 'lipid' ? 'F●' : cell.zone === 'pore' ? d.cellPore : 'H₂O'}</div>`;
           }
         }
         gridHtml += '</div>';
 
         card.innerHTML = `
-          <div class="font-bold text-sm text-center">${lvl.title}</div>
-          <div class="text-[11px] text-[var(--muted-foreground)] text-center">Použij dílky: <strong>${lvl.pieces.join(', ')}</strong></div>
+          <div class="font-bold text-sm text-center">${ltxt.title}</div>
+          <div class="text-[11px] text-[var(--muted-foreground)] text-center">${d.printUsePieces} <strong>${classicPieces.join(', ')}</strong></div>
           <div class="py-2">${gridHtml}</div>
-          <div class="text-[11px] text-[var(--muted-foreground)] text-center">${lvl.desc}</div>
+          <div class="text-[11px] text-[var(--muted-foreground)] text-center">${ltxt.desc}</div>
         `;
         bList.appendChild(card);
       });
     }
+
+    function applyStaticTranslations() {
+      const d = dict();
+      document.documentElement.lang = currentLang;
+      document.title = d.pageTitle;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', d.metaDesc);
+
+      const themeBtn = document.getElementById('btn-theme');
+      if (themeBtn) themeBtn.title = d.themeToggleTitle;
+
+      const bioDobbleLink = document.getElementById('footer-biodobble-link');
+      if (bioDobbleLink) {
+        bioDobbleLink.href = currentLang === 'cs'
+          ? 'https://karelberka.github.io/bio-dobble/'
+          : `https://karelberka.github.io/bio-dobble/?lang=${currentLang}`;
+      }
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (typeof d[key] === 'string') el.textContent = d[key];
+      });
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        if (typeof d[key] === 'string') el.innerHTML = d[key];
+      });
+
+      document.querySelectorAll('#lang-switcher .lang-btn').forEach(btn => {
+        const active = btn.getAttribute('data-lang') === currentLang;
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        btn.className = active
+          ? 'lang-btn px-2 py-1 rounded-md transition-colors bg-[var(--primary)] text-[var(--primary-foreground)]'
+          : 'lang-btn px-2 py-1 rounded-md transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)]';
+      });
+    }
+
+    function setLanguage(lang) {
+      if (!VALID_LANGS.includes(lang)) return;
+      currentLang = lang;
+      localStorage.setItem('foldngo-lang', currentLang);
+      applyStaticTranslations();
+      renderAll();
+      if (!document.getElementById('view-print').classList.contains('hidden')) {
+        renderPrintSheet();
+      }
+    }
+
+    window.addEventListener('hashchange', () => {
+      const urlLang = getLanguageFromURL();
+      if (urlLang && urlLang !== currentLang) setLanguage(urlLang);
+    });
 
     function toggleTheme() {
       const isDark = document.documentElement.classList.toggle('dark');
@@ -1466,6 +2147,8 @@
       if (btn) btn.textContent = '☀️';
     }
 
+    currentLang = resolveInitialLanguage();
+    applyStaticTranslations();
     selectLevel('mini');
   </script>
 </body>
