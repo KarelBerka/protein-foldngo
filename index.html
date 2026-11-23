@@ -61,11 +61,26 @@
       0%, 100% { filter: brightness(1); }
       50% { filter: brightness(1.18); }
     }
-    .piece-card {
-      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+    @keyframes boardNudge {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
     }
-    .piece-card:hover {
-      transform: translateY(-2px);
+    .board-nudge {
+      animation: boardNudge 0.22s ease;
+    }
+    .piece-card {
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+    }
+    @media (hover: hover) {
+      .piece-card:hover {
+        transform: translateY(-2px);
+      }
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    #floating-drag-ghost {
+      filter: drop-shadow(0 10px 18px rgba(15, 23, 42, 0.28));
     }
     .bond-badge {
       position: absolute;
@@ -205,236 +220,243 @@
   </style>
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased min-h-screen">
-  <div id="app-container" class="max-w-6xl mx-auto p-4 md:p-6 space-y-5">
+  <div id="app-container" class="max-w-6xl mx-auto px-2 py-2 sm:px-4 sm:py-3 md:px-5 space-y-2 sm:space-y-2.5">
 
     <!-- Header -->
-    <header id="site-header" class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[var(--border)]">
-      <div>
-        <h1 class="text-xl font-bold tracking-tight flex items-center gap-2 flex-wrap">
-          <span>🧬</span> Protein Fold'n'Go <span data-i18n="headerSubtitle" class="text-sm font-normal text-[var(--muted-foreground)]">(Proteinové Ubongo)</span>
-          <span data-i18n="headerMetaPill" class="text-xs font-medium px-2 py-0.5 rounded-full bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            9 úrovní · 12–28 AK
-          </span>
-          <span id="overall-progress" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-            0 / 9 složeno
-          </span>
+    <header id="site-header" class="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 pb-2 border-b border-[var(--border)]">
+      <div class="order-1 flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0">
+        <h1 class="text-base sm:text-lg font-bold tracking-tight flex items-center gap-1.5 flex-wrap">
+          <span>🧬</span> Protein Fold'n'Go
+          <span data-i18n="headerSubtitle" class="hidden md:inline text-xs font-normal text-[var(--muted-foreground)]">(Proteinové Ubongo)</span>
         </h1>
-        <p data-i18n="headerTagline" class="text-xs text-[var(--muted-foreground)] mt-1">
-          Skládej proteiny od jednoduchých peptidů po enzymy s polárním tunelem, aktivním místem C* a velké membránové transportéry.
-        </p>
+        <span id="overall-progress" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+          0 / 9 složeno
+        </span>
       </div>
-      <div class="flex flex-wrap items-center gap-2 no-print">
+      <div class="order-3 sm:order-2 w-full sm:w-auto flex flex-wrap items-center justify-between sm:justify-end gap-1.5 sm:ml-auto no-print">
         <div id="lang-switcher" role="group" aria-label="Language"
-          class="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--card)] p-0.5 text-xs font-semibold">
-          <button type="button" data-lang="cs" onclick="setLanguage('cs')" class="lang-btn px-2 py-1 rounded-md transition-colors">CZ</button>
-          <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-2 py-1 rounded-md transition-colors">EN</button>
-          <button type="button" data-lang="de" onclick="setLanguage('de')" class="lang-btn px-2 py-1 rounded-md transition-colors">DE</button>
-          <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-2 py-1 rounded-md transition-colors">FR</button>
+          class="inline-flex items-center rounded-lg border border-[var(--border)] bg-[var(--card)] p-0.5 text-[11px] sm:text-xs font-semibold">
+          <button type="button" data-lang="cs" onclick="setLanguage('cs')" class="lang-btn px-1.5 sm:px-2 py-1 rounded-md transition-colors">CZ</button>
+          <button type="button" data-lang="en" onclick="setLanguage('en')" class="lang-btn px-1.5 sm:px-2 py-1 rounded-md transition-colors">EN</button>
+          <button type="button" data-lang="de" onclick="setLanguage('de')" class="lang-btn px-1.5 sm:px-2 py-1 rounded-md transition-colors">DE</button>
+          <button type="button" data-lang="fr" onclick="setLanguage('fr')" class="lang-btn px-1.5 sm:px-2 py-1 rounded-md transition-colors">FR</button>
         </div>
-        <button id="btn-mode-play" onclick="setViewMode('play')" data-i18n="modePlay"
-          class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]">
-          Interaktivní hra
-        </button>
-        <button id="btn-theme" onclick="toggleTheme()" title="Přepnout světlý / tmavý režim"
-          class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90">
-          🌙
-        </button>
-        <button id="btn-mode-print" onclick="setViewMode('print')" data-i18n="modePrint"
-          class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90">
-          🖨️ Tisková šablona
-        </button>
+        <div class="flex items-center gap-1.5">
+          <button id="btn-mode-play" onclick="setViewMode('play')" data-i18n="modePlay"
+            class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-medium border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]">
+            Interaktivní hra
+          </button>
+          <button id="btn-mode-print" onclick="setViewMode('print')" data-i18n="modePrint"
+            class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90">
+            🖨️ Tisková šablona
+          </button>
+        </div>
       </div>
+      <button id="btn-theme" onclick="toggleTheme()" title="Přepnout světlý / tmavý režim"
+        class="order-2 sm:order-3 px-2 py-1 sm:py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90 no-print">
+        🌙
+      </button>
     </header>
 
-    <!-- Legend -->
-    <section id="site-legend" class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3">
-      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-        <span data-i18n="legendTitle" class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
-          Kódování aminokyselin (barvy + značky pro černobílý tisk)
+    <!-- Compact / Collapsible Legend -->
+    <section id="site-legend" class="bg-[var(--card)] border border-[var(--border)] rounded-xl px-2.5 py-1.5 sm:px-3 sm:py-2">
+      <!-- Mobile Collapsed Summary Bar -->
+      <button type="button" id="legend-toggle-btn" onclick="toggleLegend()" aria-expanded="false" aria-controls="legend-body"
+        class="w-full flex md:hidden items-center justify-between gap-2 text-xs py-0.5">
+        <span class="flex items-center gap-1.5 font-semibold text-[var(--muted-foreground)] shrink-0">
+          <span data-i18n="legendToggle">Kódování AK</span>
         </span>
-        <span data-i18n-html="legendControls" class="text-xs text-[var(--muted-foreground)]">
-          Přetáhni myší nebo klikni · Pravý klik / <kbd class="px-1.5 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> = otočit o 90°
+        <span class="flex items-center gap-1">
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold border aa-F leading-none">L●</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold border aa-P leading-none">S</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold border aa-POS leading-none">K+</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold border aa-NEG leading-none">D−</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold border aa-S leading-none">C*</span>
+          <span id="legend-chevron" class="ml-1 text-[var(--muted-foreground)] transition-transform duration-150">▾</span>
         </span>
-      </div>
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
-        <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)]">
-          <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-F shrink-0">L●</span>
-          <div>
-            <div data-i18n="aaHydrophobic" class="font-semibold">Hydrofobní (●)</div>
-            <div class="text-[var(--muted-foreground)]">L, V, I, F, A, M</div>
+      </button>
+
+      <!-- Legend Details (always visible on md+, collapsible on mobile) -->
+      <div id="legend-body" class="hidden md:block pt-2 md:pt-0 space-y-1.5">
+        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 text-[11px]">
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap items-center gap-1.5 md:gap-x-3 md:gap-y-1 w-full md:w-auto">
+            <div class="flex items-center gap-1.5">
+              <span class="w-6 h-5 rounded flex items-center justify-center font-bold text-[10px] border aa-F shrink-0">L●</span>
+              <span class="leading-tight"><strong data-i18n="aaHydrophobic">Hydrofobní (●)</strong> <span class="text-[var(--muted-foreground)]">L,V,I,F,A,M</span></span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-6 h-5 rounded flex items-center justify-center font-bold text-[10px] border aa-P shrink-0">S</span>
+              <span class="leading-tight"><strong data-i18n="aaPolar">Polární</strong> <span class="text-[var(--muted-foreground)]">S,T,N,Q</span></span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-6 h-5 rounded flex items-center justify-center font-bold text-[10px] border aa-POS shrink-0">K+</span>
+              <span class="leading-tight"><strong data-i18n="aaPositive">Kladné (+)</strong> <span class="text-[var(--muted-foreground)]">K,R</span></span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-6 h-5 rounded flex items-center justify-center font-bold text-[10px] border aa-NEG shrink-0">D−</span>
+              <span class="leading-tight"><strong data-i18n="aaNegative">Záporné (−)</strong> <span class="text-[var(--muted-foreground)]">D,E</span></span>
+            </div>
+            <div class="flex items-center gap-1.5 col-span-2 sm:col-span-1">
+              <span class="w-6 h-5 rounded flex items-center justify-center font-bold text-[10px] border aa-S shrink-0">C*</span>
+              <span class="leading-tight"><strong data-i18n="aaSpecial">Speciální (* / °)</strong> <span class="text-[var(--muted-foreground)]">C*,G°,P°</span></span>
+            </div>
           </div>
-        </div>
-        <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)]">
-          <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-P shrink-0">S</span>
-          <div>
-            <div data-i18n="aaPolar" class="font-semibold">Polární</div>
-            <div data-i18n="aaPolarSub" class="text-[var(--muted-foreground)]">S, T, N, Q (voda/tunel)</div>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)]">
-          <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-POS shrink-0">K+</span>
-          <div>
-            <div data-i18n="aaPositive" class="font-semibold">Kladné (+)</div>
-            <div data-i18n="aaPositiveSub" class="text-[var(--muted-foreground)]">K, R (solný můstek)</div>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)]">
-          <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-NEG shrink-0">D−</span>
-          <div>
-            <div data-i18n="aaNegative" class="font-semibold">Záporné (−)</div>
-            <div data-i18n="aaNegativeSub" class="text-[var(--muted-foreground)]">D, E (solný můstek)</div>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--border)] col-span-2 sm:col-span-1">
-          <span class="w-7 h-6 rounded flex items-center justify-center font-bold border aa-S shrink-0">C*</span>
-          <div>
-            <div data-i18n="aaSpecial" class="font-semibold">Speciální (* / °)</div>
-            <div data-i18n="aaSpecialSub" class="text-[var(--muted-foreground)]">C* (S–S / akt. místo), G°, P°</div>
-          </div>
+          <span data-i18n-html="legendControls" class="text-[11px] text-[var(--muted-foreground)]">
+            Přetáhni nebo ťukni · Pravý klik / <kbd class="px-1 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> / ↻ = otočit o 90°
+          </span>
         </div>
       </div>
     </section>
 
     <!-- PLAY VIEW -->
-    <main id="view-play" class="space-y-4">
-      <!-- 9-Level Selector Grid (3×3) -->
-      <div id="level-selector" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+    <main id="view-play" class="space-y-2.5 sm:space-y-3">
+      <!-- Compact 9-Level Strip (horizontal scrollable rail on mobile, single 9-col row on desktop) -->
+      <nav id="level-selector" aria-label="Levels"
+        class="flex overflow-x-auto gap-1.5 pb-0.5 no-scrollbar lg:grid lg:grid-cols-9 lg:overflow-visible lg:pb-0"></nav>
 
-      <!-- Workspace -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-
-        <!-- Left: Board -->
-        <div class="lg:col-span-7 bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <h2 id="level-title" class="font-bold text-base"></h2>
-                <span id="level-diff-pill" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[var(--secondary)]"></span>
-              </div>
-              <p id="level-desc" class="text-xs text-[var(--muted-foreground)] mt-0.5"></p>
+      <!-- Unified Game Arena (Board + Adjacent Piece Dock) -->
+      <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-2 sm:p-3.5 space-y-2 sm:space-y-2.5 shadow-sm">
+        <!-- Arena Header: Title, Actions & Variants -->
+        <div class="space-y-1.5">
+          <div class="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
+            <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0">
+              <h2 id="level-title" class="font-bold text-sm sm:text-base leading-snug"></h2>
+              <span id="level-diff-pill" class="text-[10.5px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[var(--secondary)] whitespace-nowrap"></span>
             </div>
-            <div class="flex items-center gap-1.5">
-              <button onclick="hintOnePiece()" data-i18n="btnHint"
-                class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-90">
+            <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+              <button type="button" onclick="hintOnePiece()" data-i18n="btnHint"
+                class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-medium border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-90">
                 💡 Nápověda
               </button>
-              <button onclick="showSolution()" data-i18n="btnSolution"
-                class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-90">
+              <button type="button" onclick="showSolution()" data-i18n="btnSolution"
+                class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-medium border border-[var(--border)] bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-90">
                 ✨ Řešení
               </button>
-              <button onclick="resetLevel()" data-i18n="btnReset"
-                class="px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] hover:opacity-90">
+              <button type="button" onclick="resetLevel()" data-i18n="btnReset"
+                class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-medium border border-[var(--border)] hover:opacity-90">
                 ↺ Reset
               </button>
             </div>
           </div>
 
-          <!-- Variant Switcher -->
-          <div class="flex flex-wrap items-center justify-between gap-2 py-2 px-2.5 rounded-lg bg-[var(--background)] border border-[var(--border)] text-xs">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span data-i18n="variantLabel" class="text-[var(--muted-foreground)] font-medium mr-1">Kombinace dílků:</span>
+          <div class="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
+            <p id="level-desc" class="text-[11px] sm:text-xs text-[var(--muted-foreground)] leading-snug max-w-2xl"></p>
+            <!-- Compact Inline Variant Bar -->
+            <div class="flex items-center gap-1 sm:gap-1.5 flex-wrap text-xs">
+              <span data-i18n="variantLabel" class="hidden sm:inline text-[11px] text-[var(--muted-foreground)] font-medium">Kombinace dílků:</span>
               <div id="variant-buttons" class="flex items-center gap-1 flex-wrap"></div>
+              <button type="button" onclick="generateRandomVariant()" data-i18n="btnRandomVariant"
+                class="px-2 py-1 rounded-md text-[11px] font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 shrink-0">
+                🎲 Jiná kombinace
+              </button>
             </div>
-            <button onclick="generateRandomVariant()" data-i18n="btnRandomVariant"
-              class="px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 shrink-0">
-              🎲 Jiná kombinace
-            </button>
           </div>
+        </div>
 
-          <!-- Grid -->
-          <div class="flex flex-col items-center justify-center py-2 overflow-x-auto">
-            <div id="env-top-label" class="text-xs font-medium text-[var(--muted-foreground)] mb-2"></div>
-            <div class="flex items-center gap-3">
-              <div id="env-left-label" class="text-xs font-medium text-[var(--muted-foreground)] text-right w-16 hidden sm:block"></div>
+        <!-- Cohesive Play Stage: Board + Immediately Adjacent Piece Dock -->
+        <div id="play-stage" class="rounded-xl bg-[var(--background)]/75 border border-[var(--border)]/80 p-2 sm:p-3 flex flex-col items-center justify-center gap-2 sm:gap-3">
+
+          <!-- Board Column (pure board + env cues, so Piece Dock hugs tightly beside/below!) -->
+          <div id="board-column" class="flex flex-col items-center justify-center shrink-0 max-w-full">
+            <div id="env-top-label" class="text-[11px] sm:text-xs font-medium text-[var(--muted-foreground)] mb-1 text-center leading-tight"></div>
+            <div id="env-mobile-sides" class="hidden sm:hidden flex-wrap items-center justify-center gap-x-2.5 gap-y-0.5 text-[10px] font-medium text-[var(--muted-foreground)] mb-1 text-center leading-tight"></div>
+            <div class="flex items-center justify-center gap-1.5 sm:gap-2 max-w-full">
+              <div id="env-left-label" class="text-[11px] font-medium text-[var(--muted-foreground)] text-right max-w-[68px] leading-tight hidden sm:block shrink-0"></div>
               <div id="board-wrapper" class="relative select-none touch-none">
-                <div id="board-grid" class="grid gap-1"></div>
+                <div id="board-grid" class="grid"></div>
                 <div id="ghost-layer" class="absolute inset-0 pointer-events-none z-20"></div>
                 <div id="bonds-layer" class="absolute inset-0 pointer-events-none z-30"></div>
               </div>
-              <div id="env-right-label" class="text-xs font-medium text-[var(--muted-foreground)] text-left w-16 hidden sm:block"></div>
+              <div id="env-right-label" class="text-[11px] font-medium text-[var(--muted-foreground)] text-left max-w-[68px] leading-tight hidden sm:block shrink-0"></div>
             </div>
-            <div id="env-bottom-label" class="text-xs font-medium text-[var(--muted-foreground)] mt-2"></div>
+            <div id="env-bottom-label" class="text-[11px] sm:text-xs font-medium text-[var(--muted-foreground)] mt-1 text-center leading-tight"></div>
           </div>
 
-          <!-- Zone Legend -->
-          <div class="flex flex-wrap items-center justify-center gap-3 pt-2 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)]">
-            <span class="flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded cell-water inline-block"></span> <span data-i18n="zoneWater">Voda (H₂O)</span>
-            </span>
-            <span class="flex items-center gap-1.5">
-              <span class="w-4 h-4 rounded cell-lipid inline-block"></span> <span data-i18n="zoneLipid">Hydrofobní jádro / lipidy (F●)</span>
-            </span>
-            <span id="legend-pore" class="flex items-center gap-1.5 hidden">
-              <span class="w-4 h-4 rounded cell-pore inline-block"></span> <span data-i18n="zonePore">Polární pór / tunel</span>
-            </span>
-            <span id="legend-active" class="flex items-center gap-1.5 hidden">
-              <span class="w-4 h-4 rounded cell-active inline-block"></span> <span data-i18n-html="zoneActive">Aktivní místo (vyžaduje <strong>C*</strong>!)</span>
-            </span>
-          </div>
+          <!-- Adjacent Piece Dock (Right beside board on desktop for compact boards, right below on wide boards & mobile) -->
+          <div id="piece-dock" class="w-full flex flex-col gap-1.5 sm:gap-2">
+            <div class="flex items-center justify-between gap-2 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg bg-[var(--card)] border border-[var(--border)]">
+              <div class="text-xs min-w-0 truncate">
+                <span data-i18n="traySelected" class="text-[11px] text-[var(--muted-foreground)]">Vybraný:</span>
+                <span id="active-piece-label" class="font-bold ml-1">žádný</span>
+                <span id="tray-tap-hint" data-i18n="trayTapHint" class="hidden text-[10px] text-[var(--muted-foreground)] ml-1.5">· Ťukni znovu = otočit</span>
+              </div>
+              <button type="button" id="btn-rotate-piece" onclick="rotateSelected()" data-i18n="btnRotate"
+                class="min-h-[32px] sm:min-h-[34px] px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 active:scale-95 transition-transform shrink-0">
+                ↻ Otočit (R)
+              </button>
+            </div>
 
-          <!-- Status -->
-          <div class="rounded-lg border border-[var(--border)] p-3 text-xs space-y-2 bg-[var(--background)]">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <span data-i18n="evalTitle" class="font-semibold">Biochemické hodnocení struktury</span>
-              <span id="status-badge" class="px-2 py-0.5 rounded-full font-semibold"></span>
-            </div>
-            <div class="grid grid-cols-3 gap-2 text-center">
-              <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)]">
-                <div data-i18n="statFilled" class="text-[var(--muted-foreground)]">Vyplněno</div>
-                <div id="stat-filled" class="text-sm font-bold tabular-nums">0 / 0</div>
-              </div>
-              <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)]">
-                <div data-i18n="statCorrect" class="text-[var(--muted-foreground)]">Správně umístěno</div>
-                <div id="stat-correct" class="text-sm font-bold tabular-nums">0 / 0</div>
-              </div>
-              <div class="p-2 rounded-lg bg-[var(--card)] border border-[var(--border)]">
-                <div data-i18n="statBonds" class="text-[var(--muted-foreground)]">Stabilizační můstky</div>
-                <div id="stat-bonds" class="text-sm font-bold tabular-nums">0</div>
-              </div>
-            </div>
-            <div id="status-message" class="text-[var(--muted-foreground)]"></div>
+            <div id="piece-tray" class="grid gap-1.5 sm:gap-2"></div>
           </div>
         </div>
 
-        <!-- Right: Piece Tray -->
-        <div class="lg:col-span-5 bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-4">
-          <div class="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-[var(--background)] border border-[var(--border)]">
-            <div class="text-xs">
-              <span data-i18n="traySelected" class="text-[var(--muted-foreground)]">Vybraný:</span>
-              <span id="active-piece-label" class="font-bold ml-1">žádný</span>
-            </div>
-            <button onclick="rotateSelected()" data-i18n="btnRotate"
-              class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90">
-              ↻ Otočit (R)
+        <!-- Compact Zone Legend (cleanly positioned below the play stage so it never separates board & pieces) -->
+        <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-[var(--muted-foreground)]">
+          <span class="flex items-center gap-1">
+            <span class="w-3.5 h-3.5 rounded cell-water inline-block"></span> <span data-i18n="zoneWater">Voda (H₂O)</span>
+          </span>
+          <span class="flex items-center gap-1">
+            <span class="w-3.5 h-3.5 rounded cell-lipid inline-block"></span> <span data-i18n="zoneLipid">Hydrofobní jádro / lipidy (F●)</span>
+          </span>
+          <span id="legend-pore" class="flex items-center gap-1 hidden">
+            <span class="w-3.5 h-3.5 rounded cell-pore inline-block"></span> <span data-i18n="zonePore">Polární pór / tunel</span>
+          </span>
+          <span id="legend-active" class="flex items-center gap-1 hidden">
+            <span class="w-3.5 h-3.5 rounded cell-active inline-block"></span> <span data-i18n-html="zoneActive">Aktivní místo (vyžaduje <strong>C*</strong>!)</span>
+          </span>
+        </div>
+
+        <!-- Compact Live Biochemical Evaluation Bar -->
+        <div id="status-bar" class="rounded-lg border border-[var(--border)] px-3 py-2 text-xs bg-[var(--background)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-2 min-w-0">
+            <span id="status-badge" class="px-2.5 py-0.5 rounded-full font-semibold shrink-0"></span>
+            <span id="status-message" class="text-[var(--muted-foreground)] leading-snug"></span>
+            <button type="button" id="btn-next-level" onclick="nextLevel()" data-i18n="btnNextLevel"
+              class="hidden px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors shrink-0">
+              Další úroveň →
             </button>
           </div>
-
-          <div id="piece-tray" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2.5"></div>
-
-          <div class="p-3 rounded-lg border border-[var(--border)] bg-[var(--background)] text-xs space-y-1.5">
-            <div class="font-semibold flex items-center gap-1.5">
-              <span>🔬</span> <span data-i18n="didacticHeading">Biochemický kontext</span>
+          <div class="flex flex-wrap items-center gap-1.5 shrink-0 text-[11px]">
+            <div class="px-2 py-1 rounded-md bg-[var(--card)] border border-[var(--border)] flex items-center gap-1 whitespace-nowrap">
+              <span data-i18n="statFilled" class="text-[var(--muted-foreground)]">Vyplněno</span>
+              <strong id="stat-filled" class="tabular-nums">0 / 0</strong>
             </div>
-            <p id="didactic-note" class="text-[var(--muted-foreground)] leading-relaxed"></p>
-          </div>
-
-          <div class="p-3 rounded-lg border border-[var(--border)] bg-[var(--background)] text-xs space-y-1.5">
-            <div class="flex flex-wrap items-center justify-between gap-1.5">
-              <div class="font-semibold flex items-center gap-1.5">
-                <span>🧪</span> <span data-i18n="exampleHeading">Molekulární příklad</span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <a id="example-pdb-link" href="#" target="_blank" rel="noopener noreferrer"
-                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-mono text-[11px] font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] hover:opacity-85 transition-opacity"></a>
-                <a id="example-3d-link" href="#" target="_blank" rel="noopener noreferrer"
-                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition-opacity"></a>
-              </div>
+            <div class="px-2 py-1 rounded-md bg-[var(--card)] border border-[var(--border)] flex items-center gap-1 whitespace-nowrap">
+              <span data-i18n="statCorrect" class="text-[var(--muted-foreground)]">Správně</span>
+              <strong id="stat-correct" class="tabular-nums">0 / 0</strong>
             </div>
-            <div id="example-name" class="font-semibold text-[var(--foreground)]"></div>
-            <p id="example-note" class="text-[var(--muted-foreground)] leading-relaxed"></p>
+            <div class="px-2 py-1 rounded-md bg-[var(--card)] border border-[var(--border)] flex items-center gap-1 whitespace-nowrap">
+              <span data-i18n="statBonds" class="text-[var(--muted-foreground)]">Můstky</span>
+              <strong id="stat-bonds" class="tabular-nums">0</strong>
+            </div>
           </div>
         </div>
+      </section>
 
+      <!-- Context & Molecular Example Row (cleanly separated below the active play arena) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-xs space-y-1.5">
+          <div class="font-semibold flex items-center gap-1.5">
+            <span>🔬</span> <span data-i18n="didacticHeading">Biochemický kontext</span>
+          </div>
+          <p id="didactic-note" class="text-[var(--muted-foreground)] leading-relaxed"></p>
+        </div>
+
+        <div class="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-xs space-y-1.5">
+          <div class="flex flex-wrap items-center justify-between gap-1.5">
+            <div class="font-semibold flex items-center gap-1.5">
+              <span>🧪</span> <span data-i18n="exampleHeading">Molekulární příklad</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <a id="example-pdb-link" href="#" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-mono text-[11px] font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] hover:opacity-85 transition-opacity"></a>
+              <a id="example-3d-link" href="#" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 transition-opacity"></a>
+            </div>
+          </div>
+          <div id="example-name" class="font-semibold text-[var(--foreground)]"></div>
+          <p id="example-note" class="text-[var(--muted-foreground)] leading-relaxed"></p>
+        </div>
       </div>
     </main>
 
@@ -531,7 +553,8 @@
         modePrint: "🖨️ Tisková šablona",
         themeToggleTitle: "Přepnout světlý / tmavý režim",
         legendTitle: "Kódování aminokyselin (barvy + značky pro černobílý tisk)",
-        legendControls: 'Přetáhni myší nebo klikni · Pravý klik / <kbd class="px-1.5 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> = otočit o 90°',
+        legendToggle: "Kódování AK",
+        legendControls: 'Přetáhni nebo ťukni · Pravý klik / <kbd class="px-1 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> / ↻ = otočit o 90°',
         aaHydrophobic: "Hydrofobní (●)",
         aaPolar: "Polární",
         aaPolarSub: "S, T, N, Q (voda/tunel)",
@@ -544,6 +567,7 @@
         btnHint: "💡 Nápověda",
         btnSolution: "✨ Řešení",
         btnReset: "↺ Reset",
+        btnNextLevel: "Další úroveň →",
         variantLabel: "Kombinace dílků:",
         variantPrefix: "Varianta",
         btnRandomVariant: "🎲 Jiná kombinace",
@@ -554,11 +578,12 @@
         zoneActive: "Aktivní místo (vyžaduje <strong>C*</strong>!)",
         evalTitle: "Biochemické hodnocení struktury",
         statFilled: "Vyplněno",
-        statCorrect: "Správně umístěno",
-        statBonds: "Stabilizační můstky",
+        statCorrect: "Správně",
+        statBonds: "Můstky",
         traySelected: "Vybraný:",
         trayNone: "žádný",
         trayOnBoard: "Na desce",
+        trayTapHint: "· Ťukni znovu = otočit",
         btnRotate: "↻ Otočit (R)",
         didacticHeading: "Biochemický kontext",
         exampleHeading: "Molekulární příklad",
@@ -600,11 +625,11 @@
         statusMissingActiveBadge: "⚗️ Chybí C* v aktivním místě!",
         statusMissingActiveMsg: "Na fialové pole aktivního místa (C*) musí přesně padnout katalytický cystein C*!",
         statusWrongEnvBadge: (n) => `⚠️ ${n}× nevhodné prostředí`,
-        statusWrongEnvMsg: "Červeně orámované aminokyseliny jsou v nevhodném prostředí. Zkus dílek otočit pravým klikem nebo klávesou R!",
+        statusWrongEnvMsg: "Červeně orámované aminokyseliny jsou v nevhodném prostředí. Zkus dílek otočit tlačítkem ↻, pravým klikem nebo klávesou R!",
         statusInProgressBadge: "⏳ Skládáš správně...",
         statusInProgressMsg: "Zatím všechny umístěné aminokyseliny sedí. Doplň zbývající dílky!",
         statusReadyBadge: "Připraveno ke skládání",
-        statusReadyMsg: "Přetáhni dílek z pravého panelu na desku (nebo klikni na dílek a pak na desku).",
+        statusReadyMsg: "Přetáhni dílek na desku, nebo na něj ťukni a klepni na políčko (další ťuknutí na vybraný dílek jej otočí).",
         aaUnit: "AK",
         blockWord: "Blok",
         tetrominoWord: "Tetromino",
@@ -734,7 +759,8 @@
         modePrint: "🖨️ Printable Template",
         themeToggleTitle: "Toggle light / dark theme",
         legendTitle: "Amino acid coding (colors + symbols for B&W printing)",
-        legendControls: 'Drag or click · Right-click / <kbd class="px-1.5 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> = rotate 90°',
+        legendToggle: "AA Legend",
+        legendControls: 'Drag or tap · Right-click / <kbd class="px-1 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> / ↻ = rotate 90°',
         aaHydrophobic: "Hydrophobic (●)",
         aaPolar: "Polar",
         aaPolarSub: "S, T, N, Q (water/tunnel)",
@@ -747,6 +773,7 @@
         btnHint: "💡 Hint",
         btnSolution: "✨ Solution",
         btnReset: "↺ Reset",
+        btnNextLevel: "Next level →",
         variantLabel: "Piece set:",
         variantPrefix: "Variant",
         btnRandomVariant: "🎲 Random set",
@@ -757,11 +784,12 @@
         zoneActive: "Active site (requires <strong>C*</strong>!)",
         evalTitle: "Biochemical structure evaluation",
         statFilled: "Filled",
-        statCorrect: "Correctly placed",
-        statBonds: "Stabilizing bridges",
+        statCorrect: "Correct",
+        statBonds: "Bridges",
         traySelected: "Selected:",
         trayNone: "none",
         trayOnBoard: "On board",
+        trayTapHint: "· Tap again = rotate",
         btnRotate: "↻ Rotate (R)",
         didacticHeading: "Biochemical context",
         exampleHeading: "Molecular example",
@@ -803,11 +831,11 @@
         statusMissingActiveBadge: "⚗️ Missing C* in active site!",
         statusMissingActiveMsg: "The catalytic cysteine C* must be placed directly on the purple active-site cell (C*)!",
         statusWrongEnvBadge: (n) => `⚠️ ${n}× wrong environment`,
-        statusWrongEnvMsg: "Red-outlined amino acids are in an unfavorable environment. Try rotating the piece with right-click or the R key!",
+        statusWrongEnvMsg: "Red-outlined amino acids are in an unfavorable environment. Try rotating the piece with ↻, right-click, or the R key!",
         statusInProgressBadge: "⏳ Folding nicely...",
         statusInProgressMsg: "All placed amino acids fit well so far. Place the remaining pieces!",
         statusReadyBadge: "Ready to fold",
-        statusReadyMsg: "Drag a piece from the right panel onto the board (or click a piece and then click the board).",
+        statusReadyMsg: "Drag a piece onto the board, or tap a piece and tap a cell (tap the selected piece again to rotate).",
         aaUnit: "AA",
         blockWord: "Block",
         tetrominoWord: "Tetromino",
@@ -937,7 +965,8 @@
         modePrint: "🖨️ Druckvorlage",
         themeToggleTitle: "Hellen / dunklen Modus umschalten",
         legendTitle: "Aminosäure-Codierung (Farben + Symbole für S/W-Druck)",
-        legendControls: 'Ziehen oder klicken · Rechtsklick / <kbd class="px-1.5 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> = um 90° drehen',
+        legendToggle: "AS-Legende",
+        legendControls: 'Ziehen oder tippen · Rechtsklick / <kbd class="px-1 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> / ↻ = um 90° drehen',
         aaHydrophobic: "Hydrophob (●)",
         aaPolar: "Polar",
         aaPolarSub: "S, T, N, Q (Wasser/Tunnel)",
@@ -950,6 +979,7 @@
         btnHint: "💡 Hinweis",
         btnSolution: "✨ Lösung",
         btnReset: "↺ Zurücksetzen",
+        btnNextLevel: "Nächstes Level →",
         variantLabel: "Teile-Kombination:",
         variantPrefix: "Variante",
         btnRandomVariant: "🎲 Neue Kombination",
@@ -960,11 +990,12 @@
         zoneActive: "Aktives Zentrum (erfordert <strong>C*</strong>!)",
         evalTitle: "Biochemische Strukturbewertung",
         statFilled: "Ausgefüllt",
-        statCorrect: "Korrekt platziert",
-        statBonds: "Stabilisierende Brücken",
+        statCorrect: "Korrekt",
+        statBonds: "Brücken",
         traySelected: "Ausgewählt:",
         trayNone: "keines",
         trayOnBoard: "Auf dem Brett",
+        trayTapHint: "· Erneut tippen = drehen",
         btnRotate: "↻ Drehen (R)",
         didacticHeading: "Biochemischer Kontext",
         exampleHeading: "Molekulares Beispiel",
@@ -1006,11 +1037,11 @@
         statusMissingActiveBadge: "⚗️ C* im aktiven Zentrum fehlt!",
         statusMissingActiveMsg: "Auf das violette Feld des aktiven Zentrums (C*) muss genau das katalytische Cystein C* gesetzt werden!",
         statusWrongEnvBadge: (n) => `⚠️ ${n}× falsche Umgebung`,
-        statusWrongEnvMsg: "Rot umrandete Aminosäuren liegen in einer ungünstigen Umgebung. Drehe das Teil per Rechtsklick oder Taste R!",
+        statusWrongEnvMsg: "Rot umrandete Aminosäuren liegen in einer ungünstigen Umgebung. Drehe das Teil mit ↻, per Rechtsklick oder Taste R!",
         statusInProgressBadge: "⏳ Sieht gut aus...",
         statusInProgressMsg: "Bisher passen alle platzierten Aminosäuren. Ergänze die übrigen Teile!",
         statusReadyBadge: "Bereit zum Falten",
-        statusReadyMsg: "Ziehe ein Teil aus dem rechten Bereich auf das Brett (oder klicke auf ein Teil und dann auf das Brett).",
+        statusReadyMsg: "Ziehe ein Teil auf das Brett oder tippe auf ein Teil und dann auf ein Feld (erneutes Tippen dreht das Teil).",
         aaUnit: "AS",
         blockWord: "Block",
         tetrominoWord: "Tetromino",
@@ -1140,7 +1171,8 @@
         modePrint: "🖨️ Modèle imprimable",
         themeToggleTitle: "Basculer le thème clair / sombre",
         legendTitle: "Codage des acides aminés (couleurs + symboles pour impression N&B)",
-        legendControls: 'Glisser ou cliquer · Clic droit / <kbd class="px-1.5 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> = pivoter de 90°',
+        legendToggle: "Code AA",
+        legendControls: 'Glisser ou toucher · Clic droit / <kbd class="px-1 py-0.5 rounded bg-[var(--secondary)] font-mono">R</kbd> / ↻ = pivoter de 90°',
         aaHydrophobic: "Hydrophobe (●)",
         aaPolar: "Polaire",
         aaPolarSub: "S, T, N, Q (eau/tunnel)",
@@ -1153,6 +1185,7 @@
         btnHint: "💡 Indice",
         btnSolution: "✨ Solution",
         btnReset: "↺ Réinitialiser",
+        btnNextLevel: "Niveau suivant →",
         variantLabel: "Jeu de pièces :",
         variantPrefix: "Variante",
         btnRandomVariant: "🎲 Autre combinaison",
@@ -1163,11 +1196,12 @@
         zoneActive: "Site actif (nécessite <strong>C*</strong> !)",
         evalTitle: "Évaluation biochimique de la structure",
         statFilled: "Rempli",
-        statCorrect: "Bien placés",
-        statBonds: "Ponts stabilisateurs",
+        statCorrect: "Corrects",
+        statBonds: "Ponts",
         traySelected: "Sélectionnée :",
         trayNone: "aucune",
         trayOnBoard: "Sur le plateau",
+        trayTapHint: "· Retoucher = pivoter",
         btnRotate: "↻ Pivoter (R)",
         didacticHeading: "Contexte biochimique",
         exampleHeading: "Exemple moléculaire",
@@ -1209,11 +1243,11 @@
         statusMissingActiveBadge: "⚗️ C* manquant dans le site actif !",
         statusMissingActiveMsg: "La cystéine catalytique C* doit être placée exactement sur la case violette du site actif (C*) !",
         statusWrongEnvBadge: (n) => `⚠️ ${n}× mauvais environnement`,
-        statusWrongEnvMsg: "Les acides aminés encadrés de rouge sont dans un environnement défavorable. Essayez de pivoter la pièce par clic droit ou avec la touche R !",
+        statusWrongEnvMsg: "Les acides aminés encadrés de rouge sont dans un environnement défavorable. Essayez de pivoter la pièce avec ↻, par clic droit ou avec la touche R !",
         statusInProgressBadge: "⏳ Bon début...",
         statusInProgressMsg: "Tous les acides aminés placés conviennent pour l'instant. Complétez avec les pièces restantes !",
         statusReadyBadge: "Prêt à plier",
-        statusReadyMsg: "Glissez une pièce du panneau de droite sur le plateau (ou cliquez sur une pièce puis sur le plateau).",
+        statusReadyMsg: "Glissez une pièce sur le plateau ou touchez une pièce puis une case (retouchez la pièce sélectionnée pour la pivoter).",
         aaUnit: "AA",
         blockWord: "Bloc",
         tetrominoWord: "Tétromino",
@@ -1682,11 +1716,60 @@
       return pts.map(p => ({ ...p, r: p.r - minR, c: p.c - minC }));
     }
 
+    function isWideDesktopBoard(lvl) {
+      return lvl.cols >= 8;
+    }
+
+    function getBoardGap(lvl) {
+      const vw = window.innerWidth || 1280;
+      if (vw < 480) return lvl.cols >= 12 ? 2 : 3;
+      return 4;
+    }
+
     function getCellSize(lvl) {
-      if (lvl.cols >= 12) return 38;
-      if (lvl.cols >= 8) return 44;
-      if (lvl.cols >= 7) return 46;
-      return 52;
+      const vw = window.innerWidth || 1280;
+      const gap = getBoardGap(lvl);
+
+      if (vw < 640) {
+        let baseCap;
+        if (lvl.cols >= 12) baseCap = 28;
+        else if (lvl.cols >= 8) baseCap = 42;
+        else if (lvl.rows >= 6) baseCap = 40;
+        else if (lvl.cols >= 7) baseCap = 45;
+        else if (lvl.cols >= 6) baseCap = 48;
+        else baseCap = 52;
+        const availW = Math.max(240, vw - 44);
+        const fitW = Math.floor((availW - (lvl.cols - 1) * gap) / lvl.cols);
+        return Math.max(22, Math.min(baseCap, fitW));
+      }
+
+      if (vw < 1024) {
+        let baseCap;
+        if (lvl.cols >= 12) baseCap = 42;
+        else if (lvl.cols >= 8) baseCap = 48;
+        else if (lvl.rows >= 6) baseCap = 46;
+        else baseCap = 52;
+        const availW = Math.max(320, Math.min(vw - 64, 780) - 160);
+        const fitW = Math.floor((availW - (lvl.cols - 1) * gap) / lvl.cols);
+        return Math.max(28, Math.min(baseCap, fitW));
+      }
+
+      if (isWideDesktopBoard(lvl)) {
+        const baseCap = lvl.cols >= 12 ? 46 : 52;
+        const availW = Math.min(vw - 80, 1080) - 170;
+        const fitW = Math.floor((availW - (lvl.cols - 1) * gap) / lvl.cols);
+        return Math.max(36, Math.min(baseCap, fitW));
+      }
+
+      let baseCap;
+      if (lvl.rows >= 6) baseCap = 46;
+      else if (lvl.cols >= 7) baseCap = 48;
+      else if (lvl.cols >= 6) baseCap = 52;
+      else baseCap = 54;
+      const dockW = (lvl.rows >= 6 || lvl.pieces.length <= 3) ? 292 : 352;
+      const availW = Math.min(vw - 80, 1080) - dockW - 164;
+      const fitW = Math.floor((availW - (lvl.cols - 1) * gap) / lvl.cols);
+      return Math.max(36, Math.min(baseCap, fitW));
     }
 
     // =========================================================================
@@ -1893,15 +1976,16 @@
         const b = document.createElement('button');
         b.type = 'button';
         b.onclick = () => selectVariant(k);
+        b.title = `${prefix} ${k}`;
         b.className = cur === k
-          ? 'px-2 py-1 rounded-md text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] ring-1 ring-[var(--primary)]'
-          : 'px-2 py-1 rounded-md text-xs text-[var(--muted-foreground)] hover:bg-[var(--card)] border border-transparent hover:border-[var(--border)]';
-        b.textContent = `${prefix} ${k}`;
+          ? 'px-2 py-1 rounded-md text-[11px] font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] ring-1 ring-[var(--primary)]'
+          : 'px-2 py-1 rounded-md text-[11px] text-[var(--muted-foreground)] hover:bg-[var(--background)] border border-transparent hover:border-[var(--border)]';
+        b.innerHTML = `<span class="hidden sm:inline">${prefix} </span>${k}`;
         container.appendChild(b);
       });
       if (cur === 'R') {
         const badge = document.createElement('span');
-        badge.className = 'px-2 py-1 rounded-md text-xs font-semibold bg-amber-500/20 text-amber-600 dark:text-amber-400';
+        badge.className = 'px-2 py-1 rounded-md text-[11px] font-semibold bg-amber-500/20 text-amber-600 dark:text-amber-400';
         badge.textContent = `${dict().customVariant} #${randomVariantCounter}`;
         container.appendChild(badge);
       }
@@ -1920,40 +2004,83 @@
     }
     LEVEL_ORDER.forEach(initLevelState);
 
+    function toggleLegend() {
+      const body = document.getElementById('legend-body');
+      const btn = document.getElementById('legend-toggle-btn');
+      const chev = document.getElementById('legend-chevron');
+      if (!body || !btn) return;
+      const isOpen = !body.classList.contains('hidden');
+      body.classList.toggle('hidden', isOpen);
+      btn.setAttribute('aria-expanded', String(!isOpen));
+      if (chev) chev.style.transform = isOpen ? '' : 'rotate(180deg)';
+    }
+
     function setViewMode(mode) {
       const playEl = document.getElementById('view-play');
       const printEl = document.getElementById('view-print');
       const btnPlay = document.getElementById('btn-mode-play');
       const btnPrint = document.getElementById('btn-mode-print');
+      const activeCls = 'px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-medium border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]';
+      const inactiveCls = 'px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90';
       if (mode === 'play') {
         document.body.classList.remove('print-mode');
         playEl.classList.remove('hidden'); printEl.classList.add('hidden');
-        btnPlay.className = 'px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]';
-        btnPrint.className = 'px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90';
+        btnPlay.className = activeCls;
+        btnPrint.className = inactiveCls;
+        renderBoard();
+        renderGhost();
+        renderTray();
       } else {
         document.body.classList.add('print-mode');
         playEl.classList.add('hidden'); printEl.classList.remove('hidden');
-        btnPrint.className = 'px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]';
-        btnPlay.className = 'px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90';
+        btnPrint.className = activeCls;
+        btnPlay.className = inactiveCls;
         renderPrintSheet();
       }
     }
 
-    function selectLevel(levelId) {
+    function selectLevel(levelId, scrollRail = false, instantScroll = false) {
       currentLevelId = levelId;
       hoverCell = null;
       const st = levelState[levelId];
       selectedPieceId = LEVELS[levelId].pieces.find(pid => !st.placed[pid]) || null;
       renderAll();
+      if (scrollRail && window.innerWidth < 1024) {
+        const alignRail = () => {
+          const rail = document.getElementById('level-selector');
+          const activeBtn = rail && rail.querySelector(`button[data-level-id="${levelId}"]`);
+          if (rail && activeBtn) {
+            const rRect = rail.getBoundingClientRect();
+            const bRect = activeBtn.getBoundingClientRect();
+            const targetLeft = Math.max(0, rail.scrollLeft + (bRect.left - rRect.left) - (rail.clientWidth - bRect.width) / 2);
+            rail.scrollTo({ left: targetLeft, behavior: instantScroll ? 'auto' : 'smooth' });
+          }
+        };
+        requestAnimationFrame(alignRail);
+        if (instantScroll && document.readyState !== 'complete') {
+          window.addEventListener('load', () => requestAnimationFrame(alignRail), { once: true });
+        }
+      }
     }
 
-    function selectPiece(pid) {
+    function nextLevel() {
+      const idx = LEVEL_ORDER.indexOf(currentLevelId);
+      if (idx >= 0 && idx < LEVEL_ORDER.length - 1) {
+        selectLevel(LEVEL_ORDER[idx + 1], true);
+      }
+    }
+
+    function selectPiece(pid, rotateIfSelected = true) {
       const st = levelState[currentLevelId];
       if (st.placed[pid]) {
         st.rots[pid] = st.placed[pid].rot;
         delete st.placed[pid];
+        selectedPieceId = pid;
+      } else if (rotateIfSelected && selectedPieceId === pid) {
+        st.rots[pid] = (st.rots[pid] + 1) % 4;
+      } else {
+        selectedPieceId = pid;
       }
-      selectedPieceId = pid;
       renderAll();
     }
 
@@ -2063,10 +2190,18 @@
       const rect = grid.getBoundingClientRect();
       if (clientX < rect.left - 18 || clientX > rect.right + 18 || clientY < rect.top - 18 || clientY > rect.bottom + 18) return null;
       const lvl = LEVELS[currentLevelId];
-      const step = getCellSize(lvl) + 4;
+      const step = getCellSize(lvl) + getBoardGap(lvl);
       const c = Math.max(0, Math.min(lvl.cols - 1, Math.floor((clientX - rect.left) / step)));
       const r = Math.max(0, Math.min(lvl.rows - 1, Math.floor((clientY - rect.top) / step)));
       return { r, c };
+    }
+
+    function nudgeBoard() {
+      const wrap = document.getElementById('board-wrapper');
+      if (!wrap) return;
+      wrap.classList.remove('board-nudge');
+      void wrap.offsetWidth;
+      wrap.classList.add('board-nudge');
     }
 
     function placeSelectedAt(r, c) {
@@ -2078,6 +2213,7 @@
       if (check.ok) {
         st.placed[selectedPieceId] = { rot, dr: check.dr, dc: check.dc };
         selectedPieceId = lvl.pieces.find(pid => !st.placed[pid]) || null;
+        hoverCell = null;
         renderAll();
         return true;
       }
@@ -2090,6 +2226,8 @@
       const key = `${r},${c}`;
       if (selectedPieceId && !occ[key]) {
         if (placeSelectedAt(r, c)) return;
+        if (LEVELS[currentLevelId].board[key]) nudgeBoard();
+        return;
       }
       if (occ[key]) {
         const pid = occ[key].pid;
@@ -2100,8 +2238,14 @@
       }
     }
 
-    // Drag & Drop
+    // Drag & Drop (Mouse + Touch with ergonomic thumb lift offset)
     let dragState = null;
+    let suppressNextClickUntil = 0;
+    const TOUCH_DRAG_LIFT_Y = 56;
+
+    function getDragTargetCoords(clientX, clientY, isTouch) {
+      return { x: clientX, y: isTouch ? clientY - TOUCH_DRAG_LIFT_Y : clientY };
+    }
 
     function createDragGhostEl(pid, rot) {
       let el = document.getElementById('floating-drag-ghost');
@@ -2114,7 +2258,8 @@
         el.style.transform = 'translate(-50%, -50%)';
         document.body.appendChild(el);
       }
-      el.innerHTML = renderMiniPiece(pid, rot, 34);
+      const ghostCell = Math.max(24, Math.min(getCellSize(LEVELS[currentLevelId]), 40));
+      el.innerHTML = renderMiniPiece(pid, rot, ghostCell);
       el.style.display = 'block';
       return el;
     }
@@ -2125,13 +2270,54 @@
     }
 
     function startPieceDrag(pid, e, fromBoard = false) {
-      if (e.button !== 0) return;
-      dragState = { pid, startX: e.clientX, startY: e.clientY, active: false, fromBoard };
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      dragState = {
+        pid,
+        startX: e.clientX,
+        startY: e.clientY,
+        active: false,
+        fromBoard,
+        isTouch: e.pointerType === 'touch',
+        pointerId: e.pointerId
+      };
+    }
+
+    function finishPieceDrag(e, commit = true) {
+      if (!dragState) return;
+      if (e && dragState.pointerId !== undefined && e.pointerId !== undefined && e.pointerId !== dragState.pointerId) return;
+      const wasActive = dragState.active;
+      const pid = dragState.pid;
+      const wasTouch = dragState.isTouch;
+      dragState = null;
+      removeDragGhostEl();
+      if (wasActive) {
+        suppressNextClickUntil = performance.now() + 260;
+        if (commit && e) {
+          const pt = getDragTargetCoords(e.clientX, e.clientY, wasTouch);
+          const cell = getCellFromPoint(pt.x, pt.y);
+          if (cell) {
+            selectedPieceId = pid;
+            if (!placeSelectedAt(cell.r, cell.c)) {
+              hoverCell = null;
+              renderGhost();
+              nudgeBoard();
+            }
+          } else {
+            hoverCell = null;
+            renderGhost();
+          }
+        } else {
+          hoverCell = null;
+          renderGhost();
+        }
+      }
     }
 
     window.addEventListener('pointermove', (e) => {
       if (!dragState) return;
-      if (!dragState.active && Math.hypot(e.clientX - dragState.startX, e.clientY - dragState.startY) > 6) {
+      if (dragState.pointerId !== undefined && e.pointerId !== dragState.pointerId) return;
+      const threshold = dragState.isTouch ? 8 : 5;
+      if (!dragState.active && Math.hypot(e.clientX - dragState.startX, e.clientY - dragState.startY) > threshold) {
         dragState.active = true;
         const st = levelState[currentLevelId];
         if (st.placed[dragState.pid]) {
@@ -2143,28 +2329,19 @@
       }
       if (dragState.active) {
         const st = levelState[currentLevelId];
+        const pt = getDragTargetCoords(e.clientX, e.clientY, dragState.isTouch);
         const el = createDragGhostEl(dragState.pid, st.rots[dragState.pid]);
-        el.style.left = `${e.clientX}px`;
-        el.style.top = `${e.clientY}px`;
-        const cell = getCellFromPoint(e.clientX, e.clientY);
+        el.style.left = `${pt.x}px`;
+        el.style.top = `${pt.y}px`;
+        const cell = getCellFromPoint(pt.x, pt.y);
         hoverCell = cell;
-        el.style.opacity = cell ? '0.25' : '0.92';
+        el.style.opacity = cell ? '0.28' : '0.94';
         renderGhost();
       }
     });
 
-    window.addEventListener('pointerup', (e) => {
-      if (!dragState) return;
-      const wasActive = dragState.active;
-      const pid = dragState.pid;
-      dragState = null;
-      removeDragGhostEl();
-      if (wasActive) {
-        const cell = getCellFromPoint(e.clientX, e.clientY);
-        if (cell) { selectedPieceId = pid; placeSelectedAt(cell.r, cell.c); }
-        else { hoverCell = null; renderGhost(); }
-      }
-    });
+    window.addEventListener('pointerup', (e) => finishPieceDrag(e, true));
+    window.addEventListener('pointercancel', (e) => finishPieceDrag(e, false));
 
     window.addEventListener('keydown', (e) => {
       if (document.getElementById('view-play').classList.contains('hidden')) return;
@@ -2173,6 +2350,19 @@
         rotateSelected();
         if (dragState && dragState.active) createDragGhostEl(dragState.pid, levelState[currentLevelId].rots[dragState.pid]);
       }
+    });
+
+    let resizeRaf = null;
+    window.addEventListener('resize', () => {
+      if (resizeRaf) cancelAnimationFrame(resizeRaf);
+      resizeRaf = requestAnimationFrame(() => {
+        resizeRaf = null;
+        if (!document.getElementById('view-play').classList.contains('hidden')) {
+          renderBoard();
+          renderGhost();
+          renderTray();
+        }
+      });
     });
 
     function renderAll() {
@@ -2184,12 +2374,15 @@
       renderStatus();
     }
 
+    const DIFF_STARS = { easy: '★', medium: '★★', hard: '★★★', expert: '★★★★' };
+
     function renderLevelSelector() {
       const container = document.getElementById('level-selector');
       container.innerHTML = '';
       let solvedCount = 0;
+      const d = dict();
 
-      LEVEL_ORDER.forEach(id => {
+      LEVEL_ORDER.forEach((id, idx) => {
         const lvl = LEVELS[id];
         const ltxt = getLevelText(id);
         const ev = evaluateLevel(id);
@@ -2198,30 +2391,33 @@
 
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.onclick = () => selectLevel(id);
-        btn.className = active
-          ? 'text-left p-2.5 rounded-xl border-2 border-[var(--primary)] bg-[var(--card)] shadow-sm transition-all'
-          : 'text-left p-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] opacity-80 hover:opacity-100 transition-all';
+        btn.dataset.levelId = id;
+        btn.onclick = () => selectLevel(id, true);
+        btn.title = `${ltxt.title} — 🧪 ${ltxt.example.name} (PDB: ${lvl.pdb})`;
+        btn.className = `shrink-0 min-w-[122px] lg:min-w-0 snap-start text-left px-1.5 py-1.5 rounded-xl border transition-all ${
+          active
+            ? 'border-2 border-[var(--primary)] bg-[var(--card)] shadow-sm ring-1 ring-[var(--primary)]/20'
+            : 'border-[var(--border)] bg-[var(--card)]/90 opacity-85 hover:opacity-100 hover:border-[var(--primary)]/50'
+        }`;
 
-        const sizeLabel = `${Object.keys(lvl.board).length} ${dict().aaUnit} · ${formatPieces(lvl.pieces.length)}`;
+        const totalAA = Object.keys(lvl.board).length;
+        const cleanTitle = ltxt.shortTitle.replace(/^\d+\.\s*/, '');
         const statusBadge = ev.isPerfect
-          ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold">✓</span>`
-          : `<span class="text-[10px] text-[var(--muted-foreground)]">${sizeLabel}</span>`;
+          ? `<span class="text-[10px] px-1 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold leading-none">✓</span>`
+          : `<span class="text-[9.5px] text-[var(--muted-foreground)] leading-none tabular-nums">${totalAA} ${d.aaUnit}</span>`;
 
         btn.innerHTML = `
           <div class="flex items-center justify-between gap-1">
-            <span class="text-[10px] font-semibold text-[var(--muted-foreground)]">${getLevelDiff(lvl)}</span>
+            <span class="text-[10px] font-bold text-amber-500 dark:text-amber-400 leading-none tracking-tight"><span class="text-[var(--muted-foreground)] mr-0.5">${idx + 1}.</span>${DIFF_STARS[lvl.diffKey] || '★'}</span>
             ${statusBadge}
           </div>
-          <div class="font-semibold text-xs mt-0.5 truncate">${ltxt.shortTitle}</div>
-          <div class="text-[10px] text-[var(--muted-foreground)] mt-0.5 truncate">🧪 ${ltxt.example.name} <span class="font-mono opacity-80">(${lvl.pdb})</span></div>
+          <div class="font-semibold text-[10.5px] mt-1 leading-tight truncate">${cleanTitle}</div>
         `;
         container.appendChild(btn);
       });
 
-      document.getElementById('overall-progress').textContent = dict().progressSolved(solvedCount, LEVEL_ORDER.length);
+      document.getElementById('overall-progress').textContent = d.progressSolved(solvedCount, LEVEL_ORDER.length);
 
-      const d = dict();
       const lvl = LEVELS[currentLevelId];
       const ltxt = getLevelText(currentLevelId);
       const totalAK = Object.keys(lvl.board).length;
@@ -2244,6 +2440,25 @@
       document.getElementById('env-left-label').innerText = ltxt.envLabels.left;
       document.getElementById('env-right-label').innerText = ltxt.envLabels.right;
 
+      // Mobile compact left/right environment cues (only when distinct from generic water sides)
+      const mobileSides = document.getElementById('env-mobile-sides');
+      if (mobileSides) {
+        const leftFlat = ltxt.envLabels.left.replace(/\n+/g, ' ').trim();
+        const rightFlat = ltxt.envLabels.right.replace(/\n+/g, ' ').trim();
+        const sameAsGenericWater = leftFlat === rightFlat && (ltxt.envLabels.top.trim().startsWith(leftFlat) || ltxt.envLabels.bottom.trim().startsWith(leftFlat));
+        if (!sameAsGenericWater && (leftFlat || rightFlat)) {
+          const leftTxt = /^[←→]/.test(leftFlat) || /[←→]$/.test(leftFlat) ? leftFlat : `← ${leftFlat}`;
+          const rightTxt = /^[←→]/.test(rightFlat) || /[←→]$/.test(rightFlat) ? rightFlat : `${rightFlat} →`;
+          mobileSides.innerHTML = `<span>${leftTxt}</span><span class="opacity-40">·</span><span>${rightTxt}</span>`;
+          mobileSides.classList.remove('hidden');
+          mobileSides.classList.add('flex');
+        } else {
+          mobileSides.innerHTML = '';
+          mobileSides.classList.add('hidden');
+          mobileSides.classList.remove('flex');
+        }
+      }
+
       const hasPore = Object.values(lvl.board).some(c => c.zone === 'pore');
       const hasActive = Object.values(lvl.board).some(c => c.zone === 'active');
       document.getElementById('legend-pore').classList.toggle('hidden', !hasPore);
@@ -2258,7 +2473,7 @@
       const lvl = LEVELS[currentLevelId];
       const st = levelState[currentLevelId];
       const cellSize = getCellSize(lvl);
-      const gap = 4;
+      const gap = getBoardGap(lvl);
       const check = findBestPlacement(currentLevelId, selectedPieceId, st.rots[selectedPieceId], hoverCell.r, hoverCell.c);
 
       check.cells.forEach(c => {
@@ -2269,7 +2484,7 @@
         box.style.top = `${c.nr * (cellSize + gap)}px`;
         box.style.width = `${cellSize}px`;
         box.style.height = `${cellSize}px`;
-        box.className = `rounded-lg flex items-center justify-center font-bold text-xs aa-${c.cat} border-2 ${
+        box.className = `${cellSize <= 30 ? 'rounded text-[10px]' : 'rounded-lg text-xs'} flex items-center justify-center font-bold aa-${c.cat} border-2 ${
           check.ok ? 'opacity-80 shadow-md ring-2 ring-emerald-500' : 'opacity-40 ring-2 ring-red-500'
         }`;
         box.textContent = aaLabel(c.aa, c.cat);
@@ -2282,7 +2497,10 @@
       const occ = getOccupiedMap(currentLevelId);
       const grid = document.getElementById('board-grid');
       const cellSize = getCellSize(lvl);
+      const gap = getBoardGap(lvl);
+      const isTinyCell = cellSize <= 30;
 
+      grid.style.gap = `${gap}px`;
       grid.style.gridTemplateColumns = `repeat(${lvl.cols}, ${cellSize}px)`;
       grid.innerHTML = '';
 
@@ -2301,7 +2519,7 @@
           }
 
           const placed = occ[key];
-          el.className = 'relative rounded-lg flex flex-col items-center justify-center cursor-pointer select-none';
+          el.className = `relative ${isTinyCell ? 'rounded' : 'rounded-lg'} flex flex-col items-center justify-center cursor-pointer select-none`;
 
           if (placed) {
             const envOk = placed.env === bCell.env;
@@ -2311,32 +2529,37 @@
             const sameB = occ[`${r + 1},${c}`]?.pid === pid;
             const sameL = occ[`${r},${c - 1}`]?.pid === pid;
             const sameR = occ[`${r},${c + 1}`]?.pid === pid;
-            const outer = '3px solid #111827';
+            const outer = isTinyCell ? '2px solid #111827' : '3px solid #111827';
             const inner = '1px dotted rgba(17,24,39,0.35)';
+            const rad = isTinyCell ? '5px' : '8px';
             el.classList.add(`aa-${placed.cat}`, 'shadow-sm');
             el.style.borderTop = sameT ? inner : outer;
             el.style.borderBottom = sameB ? inner : outer;
             el.style.borderLeft = sameL ? inner : outer;
             el.style.borderRight = sameR ? inner : outer;
-            el.style.borderTopLeftRadius = (!sameT && !sameL) ? '8px' : '2px';
-            el.style.borderTopRightRadius = (!sameT && !sameR) ? '8px' : '2px';
-            el.style.borderBottomLeftRadius = (!sameB && !sameL) ? '8px' : '2px';
-            el.style.borderBottomRightRadius = (!sameB && !sameR) ? '8px' : '2px';
+            el.style.borderTopLeftRadius = (!sameT && !sameL) ? rad : '2px';
+            el.style.borderTopRightRadius = (!sameT && !sameR) ? rad : '2px';
+            el.style.borderBottomLeftRadius = (!sameB && !sameL) ? rad : '2px';
+            el.style.borderBottomRightRadius = (!sameB && !sameR) ? rad : '2px';
             if (!envOk || !reqOk) el.classList.add('cell-invalid-env');
-            el.innerHTML = `
-              <span class="font-bold ${cellSize <= 38 ? 'text-xs' : 'text-sm'} leading-none">${aaLabel(placed.aa, placed.cat)}</span>
-              <span class="text-[8.5px] opacity-80 font-mono leading-none mt-0.5">${placed.pid}</span>
-            `;
+            el.innerHTML = isTinyCell
+              ? `<span class="font-bold text-[10px] leading-none">${aaLabel(placed.aa, placed.cat)}</span>`
+              : `
+                <span class="font-bold ${cellSize <= 38 ? 'text-xs' : 'text-sm'} leading-none">${aaLabel(placed.aa, placed.cat)}</span>
+                <span class="text-[8.5px] opacity-80 font-mono leading-none mt-0.5">${placed.pid}</span>
+              `;
             el.title = !reqOk
               ? dict().tooltipReqActive(bCell.reqAA)
               : `${placed.pid}: ${aaLabel(placed.aa, placed.cat)} (${envOk ? dict().tooltipGoodEnv : dict().tooltipBadEnv})`;
             el.addEventListener('pointerdown', (e) => {
-              if (e.button === 0) startPieceDrag(pid, e, true);
+              if (e.pointerType !== 'mouse' || e.button === 0) startPieceDrag(pid, e, true);
             });
           } else {
             el.classList.add(`cell-${bCell.zone}`);
             const lbl = bCell.zone === 'active' ? 'C*' : (bCell.zone === 'lipid' ? 'F●' : (bCell.zone === 'pore' ? dict().cellTunnel : 'H₂O'));
-            el.innerHTML = `<span class="${bCell.zone === 'active' ? 'text-xs font-extrabold text-purple-600 dark:text-purple-300' : 'text-[9.5px] opacity-55 font-semibold'}">${lbl}</span>`;
+            const activeCls = isTinyCell ? 'text-[10px] font-extrabold text-purple-600 dark:text-purple-300' : 'text-xs font-extrabold text-purple-600 dark:text-purple-300';
+            const zoneCls = isTinyCell ? 'text-[8px] opacity-60 font-semibold leading-none' : 'text-[9.5px] opacity-55 font-semibold leading-none';
+            el.innerHTML = `<span class="${bCell.zone === 'active' ? activeCls : zoneCls}">${lbl}</span>`;
           }
 
           grid.appendChild(el);
@@ -2346,7 +2569,6 @@
       const bondsLayer = document.getElementById('bonds-layer');
       bondsLayer.innerHTML = '';
       const ev = evaluateLevel(currentLevelId);
-      const gap = 4;
       ev.bonds.forEach(bond => {
         const x = ((bond.c1 + bond.c2) / 2 + 0.5) * cellSize + ((bond.c1 + bond.c2) / 2) * gap;
         const y = ((bond.r1 + bond.r2) / 2 + 0.5) * cellSize + ((bond.r1 + bond.r2) / 2) * gap;
@@ -2362,6 +2584,7 @@
     (() => {
       const grid = document.getElementById('board-grid');
       grid.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'touch') return;
         if (dragState && dragState.active) return;
         const cell = getCellFromPoint(e.clientX, e.clientY);
         if (!cell) { if (hoverCell) { hoverCell = null; renderGhost(); } return; }
@@ -2372,27 +2595,31 @@
       });
       grid.addEventListener('pointerleave', () => { if (hoverCell) { hoverCell = null; renderGhost(); } });
       grid.addEventListener('click', (e) => {
+        if (performance.now() < suppressNextClickUntil) return;
         const cell = getCellFromPoint(e.clientX, e.clientY);
         if (cell) handleBoardClick(cell.r, cell.c);
       });
       grid.addEventListener('contextmenu', (e) => { e.preventDefault(); rotateSelected(); });
     })();
 
-    function renderMiniPiece(pid, rot, cellPx = 22) {
+    function renderMiniPiece(pid, rot, cellPx = 20) {
       const cells = transformCells(MASTER_POOL[pid].cells, rot);
       const maxR = Math.max(...cells.map(c => c.r));
       const maxC = Math.max(...cells.map(c => c.c));
+      const span = Math.max(maxR + 1, maxC + 1);
+      const px = span >= 4 ? Math.max(13, Math.floor(cellPx * 0.78)) : cellPx;
+      const fs = px <= 16 ? 'text-[8.5px]' : (px <= 20 ? 'text-[9.5px]' : 'text-[10.5px]');
       const map = {};
       cells.forEach(c => map[`${c.r},${c.c}`] = c);
 
-      let html = `<div class="inline-grid gap-0.5" style="grid-template-columns: repeat(${maxC + 1}, ${cellPx}px);">`;
+      let html = `<div class="inline-grid gap-0.5" style="grid-template-columns: repeat(${maxC + 1}, ${px}px);">`;
       for (let r = 0; r <= maxR; r++) {
         for (let c = 0; c <= maxC; c++) {
           const cell = map[`${r},${c}`];
           if (cell) {
-            html += `<div style="width:${cellPx}px;height:${cellPx}px;" class="rounded border aa-${cell.cat} flex items-center justify-center font-bold text-[10px] leading-none">${aaLabel(cell.aa, cell.cat)}</div>`;
+            html += `<div style="width:${px}px;height:${px}px;" class="rounded border aa-${cell.cat} flex items-center justify-center font-bold ${fs} leading-none">${aaLabel(cell.aa, cell.cat)}</div>`;
           } else {
-            html += `<div style="width:${cellPx}px;height:${cellPx}px;"></div>`;
+            html += `<div style="width:${px}px;height:${px}px;"></div>`;
           }
         }
       }
@@ -2403,11 +2630,54 @@
     function renderTray() {
       const lvl = LEVELS[currentLevelId];
       const st = levelState[currentLevelId];
+      const stage = document.getElementById('play-stage');
+      const dock = document.getElementById('piece-dock');
       const tray = document.getElementById('piece-tray');
+      const pieceCount = lvl.pieces.length;
+      const wideBoard = isWideDesktopBoard(lvl);
+      const vw = window.innerWidth || 1280;
+      const isCompactMobile = vw < 640;
+
+      // Adapt Play Stage & Piece Dock so pieces ALWAYS sit immediately adjacent to the board
+      if (stage && dock) {
+        if (wideBoard) {
+          stage.className = 'rounded-xl bg-[var(--background)]/75 border border-[var(--border)]/80 p-2 sm:p-3 flex flex-col items-center justify-center gap-2 sm:gap-2.5';
+          dock.className = 'w-full max-w-[760px] flex flex-col gap-1.5 sm:gap-2';
+        } else {
+          stage.className = 'rounded-xl bg-[var(--background)]/75 border border-[var(--border)]/80 p-2 sm:p-3 flex flex-col lg:flex-row items-center justify-center gap-2 sm:gap-3 lg:gap-4';
+          const narrowDock = lvl.rows >= 6 || pieceCount <= 3;
+          dock.className = narrowDock
+            ? 'w-full lg:w-[292px] shrink-0 flex flex-col gap-1.5 sm:gap-2'
+            : 'w-full lg:w-[348px] shrink-0 flex flex-col gap-1.5 sm:gap-2';
+        }
+      }
+      const tapHintEl = document.getElementById('tray-tap-hint');
+      if (tapHintEl) {
+        tapHintEl.classList.toggle('hidden', !(wideBoard && vw >= 640));
+      }
+
+      // Dynamic tray column counts (compact 1–2 rows on mobile, tight adjacent block on desktop)
+      let mobileColsCls;
+      if (pieceCount === 4 || pieceCount >= 7) mobileColsCls = 'grid-cols-4';
+      else mobileColsCls = 'grid-cols-3';
+
+      let desktopColsCls;
+      if (wideBoard) {
+        if (pieceCount <= 4) desktopColsCls = 'lg:grid-cols-4';
+        else if (pieceCount === 5) desktopColsCls = 'lg:grid-cols-5';
+        else desktopColsCls = 'lg:grid-cols-6';
+      } else {
+        desktopColsCls = (lvl.rows >= 6 || pieceCount <= 3) ? 'lg:grid-cols-2' : 'lg:grid-cols-3';
+      }
+
+      tray.className = `grid ${mobileColsCls} ${desktopColsCls} gap-1.5 sm:gap-2`;
       tray.innerHTML = '';
 
       document.getElementById('active-piece-label').textContent =
         selectedPieceId ? getPieceName(selectedPieceId) : dict().trayNone;
+
+      const miniPx = isCompactMobile ? (pieceCount >= 7 ? 15 : 17) : 20;
+      const previewMinH = isCompactMobile ? (pieceCount >= 7 ? 'min-h-[48px]' : 'min-h-[54px]') : 'min-h-[60px]';
 
       lvl.pieces.forEach(pid => {
         const isPlaced = Boolean(st.placed[pid]);
@@ -2416,26 +2686,34 @@
 
         const card = document.createElement('button');
         card.type = 'button';
-        card.onclick = () => selectPiece(pid);
+        card.title = `${getPieceName(pid)} (${getPieceShape(pid)})`;
+        card.onclick = () => {
+          if (performance.now() < suppressNextClickUntil) return;
+          selectPiece(pid, true);
+        };
         card.onpointerdown = (e) => startPieceDrag(pid, e, false);
-        card.oncontextmenu = (e) => { e.preventDefault(); selectPiece(pid); rotateSelected(); };
-        card.className = `piece-card cursor-grab active:cursor-grabbing text-left p-2 rounded-xl border flex flex-col justify-between gap-1.5 select-none touch-none ${
+        card.oncontextmenu = (e) => { e.preventDefault(); selectPiece(pid, false); rotateSelected(); };
+        card.className = `piece-card cursor-grab active:cursor-grabbing text-left p-1.5 sm:p-2 rounded-xl border flex flex-col justify-between gap-1 select-none touch-none ${
           isSelected
-            ? 'border-2 border-[var(--primary)] bg-[var(--background)] shadow-md'
+            ? 'border-2 border-[var(--primary)] bg-[var(--card)] shadow-md ring-2 ring-[var(--primary)]/15'
             : isPlaced
-              ? 'border-[var(--border)] bg-[var(--background)] opacity-50'
-              : 'border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)]'
+              ? 'border-[var(--border)] bg-[var(--card)]/70 opacity-50'
+              : 'border-[var(--border)] bg-[var(--card)] hover:border-[var(--primary)]'
         }`;
+
+        const badgeHtml = isPlaced
+          ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold leading-none">✓</span>`
+          : isSelected
+            ? `<span class="text-[10px] px-1.5 py-0.5 rounded bg-[var(--primary)]/15 text-[var(--primary)] font-bold leading-none">↻</span>`
+            : `<span class="hidden sm:inline text-[9.5px] px-1 py-0.5 rounded bg-[var(--background)] border border-[var(--border)] text-[var(--muted-foreground)] truncate max-w-[74px] leading-none">${getPieceShape(pid)}</span>`;
 
         card.innerHTML = `
           <div class="flex items-center justify-between w-full gap-1">
-            <span class="text-xs font-bold">${pid}</span>
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)]">
-              ${isPlaced ? dict().trayOnBoard : getPieceShape(pid)}
-            </span>
+            <span class="text-[11px] sm:text-xs font-bold leading-none">${pid}</span>
+            ${badgeHtml}
           </div>
-          <div class="flex items-center justify-center py-1 min-h-[54px]">
-            ${renderMiniPiece(pid, rot, 22)}
+          <div class="flex items-center justify-center py-0.5 ${previewMinH}">
+            ${renderMiniPiece(pid, rot, miniPx)}
           </div>
         `;
         tray.appendChild(card);
@@ -2486,29 +2764,38 @@
 
       const badge = document.getElementById('status-badge');
       const msg = document.getElementById('status-message');
+      const bar = document.getElementById('status-bar');
+      const nextBtn = document.getElementById('btn-next-level');
+      const hasNext = LEVEL_ORDER.indexOf(currentLevelId) < LEVEL_ORDER.length - 1;
+
+      if (nextBtn) nextBtn.classList.toggle('hidden', !(ev.isPerfect && hasNext));
+      if (bar) {
+        bar.classList.toggle('border-emerald-500/60', ev.isPerfect);
+        bar.classList.toggle('bg-emerald-500/5', ev.isPerfect);
+      }
 
       if (ev.isPerfect) {
         badge.textContent = d.statusPerfectBadge;
-        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400';
+        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold shrink-0 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400';
         const bondText = ev.bonds.length > 0
           ? d.statusBondPrefix(ev.bonds.map(b => b.type === 'SS' ? d.bondSS : d.bondSalt(b.label)).join(', '))
           : '';
         msg.textContent = d.statusPerfectMsg(ev.total, bondText);
       } else if (ev.wrongActive > 0) {
         badge.textContent = d.statusMissingActiveBadge;
-        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-purple-500/20 text-purple-600 dark:text-purple-400';
+        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold shrink-0 bg-purple-500/20 text-purple-600 dark:text-purple-400';
         msg.textContent = d.statusMissingActiveMsg;
       } else if (ev.wrongEnv > 0) {
         badge.textContent = d.statusWrongEnvBadge(ev.wrongEnv);
-        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-red-500/20 text-red-600 dark:text-red-400';
+        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold shrink-0 bg-red-500/20 text-red-600 dark:text-red-400';
         msg.textContent = d.statusWrongEnvMsg;
       } else if (ev.filled > 0) {
         badge.textContent = d.statusInProgressBadge;
-        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-amber-500/20 text-amber-600 dark:text-amber-400';
+        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold shrink-0 bg-amber-500/20 text-amber-600 dark:text-amber-400';
         msg.textContent = d.statusInProgressMsg;
       } else {
         badge.textContent = d.statusReadyBadge;
-        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)]';
+        badge.className = 'px-2.5 py-0.5 rounded-full font-semibold shrink-0 bg-[var(--secondary)] text-[var(--secondary-foreground)]';
         msg.textContent = d.statusReadyMsg;
       }
     }
@@ -3216,8 +3503,8 @@
         const active = btn.getAttribute('data-lang') === currentLang;
         btn.setAttribute('aria-pressed', active ? 'true' : 'false');
         btn.className = active
-          ? 'lang-btn px-2 py-1 rounded-md transition-colors bg-[var(--primary)] text-[var(--primary-foreground)]'
-          : 'lang-btn px-2 py-1 rounded-md transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)]';
+          ? 'lang-btn px-1.5 sm:px-2 py-1 rounded-md transition-colors bg-[var(--primary)] text-[var(--primary-foreground)]'
+          : 'lang-btn px-1.5 sm:px-2 py-1 rounded-md transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)]';
       });
     }
 
@@ -3254,7 +3541,7 @@
     (() => {
       const params = new URLSearchParams(window.location.search);
       const levelParam = params.get('level');
-      selectLevel(levelParam && LEVELS[levelParam] ? levelParam : 'mini');
+      selectLevel(levelParam && LEVELS[levelParam] ? levelParam : 'mini', Boolean(levelParam && LEVELS[levelParam]), true);
       const sizeParam = Number(params.get('size'));
       if (sizeParam === 14 || sizeParam === 20) {
         setPrintCellSize(sizeParam);
