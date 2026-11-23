@@ -79,18 +79,136 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.35);
       transform: translate(-50%, -50%);
     }
+    /* Printable A4 Sheet Styles (true 1:1 14mm x 14mm cells for pieces & boards) */
+    .print-sheet {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 8mm 10mm;
+      margin: 0 auto;
+      background: #ffffff;
+      color: #0f172a;
+      box-sizing: border-box;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 2.5mm;
+    }
+    .print-cell {
+      width: var(--print-cell, 20mm);
+      height: var(--print-cell, 20mm);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .print-piece-grid,
+    .print-board-grid {
+      display: inline-grid;
+      gap: 0;
+      line-height: 0;
+    }
+    .print-board-card {
+      border: 1px solid #cbd5e1;
+      border-radius: 2.5mm;
+      padding: 2mm 2.5mm;
+      background: #ffffff;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .print-piece-card {
+      border: 0.75px dashed #94a3b8;
+      border-radius: 2mm;
+      padding: 1.5mm 2mm 2mm;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2mm;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .print-scale-bar {
+      display: inline-flex;
+      border: 1.5px solid #0f172a;
+      height: 4mm;
+    }
+    .print-scale-bar span {
+      width: var(--print-cell, 20mm);
+      height: 100%;
+      box-sizing: border-box;
+      border-right: 1px solid #0f172a;
+    }
+    .print-scale-bar span:last-child { border-right: none; }
+    .print-scale-bar span:nth-child(odd) { background: #0f172a; }
+    .print-scale-bar span:nth-child(even) { background: #ffffff; }
+
+    @page {
+      size: A4 portrait;
+      margin: 8mm 10mm;
+    }
     @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
       .no-print { display: none !important; }
-      body { background: #ffffff !important; color: #111827 !important; }
-      .print-break { page-break-before: always; }
+      body.print-mode #site-header,
+      body.print-mode #site-legend,
+      body.print-mode #site-footer,
+      body.print-mode #view-play {
+        display: none !important;
+      }
+      body.print-mode #app-container {
+        max-width: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      body.print-mode #view-print {
+        margin: 0 !important;
+      }
+      body.print-mode #print-sheets-scroll {
+        overflow: visible !important;
+        padding: 0 !important;
+      }
+      body.print-mode #print-sheets-container {
+        gap: 0 !important;
+      }
+      .print-sheet {
+        width: 190mm !important;
+        min-height: 274mm !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        break-after: page;
+        page-break-after: always;
+      }
+      .print-sheet:last-child {
+        break-after: auto !important;
+        page-break-after: auto !important;
+      }
     }
   </style>
 </head>
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased min-h-screen">
-  <div class="max-w-6xl mx-auto p-4 md:p-6 space-y-5">
+  <div id="app-container" class="max-w-6xl mx-auto p-4 md:p-6 space-y-5">
 
     <!-- Header -->
-    <header class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[var(--border)]">
+    <header id="site-header" class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[var(--border)]">
       <div>
         <h1 class="text-xl font-bold tracking-tight flex items-center gap-2 flex-wrap">
           <span>🧬</span> Protein Fold'n'Go <span data-i18n="headerSubtitle" class="text-sm font-normal text-[var(--muted-foreground)]">(Proteinové Ubongo)</span>
@@ -129,7 +247,7 @@
     </header>
 
     <!-- Legend -->
-    <section class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3">
+    <section id="site-legend" class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
         <span data-i18n="legendTitle" class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">
           Kódování aminokyselin (barvy + značky pro černobílý tisk)
@@ -304,31 +422,57 @@
       </div>
     </main>
 
-    <!-- PRINT VIEW (A4 Sheet) -->
-    <section id="view-print" class="hidden space-y-6">
-      <div class="flex items-center justify-between gap-3 p-3 rounded-xl bg-[var(--card)] border border-[var(--border)] no-print">
-        <div data-i18n-html="printBanner" class="text-xs">
-          <strong>Tisková šablona (A4):</strong> 10 univerzálních dílků P1–P10 a 3 klasické desky (Globulární enzym, Membránový kanál, Dlouhá fibrila).
+    <!-- PRINT VIEW (A4 Sheets — 1:1 20mm / 14mm scale, all 8 boards + all 36 pieces) -->
+    <section id="view-print" class="hidden space-y-4">
+      <div class="p-3.5 rounded-xl bg-[var(--card)] border border-[var(--border)] space-y-3 no-print">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="Print scope">
+            <button type="button" data-scope="all" onclick="setPrintScope('all')" data-i18n="printScopeAll"
+              class="print-scope-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]">
+              Vše (8 desek + 36 dílků)
+            </button>
+            <button type="button" data-scope="classic" onclick="setPrintScope('classic')" data-i18n="printScopeClassic"
+              class="print-scope-btn px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-90">
+              Klasická sada (3 desky + P1–P10)
+            </button>
+            <button type="button" data-scope="boards" onclick="setPrintScope('boards')" data-i18n="printScopeBoards"
+              class="print-scope-btn px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-90">
+              Jen podklady (8 desek)
+            </button>
+            <button type="button" data-scope="pieces" onclick="setPrintScope('pieces')" data-i18n="printScopePieces"
+              class="print-scope-btn px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-90">
+              Jen dílky (36)
+            </button>
+          </div>
+          <button onclick="window.print()" data-i18n="btnPrint"
+            class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 shrink-0">
+            🖨️ Vytisknout / PDF
+          </button>
         </div>
-        <button onclick="window.print()" data-i18n="btnPrint"
-          class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] shrink-0">
-          🖨️ Vytisknout / PDF
-        </button>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[var(--border)] text-xs">
+          <div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="Cell size">
+            <span data-i18n="printSizeLabel" class="text-[var(--muted-foreground)] font-medium mr-1">Velikost dílků:</span>
+            <button type="button" data-size="20" onclick="setPrintCellSize(20)" data-i18n="printSize20"
+              class="print-size-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] ring-1 ring-[var(--primary)]">
+              20 mm (2 cm · Velké)
+            </button>
+            <button type="button" data-size="14" onclick="setPrintCellSize(14)" data-i18n="printSize14"
+              class="print-size-btn px-2.5 py-1 rounded-md text-xs text-[var(--muted-foreground)] hover:bg-[var(--background)] border border-transparent hover:border-[var(--border)]">
+              14 mm (Kompaktní)
+            </button>
+          </div>
+          <p id="print-scale-hint" class="text-xs text-[var(--muted-foreground)]"></p>
+        </div>
       </div>
 
-      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-3">
-        <h2 data-i18n="printSectionPieces" class="font-bold text-base">1. Základní sada 10 peptidových dílků P1–P10 (pouze otáčet!)</h2>
-        <div id="print-pieces-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2"></div>
-      </div>
-
-      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-5 print-break">
-        <h2 data-i18n="printSectionBoards" class="font-bold text-base">2. Zadávací karty — 3 klasické proteiny</h2>
-        <div id="print-boards-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+      <div id="print-sheets-scroll" class="overflow-x-auto pb-2">
+        <div id="print-sheets-container" class="flex flex-col gap-6 items-center"></div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="pt-5 mt-6 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)] space-y-2.5">
+    <footer id="site-footer" class="pt-5 mt-6 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)] space-y-2.5">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span class="font-semibold text-[var(--foreground)]">🧬 Protein Fold'n'Go</span>
@@ -401,10 +545,25 @@
         trayOnBoard: "Na desce",
         btnRotate: "↻ Otočit (R)",
         didacticHeading: "Biochemický kontext",
-        printBanner: "<strong>Tisková šablona (A4):</strong> 10 univerzálních dílků P1–P10 a 3 klasické desky (Globulární enzym, Membránový kanál, Dlouhá fibrila).",
+        printScopeAll: "Vše (8 desek + 36 dílků)",
+        printScopeClassic: "Klasická sada (3 desky + P1–P10)",
+        printScopeBoards: "Jen podklady (8 desek)",
+        printScopePieces: "Jen dílky (36)",
+        printSizeLabel: "Velikost políčka:",
+        printSize20: "20 mm (2 cm · Velké)",
+        printSize14: "14 mm (Kompaktní)",
+        printScaleHint: (mm) => `Měřítko 1:1 — každé políčko má přesně ${mm} × ${mm} mm na deskách i na dílcích. Pro tisk na A4 nastavte měřítko 100 % (skutečná velikost).`,
         btnPrint: "🖨️ Vytisknout / PDF",
-        printSectionPieces: "1. Základní sada 10 peptidových dílků P1–P10 (pouze otáčet!)",
-        printSectionBoards: "2. Zadávací karty — 3 klasické proteiny",
+        printSheetPiecesCore: "Dílky k vystřižení — Základní sada P1–P10 (úrovně 3–5)",
+        printSheetPiecesRange: (range, list) => `Dílky k vystřižení — Úrovně ${range} (${list})`,
+        printSheetPiecesSingle: (num, list) => `Dílky k vystřižení — Úroveň ${num} (${list})`,
+        printSheetBoardsClassic: "Zadávací podklady — 3 klasické proteiny (úrovně 3–5)",
+        printSheetBoardsRange: (range) => `Zadávací podklady — Úrovně ${range}`,
+        printSheetBoardsSingle: (num) => `Zadávací podklad — Úroveň ${num}`,
+        printRotateOnlyRule: "✂️ Vystřihněte podél silné černé čáry · Dílky pouze otáčejte (nepřeklápějte naruby!)",
+        printScaleCheck: (n, mm) => `Kontrola měřítka (${n} × ${mm} mm = ${n * mm} mm)`,
+        printLegendCompactTitle: "Kódování aminokyselin a zón (včetně značek pro ČB tisk)",
+        printPageLabel: (i, n) => `A4 · Strana ${i} / ${n}`,
         printUsePieces: "Použij dílky:",
         cellTunnel: "tunel",
         cellPore: "pór",
@@ -540,10 +699,25 @@
         trayOnBoard: "On board",
         btnRotate: "↻ Rotate (R)",
         didacticHeading: "Biochemical context",
-        printBanner: "<strong>Printable template (A4):</strong> 10 universal pieces P1–P10 and 3 classic boards (Globular Enzyme, Membrane Channel, Long Fibril).",
+        printScopeAll: "All (8 boards + 36 pieces)",
+        printScopeClassic: "Classic set (3 boards + P1–P10)",
+        printScopeBoards: "Boards only (8)",
+        printScopePieces: "Pieces only (36)",
+        printSizeLabel: "Cell size:",
+        printSize20: "20 mm (2 cm · Large)",
+        printSize14: "14 mm (Compact)",
+        printScaleHint: (mm) => `1:1 scale — every square is exactly ${mm} × ${mm} mm on both boards and pieces. For A4 printing, set scale to 100% (actual size).`,
         btnPrint: "🖨️ Print / PDF",
-        printSectionPieces: "1. Core set of 10 peptide pieces P1–P10 (rotate only!)",
-        printSectionBoards: "2. Puzzle boards — 3 classic proteins",
+        printSheetPiecesCore: "Cut-out pieces — Core set P1–P10 (levels 3–5)",
+        printSheetPiecesRange: (range, list) => `Cut-out pieces — Levels ${range} (${list})`,
+        printSheetPiecesSingle: (num, list) => `Cut-out pieces — Level ${num} (${list})`,
+        printSheetBoardsClassic: "Puzzle boards — 3 classic proteins (levels 3–5)",
+        printSheetBoardsRange: (range) => `Puzzle boards — Levels ${range}`,
+        printSheetBoardsSingle: (num) => `Puzzle board — Level ${num}`,
+        printRotateOnlyRule: "✂️ Cut along the bold black outline · Rotate pieces only (do not flip upside down!)",
+        printScaleCheck: (n, mm) => `Scale check (${n} × ${mm} mm = ${n * mm} mm)`,
+        printLegendCompactTitle: "Amino acid & zone coding (includes B&W print symbols)",
+        printPageLabel: (i, n) => `A4 · Page ${i} / ${n}`,
         printUsePieces: "Use pieces:",
         cellTunnel: "tunnel",
         cellPore: "pore",
@@ -679,10 +853,25 @@
         trayOnBoard: "Auf dem Brett",
         btnRotate: "↻ Drehen (R)",
         didacticHeading: "Biochemischer Kontext",
-        printBanner: "<strong>Druckvorlage (A4):</strong> 10 universelle Teile P1–P10 und 3 klassische Bretter (Globuläres Enzym, Membrankanal, Lange Fibrille).",
+        printScopeAll: "Alle (8 Bretter + 36 Teile)",
+        printScopeClassic: "Klassisch (3 Bretter + P1–P10)",
+        printScopeBoards: "Nur Bretter (8)",
+        printScopePieces: "Nur Teile (36)",
+        printSizeLabel: "Feldgröße:",
+        printSize20: "20 mm (2 cm · Groß)",
+        printSize14: "14 mm (Kompakt)",
+        printScaleHint: (mm) => `Maßstab 1:1 — jedes Feld misst exakt ${mm} × ${mm} mm auf Brettern und Teilen. Beim A4-Druck Maßstab 100 % (tatsächliche Größe) wählen.`,
         btnPrint: "🖨️ Drucken / PDF",
-        printSectionPieces: "1. Basisset aus 10 Peptid-Teilen P1–P10 (nur drehen!)",
-        printSectionBoards: "2. Aufgabenkarten — 3 klassische Proteine",
+        printSheetPiecesCore: "Ausschneide-Teile — Basisset P1–P10 (Level 3–5)",
+        printSheetPiecesRange: (range, list) => `Ausschneide-Teile — Level ${range} (${list})`,
+        printSheetPiecesSingle: (num, list) => `Ausschneide-Teile — Level ${num} (${list})`,
+        printSheetBoardsClassic: "Aufgabenbretter — 3 klassische Proteine (Level 3–5)",
+        printSheetBoardsRange: (range) => `Aufgabenbretter — Level ${range}`,
+        printSheetBoardsSingle: (num) => `Aufgabenbrett — Level ${num}`,
+        printRotateOnlyRule: "✂️ Entlang der dicken schwarzen Linie ausschneiden · Teile nur drehen (nicht umdrehen!)",
+        printScaleCheck: (n, mm) => `Maßstabskontrolle (${n} × ${mm} mm = ${n * mm} mm)`,
+        printLegendCompactTitle: "Aminosäure- & Zonencodierung (inkl. Symbole für S/W-Druck)",
+        printPageLabel: (i, n) => `A4 · Seite ${i} / ${n}`,
         printUsePieces: "Verwende Teile:",
         cellTunnel: "Tunnel",
         cellPore: "Pore",
@@ -818,10 +1007,25 @@
         trayOnBoard: "Sur le plateau",
         btnRotate: "↻ Pivoter (R)",
         didacticHeading: "Contexte biochimique",
-        printBanner: "<strong>Modèle imprimable (A4) :</strong> 10 pièces universelles P1–P10 et 3 plateaux classiques (Enzyme globulaire, Canal membranaire, Longue fibrille).",
+        printScopeAll: "Tout (8 plateaux + 36 pièces)",
+        printScopeClassic: "Classique (3 plateaux + P1–P10)",
+        printScopeBoards: "Plateaux seuls (8)",
+        printScopePieces: "Pièces seules (36)",
+        printSizeLabel: "Taille des cases :",
+        printSize20: "20 mm (2 cm · Grand)",
+        printSize14: "14 mm (Compact)",
+        printScaleHint: (mm) => `Échelle 1:1 — chaque case mesure exactement ${mm} × ${mm} mm sur les plateaux et les pièces. Pour l'impression A4, réglez l'échelle sur 100 % (taille réelle).`,
         btnPrint: "🖨️ Imprimer / PDF",
-        printSectionPieces: "1. Jeu de base de 10 pièces peptidiques P1–P10 (rotation uniquement !)",
-        printSectionBoards: "2. Cartes défis — 3 protéines classiques",
+        printSheetPiecesCore: "Pièces à découper — Jeu de base P1–P10 (niveaux 3–5)",
+        printSheetPiecesRange: (range, list) => `Pièces à découper — Niveaux ${range} (${list})`,
+        printSheetPiecesSingle: (num, list) => `Pièces à découper — Niveau ${num} (${list})`,
+        printSheetBoardsClassic: "Plateaux défis — 3 protéines classiques (niveaux 3–5)",
+        printSheetBoardsRange: (range) => `Plateaux défis — Niveaux ${range}`,
+        printSheetBoardsSingle: (num) => `Plateau défi — Niveau ${num}`,
+        printRotateOnlyRule: "✂️ Découpez le long du contour noir épais · Faites pivoter uniquement (ne retournez pas !)",
+        printScaleCheck: (n, mm) => `Contrôle d'échelle (${n} × ${mm} mm = ${n * mm} mm)`,
+        printLegendCompactTitle: "Codage des acides aminés et zones (symboles N&B inclus)",
+        printPageLabel: (i, n) => `A4 · Page ${i} / ${n}`,
         printUsePieces: "Utilisez les pièces :",
         cellTunnel: "tunnel",
         cellPore: "pore",
@@ -1469,10 +1673,12 @@
       const btnPlay = document.getElementById('btn-mode-play');
       const btnPrint = document.getElementById('btn-mode-print');
       if (mode === 'play') {
+        document.body.classList.remove('print-mode');
         playEl.classList.remove('hidden'); printEl.classList.add('hidden');
         btnPlay.className = 'px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]';
         btnPrint.className = 'px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90';
       } else {
+        document.body.classList.add('print-mode');
         playEl.classList.add('hidden'); printEl.classList.remove('hidden');
         btnPrint.className = 'px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]';
         btnPlay.className = 'px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:opacity-90';
@@ -2042,46 +2248,622 @@
       }
     }
 
+    let printScope = 'all'; // 'all' | 'classic' | 'boards' | 'pieces'
+    let printCellMm = 20;   // 20 (Large 2cm Ubongo standard) | 14 (Compact)
+
+    function setPrintScope(scope) {
+      if (!['all', 'classic', 'boards', 'pieces'].includes(scope)) return;
+      printScope = scope;
+      document.querySelectorAll('.print-scope-btn').forEach(btn => {
+        const active = btn.getAttribute('data-scope') === printScope;
+        btn.className = active
+          ? 'print-scope-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--primary)] text-[var(--primary-foreground)]'
+          : 'print-scope-btn px-2.5 py-1.5 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:opacity-90';
+      });
+      renderPrintSheet();
+    }
+
+    function setPrintCellSize(mm) {
+      const val = Number(mm);
+      if (val !== 20 && val !== 14) return;
+      printCellMm = val;
+      document.querySelectorAll('.print-size-btn').forEach(btn => {
+        const active = Number(btn.getAttribute('data-size')) === printCellMm;
+        btn.className = active
+          ? 'print-size-btn px-2.5 py-1 rounded-md text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] ring-1 ring-[var(--primary)]'
+          : 'print-size-btn px-2.5 py-1 rounded-md text-xs text-[var(--muted-foreground)] hover:bg-[var(--background)] border border-transparent hover:border-[var(--border)]';
+      });
+      updatePrintScaleHint();
+      renderPrintSheet();
+    }
+
+    function updatePrintScaleHint() {
+      const el = document.getElementById('print-scale-hint');
+      if (el) el.textContent = dict().printScaleHint(printCellMm);
+    }
+
+    function renderPrintPiece(pid) {
+      // Landscape-orient (rotate-only, never mirror) so every piece fits cleanly in <= 2x3
+      let cells = transformCells(MASTER_POOL[pid].cells, 0);
+      let maxR = Math.max(...cells.map(c => c.r));
+      let maxC = Math.max(...cells.map(c => c.c));
+      if (maxR > maxC) {
+        cells = transformCells(MASTER_POOL[pid].cells, 1);
+        maxR = Math.max(...cells.map(c => c.r));
+        maxC = Math.max(...cells.map(c => c.c));
+      }
+      const map = {};
+      cells.forEach(c => { map[`${c.r},${c.c}`] = c; });
+
+      const isLarge = printCellMm >= 20;
+      const aaFs = isLarge ? '15pt' : '11pt';
+      const idFs = isLarge ? '8pt' : '6.5pt';
+      const outer = isLarge ? '2.2px solid #0f172a' : '2px solid #0f172a';
+      const inner = '0.85px dashed rgba(15, 23, 42, 0.45)';
+      let html = `<div class="print-piece-grid" style="grid-template-columns: repeat(${maxC + 1}, ${printCellMm}mm);">`;
+      for (let r = 0; r <= maxR; r++) {
+        for (let c = 0; c <= maxC; c++) {
+          const cell = map[`${r},${c}`];
+          if (!cell) {
+            html += `<div class="print-cell" style="visibility:hidden;"></div>`;
+            continue;
+          }
+          const bT = map[`${r - 1},${c}`] ? inner : outer;
+          const bB = map[`${r + 1},${c}`] ? inner : outer;
+          const bL = map[`${r},${c - 1}`] ? inner : outer;
+          const bR = map[`${r},${c + 1}`] ? inner : outer;
+          html += `
+            <div class="print-cell aa-${cell.cat}" style="border-top:${bT};border-bottom:${bB};border-left:${bL};border-right:${bR};">
+              <span style="font-size:${aaFs};font-weight:800;line-height:1;">${aaLabel(cell.aa, cell.cat)}</span>
+              <span style="font-size:${idFs};font-family:ui-monospace,SFMono-Regular,Menlo,monospace;opacity:0.82;margin-top:1mm;line-height:1;">${pid}</span>
+            </div>
+          `;
+        }
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function renderPrintPieceCard(pid, compact = false) {
+      const minH = printCellMm * 2 + (compact ? 0 : 0.5);
+      const padStyle = compact ? 'padding:1mm 1.8mm 1.2mm;gap:0.8mm;' : '';
+      return `
+        <div class="print-piece-card" style="${padStyle}">
+          <div style="font-size:7.3pt;line-height:1.1;text-align:center;color:#0f172a;">
+            <strong>${getPieceName(pid)}</strong>
+            <span style="color:#475569;">(${getPieceShape(pid)})</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;min-height:${minH}mm;">
+            ${renderPrintPiece(pid)}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPrintBoardGrid(boardMap, rows, cols) {
+      const d = dict();
+      const isLarge = printCellMm >= 20;
+      const outer = isLarge ? '2px solid #1e293b' : '1.8px solid #1e293b';
+      const innerFor = (zone) => {
+        if (zone === 'lipid') return '0.8px dashed rgba(180, 83, 9, 0.55)';
+        if (zone === 'pore') return '0.8px dashed rgba(4, 120, 87, 0.55)';
+        if (zone === 'active') return '1.6px dashed #7e22ce';
+        return '0.8px dashed rgba(2, 132, 199, 0.5)';
+      };
+      const bgFor = (zone) => {
+        if (zone === 'lipid') return 'rgba(245, 158, 11, 0.18)';
+        if (zone === 'pore') return 'rgba(16, 185, 129, 0.2)';
+        if (zone === 'active') return 'rgba(168, 85, 247, 0.24)';
+        return 'rgba(56, 189, 248, 0.14)';
+      };
+
+      let gridHtml = `<div class="print-board-grid" style="grid-template-columns: repeat(${cols}, ${printCellMm}mm);">`;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const cell = boardMap[`${r},${c}`];
+          if (!cell) {
+            gridHtml += `<div class="print-cell" style="visibility:hidden;"></div>`;
+            continue;
+          }
+          const inStyle = innerFor(cell.zone);
+          const bT = boardMap[`${r - 1},${c}`] ? inStyle : outer;
+          const bB = boardMap[`${r + 1},${c}`] ? inStyle : outer;
+          const bL = boardMap[`${r},${c - 1}`] ? inStyle : outer;
+          const bR = boardMap[`${r},${c + 1}`] ? inStyle : outer;
+          let labelHtml;
+          if (cell.zone === 'active') {
+            labelHtml = `<span style="font-size:${isLarge ? '14pt' : '10.5pt'};font-weight:800;color:#6b21a8;">C*</span>`;
+          } else if (cell.zone === 'lipid') {
+            labelHtml = `<span style="font-size:${isLarge ? '11.5pt' : '8.5pt'};font-weight:700;color:#78350f;">F●</span>`;
+          } else if (cell.zone === 'pore') {
+            labelHtml = `<span style="font-size:${isLarge ? '10pt' : '7.5pt'};font-weight:700;color:#065f46;">${d.cellPore}</span>`;
+          } else {
+            labelHtml = `<span style="font-size:${isLarge ? '10.5pt' : '8pt'};font-weight:600;color:#0369a1;">H₂O</span>`;
+          }
+          gridHtml += `
+            <div class="print-cell" style="background:${bgFor(cell.zone)};border-top:${bT};border-bottom:${bB};border-left:${bL};border-right:${bR};">
+              ${labelHtml}
+            </div>
+          `;
+        }
+      }
+      gridHtml += '</div>';
+      return gridHtml;
+    }
+
+    function renderPrintBoardCard(id) {
+      const d = dict();
+      const lvl = LEVELS[id];
+      const ltxt = getLevelText(id);
+      const classicPieces = BASE_VARIANTS[id].pieces;
+      const totalAA = Object.keys(lvl.board).length;
+      const gridWidthMm = lvl.cols * printCellMm;
+      const isTightWidth = gridWidthMm >= 155;
+
+      const gridHtml = renderPrintBoardGrid(lvl.board, lvl.rows, lvl.cols);
+      const sideStyle = isTightWidth
+        ? 'font-size:6.8pt;font-weight:600;color:#475569;line-height:1.15;max-width:12mm;white-space:pre-line;'
+        : 'font-size:7.5pt;font-weight:600;color:#475569;line-height:1.2;max-width:22mm;white-space:pre-line;';
+
+      return `
+        <div class="print-board-card" style="${isTightWidth ? 'padding:2mm 1.2mm;' : ''}">
+          <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:1.5mm;margin-bottom:1.5mm;">
+            <div style="display:flex;align-items:center;gap:1.5mm;flex-wrap:wrap;">
+              <span style="font-size:9.5pt;font-weight:800;color:#0f172a;">${ltxt.title}</span>
+              <span style="font-size:7pt;font-weight:600;padding:0.4mm 1.8mm;border-radius:999px;background:#e2e8f0;color:#1e293b;">${getLevelDiff(lvl)} · ${totalAA} ${d.aaUnit}</span>
+            </div>
+            <div style="font-size:8pt;color:#334155;">
+              ${d.printUsePieces} <strong style="color:#0f172a;">${classicPieces.join(', ')}</strong>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:1mm;padding:0.8mm 0;">
+            <div style="font-size:7.5pt;font-weight:600;color:#475569;">${ltxt.envLabels.top}</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:${isTightWidth ? '1mm' : '2.5mm'};">
+              <div style="${sideStyle}text-align:right;">${ltxt.envLabels.left}</div>
+              ${gridHtml}
+              <div style="${sideStyle}text-align:left;">${ltxt.envLabels.right}</div>
+            </div>
+            <div style="font-size:7.5pt;font-weight:600;color:#475569;">${ltxt.envLabels.bottom}</div>
+          </div>
+
+          <div style="font-size:7.5pt;color:#334155;text-align:center;line-height:1.3;margin-top:1mm;">
+            ${ltxt.desc}
+          </div>
+        </div>
+      `;
+    }
+
+    // Special 90° CW vertical rendering for L7 Tandem (12x2 = 240mm x 40mm at 20mm) — pure rotation preserves chirality!
+    function renderPrintVerticalTandemCard() {
+      const d = dict();
+      const lvl = LEVELS.tandem;
+      const ltxt = getLevelText('tandem');
+      const classicPieces = BASE_VARIANTS.tandem.pieces;
+      const totalAA = Object.keys(lvl.board).length;
+
+      // Rotate 90° CW: (r, c) -> (nr = c, nc = lvl.rows - 1 - r)
+      const rotBoard = {};
+      Object.entries(lvl.board).forEach(([k, val]) => {
+        const [r, c] = k.split(',').map(Number);
+        rotBoard[`${c},${lvl.rows - 1 - r}`] = val;
+      });
+      const gridHtml = renderPrintBoardGrid(rotBoard, lvl.cols, lvl.rows);
+
+      return `
+        <div class="print-board-card" style="display:flex;gap:5mm;align-items:stretch;padding:2.5mm 3mm;">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1mm;flex-shrink:0;">
+            <div style="font-size:7.5pt;font-weight:700;color:#475569;">N ↓</div>
+            <div style="display:flex;align-items:center;gap:1.5mm;">
+              <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:7.5pt;font-weight:600;color:#475569;text-align:center;">${ltxt.envLabels.bottom}</div>
+              ${gridHtml}
+              <div style="writing-mode:vertical-rl;font-size:7.5pt;font-weight:600;color:#475569;text-align:center;">${ltxt.envLabels.top}</div>
+            </div>
+            <div style="font-size:7.5pt;font-weight:700;color:#475569;">↓ C</div>
+          </div>
+
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:3mm;padding:2mm 0;">
+            <div style="display:flex;flex-direction:column;gap:2.5mm;">
+              <div>
+                <div style="font-size:11pt;font-weight:800;color:#0f172a;line-height:1.2;">${ltxt.title}</div>
+                <div style="margin-top:1.5mm;display:flex;flex-wrap:wrap;align-items:center;gap:2mm;">
+                  <span style="font-size:7.5pt;font-weight:600;padding:0.5mm 2mm;border-radius:999px;background:#e2e8f0;color:#1e293b;">${getLevelDiff(lvl)} · ${totalAA} ${d.aaUnit} · ${formatPieces(classicPieces.length)}</span>
+                </div>
+              </div>
+              <div style="font-size:8.5pt;color:#0f172a;padding:2mm 2.5mm;border-radius:2mm;background:#f8fafc;border:0.75px solid #cbd5e1;">
+                ${d.printUsePieces} <strong>${classicPieces.join(', ')}</strong>
+              </div>
+              <p style="font-size:8.5pt;color:#334155;line-height:1.45;margin:0;">${ltxt.desc}</p>
+              <div style="padding:2.5mm;border-radius:2mm;background:#f8fafc;border:0.75px solid #e2e8f0;">
+                <div style="font-size:8pt;font-weight:700;color:#0f172a;margin-bottom:1mm;">🔬 ${d.didacticHeading}</div>
+                <p style="font-size:7.8pt;color:#475569;line-height:1.45;margin:0;">${ltxt.didactic}</p>
+              </div>
+            </div>
+            <div style="border:0.75px solid #cbd5e1;border-radius:2mm;padding:2mm;background:#f8fafc;font-size:7.2pt;display:flex;flex-direction:column;gap:1.5mm;">
+              <div style="font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#475569;">${d.printLegendCompactTitle}</div>
+              <div style="display:flex;align-items:center;gap:1.5mm;"><span class="aa-F" style="width:7mm;height:5mm;border-radius:1mm;border:1px solid #b45309;display:inline-flex;align-items:center;justify-content:center;font-weight:800;">L●</span> <strong>${d.aaHydrophobic}</strong> · L, V, I, F, A, M</div>
+              <div style="display:flex;align-items:center;gap:1.5mm;"><span class="aa-P" style="width:7mm;height:5mm;border-radius:1mm;border:1px solid #047857;display:inline-flex;align-items:center;justify-content:center;font-weight:800;">S</span> <strong>${d.aaPolar}</strong> · S, T, N, Q</div>
+              <div style="display:flex;align-items:center;gap:1.5mm;"><span class="aa-POS" style="width:7mm;height:5mm;border-radius:1mm;border:1px solid #1d4ed8;display:inline-flex;align-items:center;justify-content:center;font-weight:800;">K+</span> <strong>${d.aaPositive}</strong> · K, R (+/−)</div>
+              <div style="display:flex;align-items:center;gap:1.5mm;"><span class="aa-NEG" style="width:7mm;height:5mm;border-radius:1mm;border:1px solid #b91c1c;display:inline-flex;align-items:center;justify-content:center;font-weight:800;">D−</span> <strong>${d.aaNegative}</strong> · D, E (+/−)</div>
+              <div style="display:flex;align-items:center;gap:1.5mm;"><span class="aa-S" style="width:7mm;height:5mm;border-radius:1mm;border:1px solid #7e22ce;display:inline-flex;align-items:center;justify-content:center;font-weight:800;">C*</span> <strong>${d.aaSpecial}</strong> · C* (S–S), G°, P°</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPrintCompactLegend(includeZones = false) {
+      const d = dict();
+      const zonesHtml = includeZones ? `
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4mm;margin-top:1.5mm;padding-top:1.5mm;border-top:0.5px solid #cbd5e1;font-size:7pt;color:#334155;">
+          <span style="display:inline-flex;align-items:center;gap:1.2mm;"><span style="width:3.5mm;height:3.5mm;border-radius:0.8mm;background:rgba(56,189,248,0.18);border:1px dashed #0284c7;display:inline-block;"></span> ${d.zoneWater}</span>
+          <span style="display:inline-flex;align-items:center;gap:1.2mm;"><span style="width:3.5mm;height:3.5mm;border-radius:0.8mm;background:rgba(245,158,11,0.22);border:1px dashed #b45309;display:inline-block;"></span> ${d.zoneLipid}</span>
+          <span style="display:inline-flex;align-items:center;gap:1.2mm;"><span style="width:3.5mm;height:3.5mm;border-radius:0.8mm;background:rgba(16,185,129,0.22);border:1px dashed #047857;display:inline-block;"></span> ${d.zonePore}</span>
+          <span style="display:inline-flex;align-items:center;gap:1.2mm;"><span style="width:3.5mm;height:3.5mm;border-radius:0.8mm;background:rgba(168,85,247,0.24);border:1.2px dashed #7e22ce;display:inline-block;"></span> ${d.zoneActive}</span>
+        </div>
+      ` : '';
+
+      return `
+        <div style="border:0.75px solid #cbd5e1;border-radius:2mm;padding:1.8mm 2.2mm;background:#f8fafc;">
+          <div style="font-size:6.8pt;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#475569;margin-bottom:1.2mm;">${d.printLegendCompactTitle}</div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1.5mm;font-size:6.8pt;line-height:1.2;">
+            <div style="display:flex;align-items:center;gap:1.2mm;">
+              <span class="aa-F" style="width:6.5mm;height:5mm;border-radius:1mm;border:1px solid #b45309;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">L●</span>
+              <div><strong>${d.aaHydrophobic}</strong><div style="color:#475569;">L,V,I,F,A,M</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:1.2mm;">
+              <span class="aa-P" style="width:6.5mm;height:5mm;border-radius:1mm;border:1px solid #047857;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">S</span>
+              <div><strong>${d.aaPolar}</strong><div style="color:#475569;">S,T,N,Q</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:1.2mm;">
+              <span class="aa-POS" style="width:6.5mm;height:5mm;border-radius:1mm;border:1px solid #1d4ed8;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">K+</span>
+              <div><strong>${d.aaPositive}</strong><div style="color:#475569;">K,R (+/−)</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:1.2mm;">
+              <span class="aa-NEG" style="width:6.5mm;height:5mm;border-radius:1mm;border:1px solid #b91c1c;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">D−</span>
+              <div><strong>${d.aaNegative}</strong><div style="color:#475569;">D,E (+/−)</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:1.2mm;">
+              <span class="aa-S" style="width:6.5mm;height:5mm;border-radius:1mm;border:1px solid #7e22ce;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">C*</span>
+              <div><strong>${d.aaSpecial}</strong><div style="color:#475569;">C* (S–S), G°, P°</div></div>
+            </div>
+          </div>
+          ${zonesHtml}
+        </div>
+      `;
+    }
+
+    function renderPrintSheetHeader(title, pageIdx, totalPages, subtitle = '') {
+      const d = dict();
+      return `
+        <div style="border-bottom:1.5px solid #0f172a;padding-bottom:1.2mm;display:flex;align-items:baseline;justify-content:space-between;gap:2mm;">
+          <div>
+            <div style="font-size:9.8pt;font-weight:800;color:#0f172a;line-height:1.15;">🧬 Protein Fold'n'Go — ${title}</div>
+            ${subtitle ? `<div style="font-size:7.3pt;color:#475569;margin-top:0.5mm;">${subtitle}</div>` : ''}
+          </div>
+          <div style="font-size:7.5pt;font-weight:700;color:#334155;white-space:nowrap;">${d.printPageLabel(pageIdx, totalPages)}</div>
+        </div>
+      `;
+    }
+
+    function renderPrintSheetFooter(showScale = false, showFullAck = false) {
+      const d = dict();
+      const segs = printCellMm >= 20 ? 4 : 5;
+      const scaleBlock = showScale ? `
+        <div style="display:flex;align-items:center;gap:2mm;white-space:nowrap;">
+          <div class="print-scale-bar">${'<span></span>'.repeat(segs)}</div>
+          <span style="font-size:6.5pt;font-weight:600;color:#334155;">${d.printScaleCheck(segs, printCellMm)}</span>
+        </div>
+      ` : `
+        <div style="font-size:7pt;color:#475569;">
+          <strong>Protein Fold'n'Go</strong> · ${d.footerAuthorLabel} Karel Berka (karelberka.github.io) · 🧬 BioDobble (karelberka.github.io/bio-dobble)
+        </div>
+      `;
+
+      const ackLine = showFullAck ? `
+        <div style="font-size:6.5pt;color:#475569;line-height:1.3;margin-top:1mm;">
+          This work was supported in part by complimentary access to Google Antigravity (antigravity.google) and Gemini 4 Argon, Carbon, Neon and Hydrogen to accelerate scientific workflows.
+        </div>
+      ` : '';
+
+      return `
+        <div style="border-top:0.75px solid #cbd5e1;padding-top:1mm;">
+          <div style="display:flex;flex-wrap:${showScale ? 'nowrap' : 'wrap'};align-items:center;justify-content:space-between;gap:2mm;">
+            ${scaleBlock}
+            <div style="font-size:6.5pt;color:#475569;white-space:nowrap;">karelberka.github.io/protein-foldngo</div>
+          </div>
+          ${ackLine}
+        </div>
+      `;
+    }
+
+    function renderPrintPieceGroup(titleText, pids, cols = 2, compact = false) {
+      return `
+        <div>
+          <div style="font-size:${compact ? '7.8pt' : '8.2pt'};font-weight:800;color:#0f172a;margin-bottom:${compact ? '0.8mm' : '1.2mm'};">${titleText}</div>
+          <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:${compact ? '1.2mm' : '1.8mm'};">
+            ${pids.map(pid => renderPrintPieceCard(pid, compact)).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPrintDidacticBox(levelId) {
+      const d = dict();
+      const ltxt = getLevelText(levelId);
+      return `
+        <div style="border:0.75px solid #cbd5e1;border-radius:2.5mm;padding:2.5mm 3mm;background:#f8fafc;">
+          <div style="font-size:8pt;font-weight:700;color:#0f172a;margin-bottom:1mm;">🔬 ${d.didacticHeading} — ${ltxt.shortTitle}</div>
+          <p style="font-size:7.8pt;color:#334155;line-height:1.45;margin:0;">${ltxt.didactic}</p>
+        </div>
+      `;
+    }
+
     function renderPrintSheet() {
       const d = dict();
-      const pGrid = document.getElementById('print-pieces-grid');
-      pGrid.innerHTML = '';
-      ['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10'].forEach(pid => {
-        const box = document.createElement('div');
-        box.className = 'border border-dashed border-[var(--border)] rounded-lg p-2.5 flex flex-col items-center gap-2';
-        box.innerHTML = `
-          <div class="text-xs font-bold">${pid} <span class="font-normal text-[10px] text-[var(--muted-foreground)]">(${getPieceShape(pid)})</span></div>
-          ${renderMiniPiece(pid, 0, 26)}
-        `;
-        pGrid.appendChild(box);
-      });
+      const container = document.getElementById('print-sheets-container');
+      if (!container) return;
+      container.style.setProperty('--print-cell', `${printCellMm}mm`);
+      updatePrintScaleHint();
 
-      const bList = document.getElementById('print-boards-list');
-      bList.innerHTML = '';
-      ['globular', 'membrane', 'fibril'].forEach(id => {
-        const lvl = LEVELS[id];
-        const ltxt = getLevelText(id);
-        const classicPieces = BASE_VARIANTS[id].pieces;
-        const card = document.createElement('div');
-        card.className = 'border border-[var(--border)] rounded-xl p-3 flex flex-col items-center gap-2';
-        let gridHtml = `<div class="inline-grid gap-0.5" style="grid-template-columns: repeat(${lvl.cols}, 28px);">`;
-        for (let r = 0; r < lvl.rows; r++) {
-          for (let c = 0; c < lvl.cols; c++) {
-            const cell = lvl.board[`${r},${c}`];
-            if (!cell) gridHtml += `<div style="width:28px;height:28px;"></div>`;
-            else gridHtml += `<div style="width:28px;height:28px;" class="rounded cell-${cell.zone} flex items-center justify-center text-[9px] font-bold opacity-85">${cell.zone === 'lipid' ? 'F●' : cell.zone === 'pore' ? d.cellPore : 'H₂O'}</div>`;
-          }
+      const sheets = [];
+      const includeCorePieces = printScope === 'all' || printScope === 'classic' || printScope === 'pieces';
+      const includeCampaignPieces = printScope === 'all' || printScope === 'pieces';
+      const includeAllBoards = printScope === 'all' || printScope === 'boards';
+      const includeClassicBoards = printScope === 'classic';
+
+      if (printCellMm >= 20) {
+        // =====================================================================
+        // LARGE 20 mm (2.0 cm × 2.0 cm) UBONGO STANDARD A4 PACKING
+        // =====================================================================
+        if (includeCorePieces) {
+          // 10 core pieces in 2x5 grid fill ~95% of Page 1 at 20mm!
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesCore, idx, total, d.printRotateOnlyRule)}
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1.8mm;">
+                  ${['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10'].map(pid => renderPrintPieceCard(pid, false)).join('')}
+                </div>
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
+            </div>
+          `);
         }
-        gridHtml += '</div>';
 
-        card.innerHTML = `
-          <div class="font-bold text-sm text-center">${ltxt.title}</div>
-          <div class="text-[11px] text-[var(--muted-foreground)] text-center">${d.printUsePieces} <strong>${classicPieces.join(', ')}</strong></div>
-          <div class="py-2">${gridHtml}</div>
-          <div class="text-[11px] text-[var(--muted-foreground)] text-center">${ltxt.desc}</div>
-        `;
-        bList.appendChild(card);
-      });
+        if (includeCampaignPieces) {
+          // Pieces Sheet 2: L1 (M1-M3) + L2 (R1-R4) + Legend
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2.5mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesRange('1–2', 'M1–M3, R1–R4'), idx, total, d.printRotateOnlyRule)}
+                ${renderPrintCompactLegend(false)}
+                ${renderPrintPieceGroup(`${getLevelText('mini').title} — M1–M3`, ['M1','M2','M3'], 2, false)}
+                ${renderPrintPieceGroup(`${getLevelText('ribbon').title} — R1–R4`, ['R1','R2','R3','R4'], 2, false)}
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
+            </div>
+          `);
+
+          // Pieces Sheet 3: L6 (T1-T6) + L7 (D1-D6, compact 5-row fit at exact 20mm!)
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:1.4mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesRange('6–7', 'T1–T6, D1–D6'), idx, total, d.printRotateOnlyRule)}
+                ${renderPrintPieceGroup(`${getLevelText('tunnel_cys').title} — T1–T6`, ['T1','T2','T3','T4','T5','T6'], 2, true)}
+                <div>
+                  <div style="font-size:7.8pt;font-weight:800;color:#0f172a;margin-bottom:0.8mm;">${getLevelText('tandem').title} — D1–D6</div>
+                  <div style="display:flex;flex-direction:column;gap:1.2mm;">
+                    <div style="display:grid;grid-template-columns:1.35fr 1.35fr 1fr;gap:1.2mm;">
+                      ${['D1','D2','D3'].map(pid => renderPrintPieceCard(pid, true)).join('')}
+                    </div>
+                    <div style="display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:1.2mm;">
+                      ${['D5','D4','D6'].map(pid => renderPrintPieceCard(pid, true)).join('')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
+            </div>
+          `);
+
+          // Pieces Sheet 4: L8 (X1-X7) + Legend
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2.5mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesSingle('8', 'X1–X7'), idx, total, d.printRotateOnlyRule)}
+                ${renderPrintPieceGroup(`${getLevelText('transporter').title} — X1–X7`, ['X1','X2','X3','X4','X5','X6','X7'], 2, false)}
+                ${renderPrintCompactLegend(true)}
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
+            </div>
+          `);
+        }
+
+        if (includeClassicBoards) {
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('3–4'), idx, total)}
+                ${renderPrintCompactLegend(true)}
+                ${renderPrintBoardCard('globular')}
+                ${renderPrintBoardCard('membrane')}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
+            </div>
+          `);
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsSingle('5'), idx, total)}
+                ${renderPrintBoardCard('fibril')}
+                ${renderPrintDidacticBox('fibril')}
+                ${renderPrintCompactLegend(true)}
+              </div>
+              ${renderPrintSheetFooter(false, true)}
+            </div>
+          `);
+        }
+
+        if (includeAllBoards) {
+          // Boards 1-2
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('1–2'), idx, total)}
+                ${renderPrintCompactLegend(true)}
+                ${renderPrintBoardCard('mini')}
+                ${renderPrintBoardCard('ribbon')}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
+            </div>
+          `);
+          // Boards 3-4
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('3–4'), idx, total)}
+                ${renderPrintBoardCard('globular')}
+                ${renderPrintBoardCard('membrane')}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
+            </div>
+          `);
+          // Boards 5-6
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('5–6'), idx, total)}
+                ${renderPrintBoardCard('fibril')}
+                ${renderPrintBoardCard('tunnel_cys')}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
+            </div>
+          `);
+          // Board 7 (vertical 240mm x 40mm + didactic & legend panel)
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsSingle('7'), idx, total)}
+                ${renderPrintVerticalTandemCard()}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
+            </div>
+          `);
+          // Board 8 + didactic + full legend + acknowledgement footer
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsSingle('8'), idx, total)}
+                ${renderPrintBoardCard('transporter')}
+                ${renderPrintDidacticBox('transporter')}
+                ${renderPrintCompactLegend(true)}
+              </div>
+              ${renderPrintSheetFooter(false, true)}
+            </div>
+          `);
+        }
+      } else {
+        // =====================================================================
+        // COMPACT 14 mm (1.4 cm × 1.4 cm) A4 PACKING (6 pages total / 2 classic)
+        // =====================================================================
+        if (includeCorePieces) {
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2.5mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesCore, idx, total, d.printRotateOnlyRule)}
+                ${renderPrintCompactLegend(false)}
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:2.2mm;margin-top:0.5mm;">
+                  ${['P1','P2','P3','P4','P5','P6','P7','P8','P9','P10'].map(pid => renderPrintPieceCard(pid, false)).join('')}
+                </div>
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
+            </div>
+          `);
+        }
+
+        if (includeCampaignPieces) {
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesRange('1, 2, 6', 'M1–M3, R1–R4, T1–T6'), idx, total, d.printRotateOnlyRule)}
+                ${renderPrintPieceGroup(`${getLevelText('mini').title} — M1–M3`, ['M1','M2','M3'], 3)}
+                ${renderPrintPieceGroup(`${getLevelText('ribbon').title} — R1–R4`, ['R1','R2','R3','R4'], 2)}
+                ${renderPrintPieceGroup(`${getLevelText('tunnel_cys').title} — T1–T6`, ['T1','T2','T3','T4','T5','T6'], 3)}
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
+            </div>
+          `);
+
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3.5mm;">
+                ${renderPrintSheetHeader(d.printSheetPiecesRange('7–8', 'D1–D6, X1–X7'), idx, total, d.printRotateOnlyRule)}
+                ${renderPrintPieceGroup(`${getLevelText('tandem').title} — D1–D6`, ['D1','D2','D3','D4','D5','D6'], 3)}
+                ${renderPrintPieceGroup(`${getLevelText('transporter').title} — X1–X7`, ['X1','X2','X3','X4','X5','X6','X7'], 3)}
+                ${renderPrintCompactLegend(true)}
+              </div>
+              ${renderPrintSheetFooter(true, idx === total)}
+            </div>
+          `);
+        }
+
+        if (includeClassicBoards) {
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsClassic, idx, total)}
+                ${renderPrintBoardCard('globular')}
+                ${renderPrintBoardCard('membrane')}
+                ${renderPrintBoardCard('fibril')}
+              </div>
+              ${renderPrintSheetFooter(false, true)}
+            </div>
+          `);
+        }
+
+        if (includeAllBoards) {
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:2.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('1–3'), idx, total)}
+                ${renderPrintCompactLegend(true)}
+                ${renderPrintBoardCard('mini')}
+                ${renderPrintBoardCard('ribbon')}
+                ${renderPrintBoardCard('globular')}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
+            </div>
+          `);
+
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('4–6'), idx, total)}
+                ${renderPrintBoardCard('membrane')}
+                ${renderPrintBoardCard('fibril')}
+                ${renderPrintBoardCard('tunnel_cys')}
+              </div>
+              ${renderPrintSheetFooter(false, idx === total)}
+            </div>
+          `);
+
+          sheets.push((idx, total) => `
+            <div class="print-sheet">
+              <div style="display:flex;flex-direction:column;gap:3.5mm;">
+                ${renderPrintSheetHeader(d.printSheetBoardsRange('7–8'), idx, total)}
+                ${renderPrintBoardCard('tandem')}
+                ${renderPrintBoardCard('transporter')}
+                ${renderPrintCompactLegend(true)}
+              </div>
+              ${renderPrintSheetFooter(false, true)}
+            </div>
+          `);
+        }
+      }
+
+      const totalPages = sheets.length;
+      container.innerHTML = sheets.map((renderFn, i) => renderFn(i + 1, totalPages)).join('');
     }
 
     function applyStaticTranslations() {
@@ -2109,6 +2891,7 @@
         const key = el.getAttribute('data-i18n-html');
         if (typeof d[key] === 'string') el.innerHTML = d[key];
       });
+      updatePrintScaleHint();
 
       document.querySelectorAll('#lang-switcher .lang-btn').forEach(btn => {
         const active = btn.getAttribute('data-lang') === currentLang;
@@ -2150,6 +2933,20 @@
     currentLang = resolveInitialLanguage();
     applyStaticTranslations();
     selectLevel('mini');
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const sizeParam = Number(params.get('size'));
+      if (sizeParam === 14 || sizeParam === 20) {
+        setPrintCellSize(sizeParam);
+      }
+      const scopeParam = params.get('scope');
+      if (scopeParam && ['all', 'classic', 'boards', 'pieces'].includes(scopeParam)) {
+        setPrintScope(scopeParam);
+      }
+      if (params.get('view') === 'print') {
+        setViewMode('print');
+      }
+    })();
   </script>
 </body>
 </html>
