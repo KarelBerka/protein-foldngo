@@ -19,14 +19,14 @@ Interaktivní biochemická skládačka ve stylu deskové hry **Ubongo**, ve kter
   9. ⭐⭐⭐⭐ **Cytochrom P450** *(26 AK, 6 dílků, 6×7)* — periferní membránový enzym s N-terminální transmembránovou kotvou + kanálem k hemovému **aktivnímu místu `C*`** · 🧪 **Cytochrom P450 (CYP51, plná délka)** ([PDB: `4LXJ`](https://www.rcsb.org/structure/4LXJ))
 - **4 jazykové verze:** čeština (`CZ`), angličtina (`EN`), němčina (`DE`) a francouzština (`FR`).
 - **4 předpřipravené varianty (A–D) + generátor `🎲 Jiná kombinace`** pro nekonečnou znovuhratelnost u každého typu proteinu.
-- **Pouze otáčení (bez zrcadlového překlápění)** — přetahování myší (Drag & Drop), magnetické přicvakávání, pravý klik / klávesa `R` pro otočení.
+- **Responzivní rozhraní pro počítač i mobil (pouze otáčení bez zrcadlového překlápění)** — dílky přímo u herní plochy, přetahování myší i prstem (Drag & Drop s magnetickým přicvakáváním), ťuknutí na vybraný dílek / tlačítko `↻` / pravý klik / klávesa `R` pro otočení o 90°.
 - **Tisková A4 šablona pro výuku v měřítku 1:1 (`20 × 20 mm` velké dílky / `14 × 14 mm` kompaktní)** — všech 9 podkladů a všech 42 dílků k vystřižení (včetně výběru rozsahu tisku, kontrolního pravítka `80 mm` / `70 mm` a značek `●`, `+`, `−`, `*`, `°` pro černobílý tisk).
 
 ## Barevné a symbolické kódování aminokyselin
 
 | Skupina | Barva / značka | Kódy | Chování při skládání |
 |---|---|---|---|
-| **Hydrofobní (nepolární)** | 🟨 žlutá (`●`) | `L●, V●, I●, F●, A●, M●` | Jádro proteinu, lipidová membrána, osa fibrily (`F●`) |
+| **Hydrofobní (nepolární)** | 🟨 žlutá (`●`) | `L●, V●, I●, F●, A●, M●` | Jádro proteinu, lipidová membrána, osa fibrily (`olej●`) |
 | **Polární bez náboje** | 🟩 zelená | `S, T, N, Q` | Vodný povrch a polární tunel / pór |
 | **Kladně nabité (+)** | 🟦 modrá (`+`) | `K+, R+` | Vodné prostředí; tvoří **solný můstek** s `−` |
 | **Záporně nabité (−)** | 🟥 červená (`−`) | `D−, E−` | Vodné prostředí; tvoří **solný můstek** s `+` |
