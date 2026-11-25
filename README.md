@@ -26,7 +26,7 @@ Interaktivní biochemická skládačka ve stylu deskové hry **Ubongo**, ve kter
 
 | Skupina | Barva / značka | Kódy | Chování při skládání |
 |---|---|---|---|
-| **Hydrofobní (nepolární)** | 🟨 žlutá (`●`) | `L●, V●, I●, F●, A●, M●` | Jádro proteinu, lipidová membrána, osa fibrily (`F●`) |
+| **Hydrofobní (nepolární)** | 🟨 žlutá (`●`) | `L●, V●, I●, F●, A●, M●` | Jádro proteinu, lipidová membrána, osa fibrily (`olej●`) |
 | **Polární bez náboje** | 🟩 zelená | `S, T, N, Q` | Vodný povrch a polární tunel / pór |
 | **Kladně nabité (+)** | 🟦 modrá (`+`) | `K+, R+` | Vodné prostředí; tvoří **solný můstek** s `−` |
 | **Záporně nabité (−)** | 🟥 červená (`−`) | `D−, E−` | Vodné prostředí; tvoří **solný můstek** s `+` |

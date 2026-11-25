@@ -396,7 +396,7 @@
             <span class="w-3.5 h-3.5 rounded cell-water inline-block"></span> <span data-i18n="zoneWater">Voda (H₂O)</span>
           </span>
           <span class="flex items-center gap-1">
-            <span class="w-3.5 h-3.5 rounded cell-lipid inline-block"></span> <span data-i18n="zoneLipid">Hydrofobní jádro / lipidy (F●)</span>
+            <span class="w-3.5 h-3.5 rounded cell-lipid inline-block"></span> <span data-i18n="zoneLipid">Hydrofobní jádro / lipidy (olej●)</span>
           </span>
           <span id="legend-pore" class="flex items-center gap-1 hidden">
             <span class="w-3.5 h-3.5 rounded cell-pore inline-block"></span> <span data-i18n="zonePore">Polární pór / tunel</span>
@@ -573,7 +573,7 @@
         btnRandomVariant: "🎲 Jiná kombinace",
         customVariant: "🎲 Vlastní",
         zoneWater: "Voda (H₂O)",
-        zoneLipid: "Hydrofobní jádro / lipidy (F●)",
+        zoneLipid: "Hydrofobní jádro / lipidy (olej●)",
         zonePore: "Polární pór / tunel",
         zoneActive: "Aktivní místo (vyžaduje <strong>C*</strong>!)",
         evalTitle: "Biochemické hodnocení struktury",
@@ -611,6 +611,7 @@
         printLegendCompactTitle: "Kódování aminokyselin a zón (včetně značek pro ČB tisk)",
         printPageLabel: (i, n) => `A4 · Strana ${i} / ${n}`,
         printUsePieces: "Použij dílky:",
+        cellLipid: "olej●",
         cellTunnel: "tunel",
         cellPore: "pór",
         tooltipReqActive: (aa) => `Aktivní místo vyžaduje ${aa}*!`,
@@ -661,18 +662,18 @@
           ribbon: {
             shortTitle: "2. Amfipatická páska",
             title: "📏 2. Amfipatická páska (Kostky za sebou)",
-            desc: "Slož 4 dílky do dlouhého pásu 8×2: horní hrana směřuje do vody (H₂O), dolní tvoří souvislé hydrofobní rozhraní (F●).",
+            desc: "Slož 4 dílky do dlouhého pásu 8×2: horní hrana směřuje do vody (H₂O), dolní tvoří souvislé hydrofobní rozhraní (olej●).",
             didactic: "Amfipatické β-řetězce a α-helixy mají jednu stranu hydrofilní a druhou hydrofobní — takové „kostky za sebou“ se pak snadno přikládají na povrch membrány nebo k sobě navzájem.",
             example: {
               name: "Melitin (včelí jed)",
               note: "Klasický 26-aminokyselinový amfipatický α-helix: jedna strana šroubovice je polární a kladně nabitá (do vody), zatímco protější hydrofobní strana se zanořuje do lipidové membrány."
             },
-            envLabels: { top: "💧 Vodná strana (H₂O)", bottom: "🧈 Hydrofobní rozhraní (F●)", left: "N →", right: "→ C" }
+            envLabels: { top: "💧 Vodná strana (H₂O)", bottom: "🧈 Hydrofobní rozhraní (olej●)", left: "N →", right: "→ C" }
           },
           globular: {
             shortTitle: "3. Globulární enzym",
             title: "🫧 3. Globulární enzym",
-            desc: "Okolo celého proteinu je voda. Slož 5 peptidových dílků tak, aby všech 8 hydrofobních AK (●) bylo uvnitř jádra (F●).",
+            desc: "Okolo celého proteinu je voda. Slož 5 peptidových dílků tak, aby všech 8 hydrofobních AK (●) bylo uvnitř jádra (olej●).",
             didactic: "Jednoznačné řešení (až na 180° otočení) vždy vytvoří solný můstek K+ (P5) ↔ D− (P7) a disulfidický můstek C* (P6) ↔ C* (P4).",
             example: {
               name: "Lysozym (vaječný bílek)",
@@ -683,7 +684,7 @@
           membrane: {
             shortTitle: "4. Membránový kanál",
             title: "🧱 4. Membránový kanál",
-            desc: "Boky v lipidové dvojvrstvě musí být hydrofobní (F●), hlavičky ve vodě hydrofilní — a středem vede hydrofilní pór!",
+            desc: "Boky v lipidové dvojvrstvě musí být hydrofobní (olej●), hlavičky ve vodě hydrofilní — a středem vede hydrofilní pór!",
             didactic: "Centrální pór vždy vystýlá čtveřice S (P9) – D− (P10) – R+ (P8) – T (P8) se stabilizačním solným můstkem D−/R+ uvnitř kanálu.",
             example: {
               name: "Akvaporin-1 (AQP1)",
@@ -694,7 +695,7 @@
           fibril: {
             shortTitle: "5. Dlouhá fibrila",
             title: "🧵 5. Dlouhá fibrila",
-            desc: "Středem vlákna prochází souvislá hydrofobní osa (8× F●), horní a dolní okraj chrání hydrofilní aminokyseliny.",
+            desc: "Středem vlákna prochází souvislá hydrofobní osa (8× olej●), horní a dolní okraj chrání hydrofilní aminokyseliny.",
             didactic: "Hydrofobní osa („sterický zip“) drží fibrilární podjednotky u sebe (kolagen, keratin) a povrch stabilizuje solný můstek E− (P3) ↔ R+ (P8).",
             example: {
               name: "Amyloid-β(1–42) fibrila",
@@ -716,18 +717,18 @@
           tandem: {
             shortTitle: "7. Dvou-doménový řetězec",
             title: "🔗 7. Tandemová dvou-doména (Bloky za sebou)",
-            desc: "Dlouhý modulární řetězec 12×2: dva oddělené hydrofobní bloky (2× 4 F●) spojené hydrofilním kloubem uprostřed!",
+            desc: "Dlouhý modulární řetězec 12×2: dva oddělené hydrofobní bloky (2× 4 olej●) spojené hydrofilním kloubem uprostřed!",
             didactic: "Vícedoménové proteiny vznikají opakováním modulů za sebou (např. imunoglobulinové nebo ankyrinové domény) propojených ohebným polárním linkerem — zde navíc kloub zpevňuje disulfidický můstek C*–C* (D3–D4)!",
             example: {
               name: "Lidská protilátka IgG1",
               note: "Modulární vícedoménová stavba: opakující se imunoglobulinové domény s hydrofobním jádrem spojuje ohebná polární kloubová oblast zpevněná disulfidickými můstky (C–C)."
             },
-            envLabels: { top: "💧 Hydrofilní povrch obou domén (H₂O)", bottom: "🧈 Blok 1 (F●) · 💧 Kloub · 🧈 Blok 2 (F●)", left: "N →", right: "→ C" }
+            envLabels: { top: "💧 Hydrofilní povrch obou domén (H₂O)", bottom: "🧈 Blok 1 (olej●) · 💧 Kloub · 🧈 Blok 2 (olej●)", left: "N →", right: "→ C" }
           },
           transporter: {
             shortTitle: "8. Velký transportér",
             title: "🏛️ 8. Velký membránový transportér (Široký tunel + C* senzor)",
-            desc: "7 dílků do 7×4 komplexu! Boky drží v lipidové dvojvrstvě (F●), středem vede široký 3-sloupcový polární tunel a uprostřed sedí redoxní senzor C*!",
+            desc: "7 dílků do 7×4 komplexu! Boky drží v lipidové dvojvrstvě (olej●), středem vede široký 3-sloupcový polární tunel a uprostřed sedí redoxní senzor C*!",
             didactic: "Velké membránové póry a transportéry (např. poriny nebo ABC transportéry) potřebují širokou polární dutinu pro průchod větších metabolitů a citlivé cysteinové zbytky (C*) uvnitř kanálu často fungují jako redoxní spínače.",
             example: {
               name: "Mitochondriální porin VDAC1",
@@ -779,7 +780,7 @@
         btnRandomVariant: "🎲 Random set",
         customVariant: "🎲 Custom",
         zoneWater: "Water (H₂O)",
-        zoneLipid: "Hydrophobic core / lipids (F●)",
+        zoneLipid: "Hydrophobic core / lipids (oil●)",
         zonePore: "Polar pore / tunnel",
         zoneActive: "Active site (requires <strong>C*</strong>!)",
         evalTitle: "Biochemical structure evaluation",
@@ -817,6 +818,7 @@
         printLegendCompactTitle: "Amino acid & zone coding (includes B&W print symbols)",
         printPageLabel: (i, n) => `A4 · Page ${i} / ${n}`,
         printUsePieces: "Use pieces:",
+        cellLipid: "oil●",
         cellTunnel: "tunnel",
         cellPore: "pore",
         tooltipReqActive: (aa) => `Active site requires ${aa}*!`,
@@ -867,18 +869,18 @@
           ribbon: {
             shortTitle: "2. Amphipathic Ribbon",
             title: "📏 2. Amphipathic Ribbon (Blocks in a Row)",
-            desc: "Assemble 4 pieces into an 8×2 strip: the top edge faces water (H₂O), while the bottom forms a continuous hydrophobic interface (F●).",
+            desc: "Assemble 4 pieces into an 8×2 strip: the top edge faces water (H₂O), while the bottom forms a continuous hydrophobic interface (oil●).",
             didactic: "Amphipathic β-strands and α-helices have one hydrophilic face and one hydrophobic face — allowing them to rest on a membrane surface or pack neatly against each other.",
             example: {
               name: "Melittin (bee venom)",
               note: "A textbook 26-residue amphipathic α-helix: one face carries polar and positively charged residues facing water, while the opposite hydrophobic face inserts into lipid bilayers."
             },
-            envLabels: { top: "💧 Aqueous face (H₂O)", bottom: "🧈 Hydrophobic interface (F●)", left: "N →", right: "→ C" }
+            envLabels: { top: "💧 Aqueous face (H₂O)", bottom: "🧈 Hydrophobic interface (oil●)", left: "N →", right: "→ C" }
           },
           globular: {
             shortTitle: "3. Globular Enzyme",
             title: "🫧 3. Globular Enzyme",
-            desc: "Water surrounds the entire protein. Arrange 5 peptide pieces so that all 8 hydrophobic amino acids (●) are buried inside the core (F●).",
+            desc: "Water surrounds the entire protein. Arrange 5 peptide pieces so that all 8 hydrophobic amino acids (●) are buried inside the core (oil●).",
             didactic: "The unique solution (up to a 180° rotation) always forms a K+ (P5) ↔ D− (P7) salt bridge and a C* (P6) ↔ C* (P4) disulfide bridge.",
             example: {
               name: "Lysozyme (egg white)",
@@ -889,7 +891,7 @@
           membrane: {
             shortTitle: "4. Membrane Channel",
             title: "🧱 4. Membrane Channel",
-            desc: "The sides embedded in the lipid bilayer must be hydrophobic (F●), the caps in water hydrophilic — with a hydrophilic pore running through the center!",
+            desc: "The sides embedded in the lipid bilayer must be hydrophobic (oil●), the caps in water hydrophilic — with a hydrophilic pore running through the center!",
             didactic: "The central pore is always lined by S (P9) – D− (P10) – R+ (P8) – T (P8), stabilized by an internal D−/R+ salt bridge inside the channel.",
             example: {
               name: "Aquaporin-1 (AQP1)",
@@ -900,7 +902,7 @@
           fibril: {
             shortTitle: "5. Long Fibril",
             title: "🧵 5. Long Fibril",
-            desc: "A continuous hydrophobic spine (8× F●) runs along the core of the fiber, while hydrophilic amino acids protect the top and bottom surfaces.",
+            desc: "A continuous hydrophobic spine (8× oil●) runs along the core of the fiber, while hydrophilic amino acids protect the top and bottom surfaces.",
             didactic: "A hydrophobic core (\"steric zipper\") holds fibrillar subunits together (as in collagen or keratin), while an E− (P3) ↔ R+ (P8) salt bridge stabilizes the surface.",
             example: {
               name: "Amyloid-β(1–42) fibril",
@@ -922,18 +924,18 @@
           tandem: {
             shortTitle: "7. Two-Domain Chain",
             title: "🔗 7. Tandem Two-Domain (Blocks in a Row)",
-            desc: "A long 12×2 modular chain: two separate hydrophobic blocks (2× 4 F●) joined by a hydrophilic hinge in the middle!",
+            desc: "A long 12×2 modular chain: two separate hydrophobic blocks (2× 4 oil●) joined by a hydrophilic hinge in the middle!",
             didactic: "Multi-domain proteins are built from repeating modules in tandem (e.g., immunoglobulin or ankyrin domains) connected by a flexible polar linker — here reinforced by a C*–C* disulfide bridge (D3–D4)!",
             example: {
               name: "Human IgG1 antibody",
               note: "A modular multi-domain architecture: repeating immunoglobulin domains with hydrophobic cores are linked by a flexible polar hinge region reinforced by disulfide bridges (C–C)."
             },
-            envLabels: { top: "💧 Hydrophilic surface of both domains (H₂O)", bottom: "🧈 Block 1 (F●) · 💧 Hinge · 🧈 Block 2 (F●)", left: "N →", right: "→ C" }
+            envLabels: { top: "💧 Hydrophilic surface of both domains (H₂O)", bottom: "🧈 Block 1 (oil●) · 💧 Hinge · 🧈 Block 2 (oil●)", left: "N →", right: "→ C" }
           },
           transporter: {
             shortTitle: "8. Large Transporter",
             title: "🏛️ 8. Large Membrane Transporter (Wide Tunnel + C* Sensor)",
-            desc: "7 pieces forming a 7×4 complex! The flanks anchor in the lipid bilayer (F●), a wide 3-column polar tunnel runs through the middle, and a C* redox sensor sits at its center!",
+            desc: "7 pieces forming a 7×4 complex! The flanks anchor in the lipid bilayer (oil●), a wide 3-column polar tunnel runs through the middle, and a C* redox sensor sits at its center!",
             didactic: "Large membrane pores and transporters (e.g., porins or ABC transporters) need a wide polar cavity to pass larger metabolites, and reactive cysteines (C*) inside the channel often act as redox switches.",
             example: {
               name: "Mitochondrial porin VDAC1",
@@ -985,7 +987,7 @@
         btnRandomVariant: "🎲 Neue Kombination",
         customVariant: "🎲 Zufällig",
         zoneWater: "Wasser (H₂O)",
-        zoneLipid: "Hydrophober Kern / Lipide (F●)",
+        zoneLipid: "Hydrophober Kern / Lipide (Öl●)",
         zonePore: "Polarer Kanal / Tunnel",
         zoneActive: "Aktives Zentrum (erfordert <strong>C*</strong>!)",
         evalTitle: "Biochemische Strukturbewertung",
@@ -1023,6 +1025,7 @@
         printLegendCompactTitle: "Aminosäure- & Zonencodierung (inkl. Symbole für S/W-Druck)",
         printPageLabel: (i, n) => `A4 · Seite ${i} / ${n}`,
         printUsePieces: "Verwende Teile:",
+        cellLipid: "Öl●",
         cellTunnel: "Tunnel",
         cellPore: "Pore",
         tooltipReqActive: (aa) => `Aktives Zentrum erfordert ${aa}*!`,
@@ -1073,18 +1076,18 @@
           ribbon: {
             shortTitle: "2. Amphipathisches Band",
             title: "📏 2. Amphipathisches Band (Blöcke in Reihe)",
-            desc: "Füge 4 Teile zu einem 8×2-Streifen zusammen: Die obere Kante zeigt ins Wasser (H₂O), die untere bildet eine durchgehende hydrophobe Grenzfläche (F●).",
+            desc: "Füge 4 Teile zu einem 8×2-Streifen zusammen: Die obere Kante zeigt ins Wasser (H₂O), die untere bildet eine durchgehende hydrophobe Grenzfläche (Öl●).",
             didactic: "Amphipathische β-Stränge und α-Helices besitzen eine hydrophile und eine hydrophobe Seite – so lagern sie sich leicht an Membranoberflächen oder aneinander an.",
             example: {
               name: "Melittin (Bienengift)",
               note: "Eine klassische amphipathische α-Helix aus 26 Aminosäuren: Eine Seite trägt polare und positiv geladene Reste zum Wasser hin, während die hydrophobe Gegenseite in Lipidmembranen eintaucht."
             },
-            envLabels: { top: "💧 Wässrige Seite (H₂O)", bottom: "🧈 Hydrophobe Grenzfläche (F●)", left: "N →", right: "→ C" }
+            envLabels: { top: "💧 Wässrige Seite (H₂O)", bottom: "🧈 Hydrophobe Grenzfläche (Öl●)", left: "N →", right: "→ C" }
           },
           globular: {
             shortTitle: "3. Globuläres Enzym",
             title: "🫧 3. Globuläres Enzym",
-            desc: "Das gesamte Protein ist von Wasser umgeben. Ordne 5 Peptid-Teile so an, dass alle 8 hydrophoben Aminosäuren (●) im Inneren des Kerns (F●) liegen.",
+            desc: "Das gesamte Protein ist von Wasser umgeben. Ordne 5 Peptid-Teile so an, dass alle 8 hydrophoben Aminosäuren (●) im Inneren des Kerns (Öl●) liegen.",
             didactic: "Die eindeutige Lösung (bis auf eine 180°-Drehung) bildet stets eine Salzbrücke K+ (P5) ↔ D− (P7) sowie eine Disulfidbrücke C* (P6) ↔ C* (P4).",
             example: {
               name: "Lysozym (Hühnereiweiß)",
@@ -1095,7 +1098,7 @@
           membrane: {
             shortTitle: "4. Membrankanal",
             title: "🧱 4. Membrankanal",
-            desc: "Die Seiten in der Lipiddoppelschicht müssen hydrophob (F●) sein, die Ränder im Wasser hydrophil – und durch die Mitte verläuft eine hydrophile Pore!",
+            desc: "Die Seiten in der Lipiddoppelschicht müssen hydrophob (Öl●) sein, die Ränder im Wasser hydrophil – und durch die Mitte verläuft eine hydrophile Pore!",
             didactic: "Die zentrale Pore wird stets von S (P9) – D− (P10) – R+ (P8) – T (P8) ausgekleidet und durch eine D−/R+-Salzbrücke im Inneren des Kanals stabilisiert.",
             example: {
               name: "Aquaporin-1 (AQP1)",
@@ -1106,7 +1109,7 @@
           fibril: {
             shortTitle: "5. Lange Fibrille",
             title: "🧵 5. Lange Fibrille",
-            desc: "Durch die Mitte der Faser zieht sich eine durchgehende hydrophobe Achse (8× F●), während hydrophile Aminosäuren Ober- und Unterseite schützen.",
+            desc: "Durch die Mitte der Faser zieht sich eine durchgehende hydrophobe Achse (8× Öl●), während hydrophile Aminosäuren Ober- und Unterseite schützen.",
             didactic: "Die hydrophobe Achse („sterischer Reißverschluss“) hält fibrilläre Untereinheiten zusammen (wie bei Kollagen oder Keratin), und eine Salzbrücke E− (P3) ↔ R+ (P8) stabilisiert die Oberfläche.",
             example: {
               name: "Amyloid-β(1–42)-Fibrille",
@@ -1128,18 +1131,18 @@
           tandem: {
             shortTitle: "7. Zweidomänen-Kette",
             title: "🔗 7. Tandem-Zweidomäne (Blöcke in Reihe)",
-            desc: "Eine lange modulare 12×2-Kette: zwei getrennte hydrophobe Blöcke (2× 4 F●), verbunden durch ein hydrophiles Gelenk in der Mitte!",
+            desc: "Eine lange modulare 12×2-Kette: zwei getrennte hydrophobe Blöcke (2× 4 Öl●), verbunden durch ein hydrophiles Gelenk in der Mitte!",
             didactic: "Multidomänen-Proteine entstehen durch hintereinander geschaltete Module (z. B. Immunglobulin- oder Ankyrin-Domänen), die ein flexibler polarer Linker verbindet – hier zusätzlich stabilisiert durch eine Disulfidbrücke C*–C* (D3–D4)!",
             example: {
               name: "Humaner IgG1-Antikörper",
               note: "Eine modulare Multidomänen-Architektur: Wiederholte Immunglobulin-Domänen mit hydrophobem Kern werden durch eine flexible polare Gelenkregion mit Disulfidbrücken (C–C) verbunden."
             },
-            envLabels: { top: "💧 Hydrophile Oberfläche beider Domänen (H₂O)", bottom: "🧈 Block 1 (F●) · 💧 Gelenk · 🧈 Block 2 (F●)", left: "N →", right: "→ C" }
+            envLabels: { top: "💧 Hydrophile Oberfläche beider Domänen (H₂O)", bottom: "🧈 Block 1 (Öl●) · 💧 Gelenk · 🧈 Block 2 (Öl●)", left: "N →", right: "→ C" }
           },
           transporter: {
             shortTitle: "8. Großer Transporter",
             title: "🏛️ 8. Großer Membrantransporter (Breiter Tunnel + C*-Sensor)",
-            desc: "7 Teile für einen 7×4-Komplex! Die Flanken verankern sich in der Lipiddoppelschicht (F●), in der Mitte verläuft ein breiter 3-spaltiger polarer Tunnel mit einem Redox-Sensor C* im Zentrum!",
+            desc: "7 Teile für einen 7×4-Komplex! Die Flanken verankern sich in der Lipiddoppelschicht (Öl●), in der Mitte verläuft ein breiter 3-spaltiger polarer Tunnel mit einem Redox-Sensor C* im Zentrum!",
             didactic: "Große Membranporen und Transporter (z. B. Porine oder ABC-Transporter) benötigen einen weiten polaren Kanal für größere Metabolite; empfindliche Cysteine (C*) im Kanal dienen oft als Redox-Schalter.",
             example: {
               name: "Mitochondriales Porin VDAC1",
@@ -1191,7 +1194,7 @@
         btnRandomVariant: "🎲 Autre combinaison",
         customVariant: "🎲 Aléatoire",
         zoneWater: "Eau (H₂O)",
-        zoneLipid: "Cœur hydrophobe / lipides (F●)",
+        zoneLipid: "Cœur hydrophobe / lipides (huile●)",
         zonePore: "Pore / tunnel polaire",
         zoneActive: "Site actif (nécessite <strong>C*</strong> !)",
         evalTitle: "Évaluation biochimique de la structure",
@@ -1229,6 +1232,7 @@
         printLegendCompactTitle: "Codage des acides aminés et zones (symboles N&B inclus)",
         printPageLabel: (i, n) => `A4 · Page ${i} / ${n}`,
         printUsePieces: "Utilisez les pièces :",
+        cellLipid: "huile●",
         cellTunnel: "tunnel",
         cellPore: "pore",
         tooltipReqActive: (aa) => `Le site actif nécessite ${aa}* !`,
@@ -1279,18 +1283,18 @@
           ribbon: {
             shortTitle: "2. Ruban amphipathique",
             title: "📏 2. Ruban amphipathique (Blocs en ligne)",
-            desc: "Assemblez 4 pièces en une bande 8×2 : le bord supérieur est tourné vers l'eau (H₂O), le bord inférieur forme une interface hydrophobe continue (F●).",
+            desc: "Assemblez 4 pièces en une bande 8×2 : le bord supérieur est tourné vers l'eau (H₂O), le bord inférieur forme une interface hydrophobe continue (huile●).",
             didactic: "Les brins β et hélices α amphipathiques possèdent une face hydrophile et une face hydrophobe, ce qui leur permet de s'ancrer à la surface d'une membrane ou de s'accoler entre eux.",
             example: {
               name: "Mélittine (venin d'abeille)",
               note: "Une hélice α amphipathique classique de 26 résidus : une face porte des résidus polaires et positifs tournés vers l'eau, tandis que la face hydrophobe opposée s'insère dans la bicouche lipidique."
             },
-            envLabels: { top: "💧 Face aqueuse (H₂O)", bottom: "🧈 Interface hydrophobe (F●)", left: "N →", right: "→ C" }
+            envLabels: { top: "💧 Face aqueuse (H₂O)", bottom: "🧈 Interface hydrophobe (huile●)", left: "N →", right: "→ C" }
           },
           globular: {
             shortTitle: "3. Enzyme globulaire",
             title: "🫧 3. Enzyme globulaire",
-            desc: "L'eau entoure toute la protéine. Assemblez 5 pièces peptidiques de sorte que les 8 acides aminés hydrophobes (●) soient enfouis dans le cœur (F●).",
+            desc: "L'eau entoure toute la protéine. Assemblez 5 pièces peptidiques de sorte que les 8 acides aminés hydrophobes (●) soient enfouis dans le cœur (huile●).",
             didactic: "La solution unique (à une rotation de 180° près) forme toujours un pont salin K+ (P5) ↔ D− (P7) et un pont disulfure C* (P6) ↔ C* (P4).",
             example: {
               name: "Lysozyme (blanc d'œuf)",
@@ -1301,7 +1305,7 @@
           membrane: {
             shortTitle: "4. Canal membranaire",
             title: "🧱 4. Canal membranaire",
-            desc: "Les flancs dans la bicouche lipidique doivent être hydrophobes (F●), les extrémités dans l'eau hydrophiles — avec un pore hydrophile au centre !",
+            desc: "Les flancs dans la bicouche lipidique doivent être hydrophobes (huile●), les extrémités dans l'eau hydrophiles — avec un pore hydrophile au centre !",
             didactic: "Le pore central est toujours tapissé par S (P9) – D− (P10) – R+ (P8) – T (P8), stabilisé par un pont salin D−/R+ à l'intérieur du canal.",
             example: {
               name: "Aquaporine-1 (AQP1)",
@@ -1312,7 +1316,7 @@
           fibril: {
             shortTitle: "5. Longue fibrille",
             title: "🧵 5. Longue fibrille",
-            desc: "Un axe hydrophobe continu (8× F●) traverse le cœur de la fibre, tandis que des acides aminés hydrophiles protègent les bords supérieur et inférieur.",
+            desc: "Un axe hydrophobe continu (8× huile●) traverse le cœur de la fibre, tandis que des acides aminés hydrophiles protègent les bords supérieur et inférieur.",
             didactic: "L'axe hydrophobe (« fermeture stérique ») maintient les sous-unités fibrillaires ensemble (collagène, kératine) et un pont salin E− (P3) ↔ R+ (P8) stabilise la surface.",
             example: {
               name: "Fibrille d'amyloïde-β(1–42)",
@@ -1334,18 +1338,18 @@
           tandem: {
             shortTitle: "7. Chaîne bi-domaine",
             title: "🔗 7. Bi-domaine en tandem (Blocs en ligne)",
-            desc: "Une longue chaîne modulaire 12×2 : deux blocs hydrophobes séparés (2× 4 F●) reliés par une charnière hydrophile au milieu !",
+            desc: "Une longue chaîne modulaire 12×2 : deux blocs hydrophobes séparés (2× 4 huile●) reliés par une charnière hydrophile au milieu !",
             didactic: "Les protéines multidomaines se forment par répétition de modules en tandem (ex. domaines immunoglobuline ou ankyrine) reliés par un lieur polaire flexible — ici renforcé par un pont disulfure C*–C* (D3–D4) !",
             example: {
               name: "Anticorps IgG1 humain",
               note: "Une architecture modulaire multidomaine : des domaines immunoglobuline répétés à cœur hydrophobe sont reliés par une région charnière polaire flexible consolidée par des ponts disulfure (C–C)."
             },
-            envLabels: { top: "💧 Surface hydrophile des deux domaines (H₂O)", bottom: "🧈 Bloc 1 (F●) · 💧 Charnière · 🧈 Bloc 2 (F●)", left: "N →", right: "→ C" }
+            envLabels: { top: "💧 Surface hydrophile des deux domaines (H₂O)", bottom: "🧈 Bloc 1 (huile●) · 💧 Charnière · 🧈 Bloc 2 (huile●)", left: "N →", right: "→ C" }
           },
           transporter: {
             shortTitle: "8. Grand transporteur",
             title: "🏛️ 8. Grand transporteur membranaire (Large tunnel + capteur C*)",
-            desc: "7 pièces pour un complexe 7×4 ! Les flancs s'ancrent dans la bicouche lipidique (F●), un large tunnel polaire de 3 colonnes traverse le centre avec un capteur redox C* !",
+            desc: "7 pièces pour un complexe 7×4 ! Les flancs s'ancrent dans la bicouche lipidique (huile●), un large tunnel polaire de 3 colonnes traverse le centre avec un capteur redox C* !",
             didactic: "Les grands pores et transporteurs membranaires (porines, transporteurs ABC) requièrent une large cavité polaire pour le passage de gros métabolites, et les cystéines (C*) internes servent souvent d'interrupteurs redox.",
             example: {
               name: "Porine mitochondriale VDAC1",
@@ -2556,9 +2560,11 @@
             });
           } else {
             el.classList.add(`cell-${bCell.zone}`);
-            const lbl = bCell.zone === 'active' ? 'C*' : (bCell.zone === 'lipid' ? 'F●' : (bCell.zone === 'pore' ? dict().cellTunnel : 'H₂O'));
+            const lbl = bCell.zone === 'active' ? 'C*' : (bCell.zone === 'lipid' ? dict().cellLipid : (bCell.zone === 'pore' ? dict().cellTunnel : 'H₂O'));
             const activeCls = isTinyCell ? 'text-[10px] font-extrabold text-purple-600 dark:text-purple-300' : 'text-xs font-extrabold text-purple-600 dark:text-purple-300';
-            const zoneCls = isTinyCell ? 'text-[8px] opacity-60 font-semibold leading-none' : 'text-[9.5px] opacity-55 font-semibold leading-none';
+            const zoneCls = isTinyCell
+              ? `${lbl.length >= 5 ? 'text-[7px] tracking-tighter' : 'text-[8px]'} opacity-65 font-semibold leading-none`
+              : `${lbl.length >= 6 ? 'text-[9px] tracking-tight' : 'text-[9.5px]'} opacity-60 font-semibold leading-none`;
             el.innerHTML = `<span class="${bCell.zone === 'active' ? activeCls : zoneCls}">${lbl}</span>`;
           }
 
@@ -2926,7 +2932,7 @@
           if (cell.zone === 'active') {
             labelHtml = `<span style="font-size:${isLarge ? '14pt' : '10.5pt'};font-weight:800;color:#6b21a8;">C*</span>`;
           } else if (cell.zone === 'lipid') {
-            labelHtml = `<span style="font-size:${isLarge ? '11.5pt' : '8.5pt'};font-weight:700;color:#78350f;">F●</span>`;
+            labelHtml = `<span style="font-size:${isLarge ? '10pt' : '7.5pt'};font-weight:700;color:#78350f;">${d.cellLipid}</span>`;
           } else if (cell.zone === 'pore') {
             labelHtml = `<span style="font-size:${isLarge ? '10pt' : '7.5pt'};font-weight:700;color:#065f46;">${d.cellPore}</span>`;
           } else {
