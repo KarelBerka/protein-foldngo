@@ -1734,13 +1734,27 @@
 
     function resolveInitialLanguage() {
       const urlLang = getLanguageFromURL();
-      if (urlLang) {
-        localStorage.setItem('foldngo-lang', urlLang);
-        return urlLang;
-      }
-      const stored = localStorage.getItem('foldngo-lang');
-      if (stored && VALID_LANGS.includes(stored)) return stored;
-      return 'cs';
+      return urlLang || 'cs';
+    }
+
+    function syncLanguageToURL(lang) {
+      try {
+        const url = new URL(window.location.href);
+        for (const k of ['en', 'de', 'fr', 'cs', 'cz']) url.searchParams.delete(k);
+        const hashClean = (url.hash || '').replace(/^#\/?/, '').replace(/^lang=/, '').split('?')[0].split('/')[0].trim().toLowerCase();
+        if (['en', 'de', 'fr', 'cs', 'cz'].includes(hashClean)) url.hash = '';
+
+        if (lang && lang !== 'cs') {
+          url.searchParams.set('lang', lang);
+        } else {
+          url.searchParams.delete('lang');
+        }
+        const nextUrl = url.pathname + url.search + url.hash;
+        const curUrl = window.location.pathname + window.location.search + window.location.hash;
+        if (nextUrl !== curUrl) {
+          window.history.replaceState(null, '', nextUrl);
+        }
+      } catch (_) {}
     }
 
     function dict() {
@@ -5721,10 +5735,10 @@
       });
     }
 
-    function setLanguage(lang) {
+    function setLanguage(lang, updateUrl = true) {
       if (!VALID_LANGS.includes(lang)) return;
       currentLang = lang;
-      localStorage.setItem('foldngo-lang', currentLang);
+      if (updateUrl) syncLanguageToURL(currentLang);
       applyStaticTranslations();
       renderCustomPanel();
       renderAll();
@@ -5735,7 +5749,12 @@
 
     window.addEventListener('hashchange', () => {
       const urlLang = getLanguageFromURL();
-      if (urlLang && urlLang !== currentLang) setLanguage(urlLang);
+      if (urlLang && urlLang !== currentLang) setLanguage(urlLang, true);
+    });
+
+    window.addEventListener('popstate', () => {
+      const urlLang = getLanguageFromURL() || 'cs';
+      if (urlLang !== currentLang) setLanguage(urlLang, false);
     });
 
     function toggleTheme() {
@@ -5751,6 +5770,7 @@
     }
 
     currentLang = resolveInitialLanguage();
+    syncLanguageToURL(currentLang);
     applyStaticTranslations();
     (() => {
       const params = new URLSearchParams(window.location.search);

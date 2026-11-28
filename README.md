@@ -3,7 +3,7 @@
 Interaktivní biochemická skládačka ve stylu deskové hry **Ubongo**, ve které z peptidových polyomino dílků skládáte trojrozměrné architektury proteinů podle vlastností postranních řetězců aminokyselin.
 
 👉 **Hrát přímo v prohlížeči:** [https://karelberka.github.io/protein-foldngo/](https://karelberka.github.io/protein-foldngo/)  
-🌐 **Jazykové verze / Languages:** [Čeština (CZ)](https://karelberka.github.io/protein-foldngo/cz/) · [English (EN)](https://karelberka.github.io/protein-foldngo/en/) · [Deutsch (DE)](https://karelberka.github.io/protein-foldngo/de/) · [Français (FR)](https://karelberka.github.io/protein-foldngo/fr/)
+🌐 **Jazykové verze / Languages:** [Čeština (CZ, výchozí)](https://karelberka.github.io/protein-foldngo/) · [English (`?lang=en`)](https://karelberka.github.io/protein-foldngo/?lang=en) · [Deutsch (`?lang=de`)](https://karelberka.github.io/protein-foldngo/?lang=de) · [Français (`?lang=fr`)](https://karelberka.github.io/protein-foldngo/?lang=fr)
 
 ## Co hra obsahuje
 

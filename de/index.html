@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <title>Protein Fold'n'Go – Deutsch</title>
   <script>
-    localStorage.setItem("foldngo-lang", "de");
-    window.location.replace("../?lang=de");
+    const params = new URLSearchParams(window.location.search);
+    params.set("lang", "de");
+    window.location.replace("../?" + params.toString());
   </script>
   <noscript>
     <meta http-equiv="refresh" content="0; url=../?lang=de">
