@@ -720,6 +720,7 @@
         customSourceArch: (arch) => `Archetyp · ${arch}`,
         customArchNames: {
           complex: "vícepodjednotkový proteinový komplex (tetramer)",
+          spike: "trimerní obalový glykoprotein (koruna na dlouhém stonku v membráně)",
           cyp450: "periferní membránový enzym s TM kotvou",
           tm1: "jednoprůchodový transmembránový protein",
           channel: "membránový kanál",
@@ -747,6 +748,7 @@
           erLumen: "💧 Lumen / membránové zakončení",
           membrane: "🧈 Lipidová\ndvojvrstva",
           tmAnchor: "🧈 Membrána\n(TM kotva)",
+          viralMembrane: "🧈 Membrána viru · dlouhý TM stonek (olej●)",
           channel: "← Kanál\naktiv. místa",
           hydroFace: "🧈 Hydrofobní rozhraní (olej●)",
           fiberL: "← Osa\nvlákna",
@@ -990,6 +992,7 @@
         customSourceArch: (arch) => `Archetype · ${arch}`,
         customArchNames: {
           complex: "multi-subunit protein complex (tetramer)",
+          spike: "trimeric envelope glycoprotein (crown on a long membrane-anchored stem)",
           cyp450: "peripheral membrane enzyme with TM anchor",
           tm1: "single-pass transmembrane protein",
           channel: "membrane channel",
@@ -1017,6 +1020,7 @@
           erLumen: "💧 Lumen / membrane terminus",
           membrane: "🧈 Lipid\nbilayer",
           tmAnchor: "🧈 Membrane\n(TM anchor)",
+          viralMembrane: "🧈 Viral membrane · long TM stem (oil●)",
           channel: "← Active-site\nchannel",
           hydroFace: "🧈 Hydrophobic interface (oil●)",
           fiberL: "← Fiber\naxis",
@@ -1260,6 +1264,7 @@
         customSourceArch: (arch) => `Archetyp · ${arch}`,
         customArchNames: {
           complex: "Protein-Multimerkomplex (Tetramer)",
+          spike: "trimeres Hüllglykoprotein (Krone auf langem Membran-Stiel)",
           cyp450: "peripheres Membranenzym mit TM-Anker",
           tm1: "einfach durchspannendes Transmembranprotein",
           channel: "Membrankanal",
@@ -1287,6 +1292,7 @@
           erLumen: "💧 Lumen / Membranende",
           membrane: "🧈 Lipid-\ndoppelschicht",
           tmAnchor: "🧈 Membran\n(TM-Anker)",
+          viralMembrane: "🧈 Virusmembran · langer TM-Stiel (Öl●)",
           channel: "← Kanal zum\nakt. Zentrum",
           hydroFace: "🧈 Hydrophobe Grenzfläche (Öl●)",
           fiberL: "← Faser-\nachse",
@@ -1530,6 +1536,7 @@
         customSourceArch: (arch) => `Archétype · ${arch}`,
         customArchNames: {
           complex: "complexe protéique multi-sous-unités (tétramère)",
+          spike: "glycoprotéine d'enveloppe trimérique (couronne sur longue tige membranaire)",
           cyp450: "enzyme membranaire périphérique avec ancre TM",
           tm1: "protéine transmembranaire à un passage",
           channel: "canal membranaire",
@@ -1557,6 +1564,7 @@
           erLumen: "💧 Lumière / extrémité membranaire",
           membrane: "🧈 Bicouche\nlipidique",
           tmAnchor: "🧈 Membrane\n(ancre TM)",
+          viralMembrane: "🧈 Membrane virale · longue tige TM (huile●)",
           channel: "← Canal vers\nle site actif",
           hydroFace: "🧈 Interface hydrophobe (huile●)",
           fiberL: "← Axe de\nla fibre",
@@ -2110,6 +2118,7 @@
     function getBoardGap(lvl) {
       const vw = window.innerWidth || 1280;
       if (vw < 480) return lvl.cols >= 12 ? 2 : 3;
+      if (lvl.rows >= 9) return 3;
       return 4;
     }
 
@@ -2121,6 +2130,7 @@
         let baseCap;
         if (lvl.cols >= 12) baseCap = 28;
         else if (lvl.cols >= 9) baseCap = 36;
+        else if (lvl.rows >= 8) baseCap = 36;
         else if (lvl.rows >= 7) baseCap = 38;
         else if (lvl.cols >= 8) baseCap = 42;
         else if (lvl.rows >= 6) baseCap = 40;
@@ -2135,6 +2145,7 @@
       if (vw < 1024) {
         let baseCap;
         if (lvl.cols >= 12) baseCap = 42;
+        else if (lvl.rows >= 8) baseCap = 40;
         else if (lvl.rows >= 7) baseCap = 44;
         else if (lvl.cols >= 8) baseCap = 48;
         else if (lvl.rows >= 6) baseCap = 46;
@@ -2152,7 +2163,9 @@
       }
 
       let baseCap;
-      if (lvl.rows >= 7) baseCap = 44;
+      if (lvl.rows >= 9) baseCap = 38;
+      else if (lvl.rows >= 8) baseCap = 40;
+      else if (lvl.rows >= 7) baseCap = 44;
       else if (lvl.rows >= 6) baseCap = 46;
       else if (lvl.cols >= 7) baseCap = 48;
       else if (lvl.cols >= 6) baseCap = 52;
@@ -2756,6 +2769,11 @@
         if (/\b(?:cytochrome\s*p450|cyp\d|monooxygenase|lanosterol|heme)\b/.test(blob) && (profile.activeSite || profile.seqLen >= 250)) {
           return 'cyp450';
         }
+        const cTermTM = profile.seqLen >= 400 && profile.tmRanges[0]?.[0] > profile.seqLen * 0.75;
+        if (/\b(?:spike|hemagglutinin|haemagglutinin|envelope\s+glycoprotein|fusion\s+glycoprotein|surface\s+glycoprotein|viral\s+envelope)\b/.test(blob)
+          || (cTermTM && /\b(?:coiled\s+coil|trimer|heptad|virion)\b/.test(blob))) {
+          return 'spike';
+        }
         return 'tm1';
       }
       if (tmCount >= 2) {
@@ -2766,6 +2784,9 @@
           return 'transporter';
         }
         return 'channel';
+      }
+      if (/\b(?:spike\s+glycoprotein|hemagglutinin|haemagglutinin|viral\s+envelope)\b/.test(blob)) {
+        return 'spike';
       }
       if (/\b(?:collagen|keratin|amyloid|fibril|coiled coil|tropomyosin|vimentin|fibroin|silk|elastin|myosin)\b/.test(blob)) {
         return 'fibril';
@@ -3049,10 +3070,56 @@
       }
 
       // Single-TM refinement: orient TM anchor downward (larger row index v > 0)
-      if (tmRanges.length === 1) {
+      if (tmRanges.length === 1 && archKey !== 'spike') {
         const tmPts = pts.filter(p => inTM(p.seqId));
         if (tmPts.length >= 4) {
           const meanV = tmPts.reduce((acc, p) => acc + ((p.x - mx)*axisY[0] + (p.y - my)*axisY[1] + (p.z - mz)*axisY[2]), 0) / tmPts.length;
+          if (meanV < 0) axisY = [-axisY[0], -axisY[1], -axisY[2]];
+        }
+      }
+
+      // Stalked trimeric viral glycoproteins (e.g. SARS-CoV-2 Spike, Influenza HA):
+      // stand upright along the 3-fold stem-to-crown axis, rotate camera around it for symmetric side view,
+      // and orient the membrane-proximal stem downward (v > 0) toward the viral lipid membrane.
+      const isSpike = archKey === 'spike';
+      if (isSpike) {
+        axisY = [...eigs[0].vec];
+        const b1 = eigs[1].vec, b2 = eigs[2].vec;
+        let bestTheta = 0, bestSkew = Infinity;
+        for (let deg = 0; deg < 180; deg += 5) {
+          const th = (deg * Math.PI) / 180, ct = Math.cos(th), st = Math.sin(th);
+          const ux = b1[0]*ct + b2[0]*st, uy = b1[1]*ct + b2[1]*st, uz = b1[2]*ct + b2[2]*st;
+          let m2 = 0, m3 = 0;
+          for (let i = 0; i < pts.length; i += stride) {
+            const p = pts[i];
+            const u = (p.x - mx)*ux + (p.y - my)*uy + (p.z - mz)*uz;
+            m2 += u * u; m3 += u * u * u;
+          }
+          const nSamp = Math.max(1, Math.ceil(pts.length / stride));
+          const sd = Math.sqrt(m2 / nSamp) || 1;
+          const skew = Math.abs((m3 / nSamp) / (sd * sd * sd));
+          if (skew < bestSkew) { bestSkew = skew; bestTheta = th; }
+        }
+        const ct = Math.cos(bestTheta), st = Math.sin(bestTheta);
+        axisX = [b1[0]*ct + b2[0]*st, b1[1]*ct + b2[1]*st, b1[2]*ct + b2[2]*st];
+
+        // Stem-down polarity: use resolved TM helix if present, else membrane-proximal sequence terminus
+        let stemPts = pts.filter(p => inTM(p.seqId));
+        if (stemPts.length < 4) {
+          const seqs = pts.map(p => p.seqId).filter(Number.isFinite).sort((a, b) => a - b);
+          if (seqs.length >= 12) {
+            const nTermTM = tmRanges.length > 0 && tmRanges[0][0] < (profile?.seqLen || seqs[seqs.length - 1]) * 0.4;
+            if (nTermTM) {
+              const cut = seqs[Math.floor(seqs.length * 0.12)];
+              stemPts = pts.filter(p => p.seqId <= cut);
+            } else {
+              const cut = seqs[Math.floor(seqs.length * 0.88)];
+              stemPts = pts.filter(p => p.seqId >= cut);
+            }
+          }
+        }
+        if (stemPts.length >= 3) {
+          const meanV = stemPts.reduce((acc, p) => acc + ((p.x - mx)*axisY[0] + (p.y - my)*axisY[1] + (p.z - mz)*axisY[2]), 0) / stemPts.length;
           if (meanV < 0) axisY = [-axisY[0], -axisY[1], -axisY[2]];
         }
       }
@@ -3072,11 +3139,15 @@
       const minU = quant(us, 0.01), maxU = quant(us, 0.99);
       const minV = quant(vs, 0.01), maxV = quant(vs, 0.99);
       const spanU = Math.max(1, maxU - minU), spanV = Math.max(1, maxV - minV);
-      const ar = Math.max(0.55, Math.min(3.4, spanU / spanV));
+      const ar = Math.max(isSpike ? 0.45 : 0.55, Math.min(3.4, spanU / spanV));
 
-      const maxCols = (targetN >= 36 && ar > 1.7) ? 9 : 8;
-      const maxRows = (maxCols === 9) ? 5 : 7;
-      const area = targetN * 1.45;
+      const maxCols = isSpike
+        ? (targetN >= 36 ? 7 : (targetN >= 26 ? 6 : 5))
+        : ((targetN >= 36 && ar > 1.7) ? 9 : 8);
+      const maxRows = isSpike
+        ? (targetN >= 36 ? 9 : (targetN >= 26 ? 8 : (targetN >= 20 ? 7 : 6)))
+        : (maxCols === 9 ? 5 : 7);
+      const area = targetN * (isSpike ? 1.58 : 1.45);
       let cols = Math.round(Math.sqrt(area * ar));
       let rows = Math.round(area / Math.max(1, cols));
       cols = Math.max(4, Math.min(maxCols, cols));
@@ -3140,11 +3211,13 @@
         const avgCN = res.length ? res.reduce((s, x) => s + x.cn, 0) / res.length : 0;
         const hydroFrac = res.length ? res.filter(x => AA_INFO[x.aa]?.env === 'F').length / res.length : 0.35;
         const tmFrac = res.length ? res.filter(x => x.isTM).length / res.length : 0;
-        // Soluble proteins prioritize interior burial; TM proteins let lipid helices face lateral edges
-        const interiorW = tmRanges.length === 0
+        // Soluble ectodomains (including Spike crown & stalk) prioritize interior burial;
+        // multi-pass TM proteins let lipid helices face lateral edges.
+        const interiorW = (tmRanges.length === 0 || isSpike)
           ? (deg === 4 ? 3.2 : deg === 3 ? 0.55 : -1.5)
           : (deg === 4 ? 1.8 : deg === 3 ? 0.55 : -0.4);
-        const score = interiorW + (avgCN / 18) + hydroFrac * 1.45 + tmFrac * 3.8;
+        const spikeStemAnchorBoost = (isSpike && nr === outRows - 1) ? 8.0 : 0;
+        const score = interiorW + (avgCN / 18) + hydroFrac * 1.45 + tmFrac * 3.8 + spikeStemAnchorBoost;
         const st = { key, r: nr, c: nc, res, deg, avgCN, hydroFrac, tmFrac, score };
         cellStats[key] = st;
         statList.push(st);
@@ -3156,6 +3229,12 @@
       const sorted = [...statList].sort((a, b) => b.score - a.score);
       for (let i = 0; i < targetLipid && i < sorted.length; i++) {
         board[sorted[i].key] = { zone: 'lipid', env: 'F' };
+      }
+      if (isSpike) {
+        // Ensure the bottom stem base anchoring into the viral membrane is hydrophobic (oil●)
+        statList.filter(s => s.r === outRows - 1).forEach(s => {
+          board[s.key] = { zone: 'lipid', env: 'F' };
+        });
       }
 
       // Multi-pass channel / transporter refinement: carve a central polar pore through the TM lipid band
@@ -3233,7 +3312,7 @@
     }
 
     // -------------------------------------------------------------------------
-    // BIOCHEMICAL ARCHETYPE BOARD GENERATOR (11 archetypes × 16 / 22 / 28 / 40 AA)
+    // BIOCHEMICAL ARCHETYPE BOARD GENERATOR (12 archetypes × 16 / 22 / 28 / 40 AA)
     // -------------------------------------------------------------------------
     function buildArchetypeBoard(archKey, targetN, activeReqAA = null) {
       const b = {};
@@ -3242,6 +3321,42 @@
         b[`${r},${c}`] = reqAA ? { env, zone, reqAA } : { env, zone };
       };
       const req = activeReqAA || 'C';
+
+      if (archKey === 'spike') {
+        if (targetN === 16) {
+          // 6x4 compact spike crown + long membrane-anchored stem
+          [1, 2].forEach(c => set(0, c, 'water'));
+          for (const r of [1, 2]) { set(r, 0, 'water'); set(r, 1, 'lipid'); set(r, 2, 'lipid'); set(r, 3, 'water'); }
+          [1, 2].forEach(c => set(3, c, 'water'));
+          [1, 2].forEach(c => { set(4, c, 'lipid'); set(5, c, 'lipid'); });
+          return { rows: 6, cols: 4, board: b };
+        }
+        if (targetN === 22) {
+          // 6x5 3-peaked trimeric crown + long coiled-coil stem + viral membrane anchor
+          [0, 2, 4].forEach(c => set(0, c, 'water'));
+          for (const r of [1, 2]) { set(r, 0, 'water'); set(r, 4, 'water'); for (let c = 1; c <= 3; c++) set(r, c, 'lipid'); }
+          for (const r of [3, 4]) { set(r, 1, 'water'); set(r, 2, 'lipid'); set(r, 3, 'water'); }
+          for (let c = 1; c <= 3; c++) set(5, c, 'lipid');
+          return { rows: 6, cols: 5, board: b };
+        }
+        if (targetN === 28) {
+          // 8x5 3-peaked trimeric crown + 5-row long stem (coiled-coil + bilayer TM anchor)
+          [0, 2, 4].forEach(c => set(0, c, 'water'));
+          for (const r of [1, 2]) { set(r, 0, 'water'); set(r, 4, 'water'); for (let c = 1; c <= 3; c++) set(r, c, 'lipid'); }
+          for (const r of [3, 4, 5]) { set(r, 1, 'water'); set(r, 2, 'lipid'); set(r, 3, 'water'); }
+          for (const r of [6, 7]) { for (let c = 1; c <= 3; c++) set(r, c, 'lipid'); }
+          return { rows: 8, cols: 5, board: b };
+        }
+        // 40 AA XL (9x7 3-lobed trimer crown with central cavity + long coiled-coil stem + 2-row viral membrane TM bundle)
+        [1, 3, 5].forEach(c => set(0, c, 'water'));
+        [0, 2, 4, 6].forEach(c => set(1, c, 'water')); [1, 3, 5].forEach(c => set(1, c, 'lipid'));
+        [0, 6].forEach(c => set(2, c, 'water')); [1, 2, 4, 5].forEach(c => set(2, c, 'lipid'));
+        [0, 6].forEach(c => set(3, c, 'water')); for (let c = 1; c <= 5; c++) set(3, c, 'lipid');
+        [1, 2, 4, 5].forEach(c => set(4, c, 'water')); set(4, 3, 'lipid');
+        for (const r of [5, 6]) { set(r, 2, 'water'); set(r, 3, 'lipid'); set(r, 4, 'water'); }
+        for (const r of [7, 8]) { for (let c = 2; c <= 4; c++) set(r, c, 'lipid'); }
+        return { rows: 9, cols: 7, board: b };
+      }
 
       if (archKey === 'complex') {
         const useActive = Boolean(activeReqAA);
@@ -3659,7 +3774,7 @@
 
     function getEffectiveCustomArchKey() {
       const base = customProteinState.archKey || 'globular';
-      const isMembrane = base === 'channel' || base === 'transporter' || base === 'cyp450' || base === 'tm1';
+      const isMembrane = base === 'spike' || base === 'channel' || base === 'transporter' || base === 'cyp450' || base === 'tm1';
       if (customProteinState.size >= 40 && customProteinState.chainIds.length >= 2 && !isMembrane) {
         return 'complex';
       }
@@ -3685,6 +3800,9 @@
 
     function getCustomEnvLabels(archKey) {
       const e = dict().customEnv;
+      if (archKey === 'spike') {
+        return { top: e.extracellular, bottom: e.viralMembrane, left: e.water, right: e.water };
+      }
       if (archKey === 'cyp450') {
         return { top: e.cytoplasm, bottom: e.erLumen, left: e.tmAnchor, right: e.channel };
       }
@@ -3758,14 +3876,15 @@
       const p = customProteinState.profile;
       const targetN = customProteinState.size;
       const use3d = customProteinState.mode === '3d' && customProteinState.has3d && customProteinState.atoms.length >= 12;
-      const isComplexXL = use3d && targetN >= 40 && customProteinState.chainIds.length >= 2
-        && customProteinState.complexAtoms.length > customProteinState.atoms.length;
-      customProteinState.usingComplex = isComplexXL;
+      const isComplex3d = use3d && customProteinState.chainIds.length >= 2
+        && customProteinState.complexAtoms.length > customProteinState.atoms.length
+        && (targetN >= 40 || customProteinState.archKey === 'spike');
+      customProteinState.usingComplex = isComplex3d;
       const effArch = getEffectiveCustomArchKey();
 
       let geo;
       if (use3d) {
-        const srcAtoms = isComplexXL ? customProteinState.complexAtoms : customProteinState.atoms;
+        const srcAtoms = isComplex3d ? customProteinState.complexAtoms : customProteinState.atoms;
         geo = project3DToBoard(srcAtoms, p, targetN, customProteinState.isAlphaFold, customProteinState.archKey, customProteinState.structChain);
         customProteinState.cellStats = geo.cellStats;
       } else {
@@ -5463,10 +5582,12 @@
       const safeDidactic = escapeHtml(ltxt.didactic);
       const safeExName = escapeHtml(ltxt.example.name);
       const needsRotate = (lvl.cols * printCellMm > 164 && lvl.rows < lvl.cols);
+      const ultraTall = !needsRotate && lvl.rows >= 9 && isLarge;
       const xlTall = !needsRotate && lvl.rows >= 7 && isLarge;
       const rawExNote = ltxt.example.note || '';
-      const trimmedExNote = (xlTall || (needsRotate && lvl.rows >= 4 && isLarge)) && rawExNote.length > 165
-        ? `${rawExNote.slice(0, 162).trim()}…`
+      const maxExLen = ultraTall ? 115 : 165;
+      const trimmedExNote = (xlTall || (needsRotate && lvl.rows >= 4 && isLarge)) && rawExNote.length > maxExLen
+        ? `${rawExNote.slice(0, maxExLen - 3).trim()}…`
         : rawExNote;
       const safeExNote = escapeHtml(trimmedExNote);
 
@@ -5551,39 +5672,39 @@
           : (tightW
             ? 'font-size:6.5pt;font-weight:600;color:#475569;line-height:1.12;max-width:12mm;white-space:pre-line;'
             : 'font-size:7.2pt;font-weight:600;color:#475569;line-height:1.15;max-width:22mm;white-space:pre-line;');
-        const cardPad = xlTall
-          ? (ultraTightW ? 'padding:1.1mm 1.2mm;' : 'padding:1.1mm 1.8mm;')
-          : (tallBoard
-            ? (ultraTightW ? 'padding:1.5mm 1.2mm;' : 'padding:1.6mm 2mm;')
-            : (ultraTightW ? 'padding:1.8mm 1.2mm;' : ''));
+        const cardPad = ultraTall
+          ? 'padding:0.8mm 1.6mm;'
+          : (xlTall
+            ? (ultraTightW ? 'padding:1.1mm 1.2mm;' : 'padding:1.1mm 1.8mm;')
+            : (tallBoard
+              ? (ultraTightW ? 'padding:1.5mm 1.2mm;' : 'padding:1.6mm 2mm;')
+              : (ultraTightW ? 'padding:1.8mm 1.2mm;' : '')));
         boardSectionHtml = `
           <div class="print-board-card" style="${cardPad}">
-            <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:1mm;margin-bottom:${xlTall ? '0.5mm' : (tallBoard ? '0.8mm' : '1.4mm')};">
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:1mm;margin-bottom:${ultraTall ? '0.3mm' : (xlTall ? '0.5mm' : (tallBoard ? '0.8mm' : '1.4mm'))};">
               <div style="display:flex;align-items:center;gap:1.2mm;flex-wrap:wrap;">
-                <span style="font-size:${xlTall ? '8.6pt' : (tallBoard ? '9pt' : '9.6pt')};font-weight:800;color:#0f172a;">${safeTitle}</span>
-                <span style="font-size:6.6pt;font-weight:600;padding:0.25mm 1.4mm;border-radius:999px;background:#e2e8f0;color:#1e293b;">${getLevelDiff(lvl)} · ${totalAA} ${d.aaUnit}</span>
+                <span style="font-size:${ultraTall ? '8.2pt' : (xlTall ? '8.6pt' : (tallBoard ? '9pt' : '9.6pt'))};font-weight:800;color:#0f172a;">${safeTitle}</span>
+                <span style="font-size:6.5pt;font-weight:600;padding:0.2mm 1.3mm;border-radius:999px;background:#e2e8f0;color:#1e293b;">${getLevelDiff(lvl)} · ${totalAA} ${d.aaUnit}</span>
               </div>
-              <div style="font-size:${xlTall ? '7.1pt' : '7.6pt'};color:#334155;">
+              <div style="font-size:${ultraTall ? '6.8pt' : (xlTall ? '7.1pt' : '7.6pt')};color:#334155;">
                 ${d.printUsePieces} <strong style="color:#0f172a;">${pids.join(', ')}</strong>
               </div>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:${xlTall ? '0.35mm' : (tallBoard ? '0.5mm' : '1mm')};padding:${xlTall ? '0.1mm 0' : (tallBoard ? '0.2mm 0' : '0.6mm 0')};">
-              <div style="font-size:${xlTall ? '6.8pt' : '7.2pt'};font-weight:600;color:#475569;">${escapeHtml(ltxt.envLabels.top)}</div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:${ultraTall ? '0.25mm' : (xlTall ? '0.35mm' : (tallBoard ? '0.5mm' : '1mm'))};padding:${xlTall ? '0' : (tallBoard ? '0.2mm 0' : '0.6mm 0')};">
+              <div style="font-size:${ultraTall ? '6.5pt' : (xlTall ? '6.8pt' : '7.2pt')};font-weight:600;color:#475569;">${escapeHtml(ltxt.envLabels.top)}</div>
               <div style="display:flex;align-items:center;justify-content:center;gap:${tightW ? '1mm' : '2.2mm'};">
                 <div style="${sideStyle}text-align:right;">${escapeHtml(ltxt.envLabels.left)}</div>
                 ${gridHtml}
                 <div style="${sideStyle}text-align:left;">${escapeHtml(ltxt.envLabels.right)}</div>
               </div>
-              <div style="font-size:${xlTall ? '6.8pt' : '7.2pt'};font-weight:600;color:#475569;">${escapeHtml(ltxt.envLabels.bottom)}</div>
+              <div style="font-size:${ultraTall ? '6.5pt' : (xlTall ? '6.8pt' : '7.2pt')};font-weight:600;color:#475569;">${escapeHtml(ltxt.envLabels.bottom)}</div>
             </div>
-            <div style="font-size:${xlTall ? '6.7pt' : '7.1pt'};color:#334155;text-align:center;line-height:${xlTall ? '1.18' : '1.25'};margin-top:${xlTall ? '0.4mm' : (tallBoard ? '0.6mm' : '1mm')};">
-              ${safeDesc}
-            </div>
+            ${ultraTall ? '' : `<div style="font-size:${xlTall ? '6.7pt' : '7.1pt'};color:#334155;text-align:center;line-height:${xlTall ? '1.18' : '1.25'};margin-top:${xlTall ? '0.4mm' : (tallBoard ? '0.6mm' : '1mm')};">${safeDesc}</div>`}
           </div>
-          <div style="border:0.75px solid #cbd5e1;border-radius:2.2mm;padding:${xlTall ? '1.1mm 2mm' : (tallBoard ? '1.6mm 2.4mm' : '2mm 2.8mm')};background:#f8fafc;">
-            <div style="font-size:${xlTall ? '7.2pt' : '7.6pt'};font-weight:700;color:#0f172a;margin-bottom:0.4mm;">🔬 ${d.didacticHeading} · <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#475569;">${idBadgeStr}</span></div>
-            <p style="font-size:${xlTall ? '6.8pt' : '7.2pt'};color:#334155;line-height:${xlTall ? '1.24' : '1.34'};margin:0;">${safeDidactic}</p>
-            ${p && p.functionNote ? `<p style="font-size:${xlTall ? '6.6pt' : '7pt'};color:#475569;line-height:${xlTall ? '1.22' : '1.32'};margin:${xlTall ? '0.7mm' : '1mm'} 0 0;padding-top:${xlTall ? '0.7mm' : '1mm'};border-top:0.5px solid #cbd5e1;"><strong>🧪 ${safeExName}:</strong> ${safeExNote}</p>` : ''}
+          <div style="border:0.75px solid #cbd5e1;border-radius:2.2mm;padding:${ultraTall ? '0.9mm 1.8mm' : (xlTall ? '1.1mm 2mm' : (tallBoard ? '1.6mm 2.4mm' : '2mm 2.8mm'))};background:#f8fafc;">
+            <div style="font-size:${ultraTall ? '6.8pt' : (xlTall ? '7.2pt' : '7.6pt')};font-weight:700;color:#0f172a;margin-bottom:0.35mm;">🔬 ${d.didacticHeading} · <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#475569;">${idBadgeStr}</span></div>
+            <p style="font-size:${ultraTall ? '6.4pt' : (xlTall ? '6.8pt' : '7.2pt')};color:#334155;line-height:${ultraTall ? '1.18' : (xlTall ? '1.24' : '1.34')};margin:0;">${safeDidactic}</p>
+            ${p && p.functionNote ? `<p style="font-size:${ultraTall ? '6.3pt' : (xlTall ? '6.6pt' : '7pt')};color:#475569;line-height:${ultraTall ? '1.16' : (xlTall ? '1.22' : '1.32')};margin:${ultraTall ? '0.5mm' : (xlTall ? '0.7mm' : '1mm')} 0 0;padding-top:${ultraTall ? '0.5mm' : (xlTall ? '0.7mm' : '1mm')};border-top:0.5px solid #cbd5e1;"><strong>🧪 ${safeExName}:</strong> ${safeExNote}</p>` : ''}
           </div>
           ${renderPrintCustomLegend(actReq, false, xlTall)}
         `;
@@ -5591,7 +5712,7 @@
 
       const page2 = (idx, total) => `
         <div class="print-sheet">
-          <div style="display:flex;flex-direction:column;gap:${xlTall ? '1.2mm' : '1.8mm'};">
+          <div style="display:flex;flex-direction:column;gap:${ultraTall ? '0.9mm' : (xlTall ? '1.2mm' : '1.8mm')};">
             ${renderPrintSheetHeader(d.customPrintSheetBoard(safeShort), idx, total)}
             ${boardSectionHtml}
           </div>
