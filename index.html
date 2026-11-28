@@ -105,6 +105,7 @@
       font-size: 10px;
       font-weight: 700;
       line-height: 1;
+      white-space: nowrap;
       padding: 2px 4px;
       border-radius: 9999px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.35);
@@ -377,6 +378,7 @@
               <button type="button" data-csize="16" onclick="switchCustomSize(16)" class="custom-size-btn px-2 py-1 rounded-md text-[11px] font-medium text-[var(--muted-foreground)] transition-colors">16</button>
               <button type="button" data-csize="22" onclick="switchCustomSize(22)" class="custom-size-btn px-2 py-1 rounded-md text-[11px] font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] transition-colors">22</button>
               <button type="button" data-csize="28" onclick="switchCustomSize(28)" class="custom-size-btn px-2 py-1 rounded-md text-[11px] font-medium text-[var(--muted-foreground)] transition-colors">28</button>
+              <button type="button" data-csize="40" onclick="switchCustomSize(40)" class="custom-size-btn px-2 py-1 rounded-md text-[11px] font-medium text-[var(--muted-foreground)] transition-colors">40 XL</button>
             </div>
             <span id="custom-source-pill" class="text-[11px] text-[var(--muted-foreground)] font-mono"></span>
           </div>
@@ -704,7 +706,7 @@
         customShareBtn: "🔗 Sdílet odkaz",
         customCopied: "✓ Zkopírováno!",
         customPrintBtn: "🖨️ Tisk A4",
-        customSizeLabel: (n) => `${n} AK`,
+        customSizeLabel: (n) => n >= 40 ? `${n} AK · XL` : `${n} AK`,
         customLoadingMeta: (q) => `Načítám data pro „${q}“ z UniProt / RCSB PDB…`,
         customLoading3d: (src) => `Stahuji 3D Cα souřadnice (${src}) a promítám siluetu…`,
         customSearching: (q) => `Hledám „${q}“ v databázi UniProtKB…`,
@@ -713,9 +715,11 @@
         customErrorFetch: (q, err) => `Nepodařilo se načíst „${q}“ (${err}). Zkontroluj připojení nebo ID.`,
         customFallbackArchNote: "3D struktura nebyla dostupná — automaticky použit biochemický archetyp z UniProt anotací.",
         customSource3dPdb: (pdb, ch) => `3D silueta · PDB ${pdb} (řetězec ${ch})`,
+        customSource3dPdbComplex: (pdb, n, ch) => `3D silueta · PDB ${pdb} (komplex · ${n} ${n >= 2 && n <= 4 ? 'řetězce' : 'řetězců'}: ${ch})`,
         customSource3dAf: (acc) => `3D silueta · AlphaFold (${acc})`,
         customSourceArch: (arch) => `Archetyp · ${arch}`,
         customArchNames: {
+          complex: "vícepodjednotkový proteinový komplex (tetramer)",
           cyp450: "periferní membránový enzym s TM kotvou",
           tm1: "jednoprůchodový transmembránový protein",
           channel: "membránový kanál",
@@ -972,7 +976,7 @@
         customShareBtn: "🔗 Share link",
         customCopied: "✓ Copied!",
         customPrintBtn: "🖨️ Print A4",
-        customSizeLabel: (n) => `${n} AA`,
+        customSizeLabel: (n) => n >= 40 ? `${n} AA · XL` : `${n} AA`,
         customLoadingMeta: (q) => `Fetching data for “${q}” from UniProt / RCSB PDB…`,
         customLoading3d: (src) => `Downloading 3D Cα coordinates (${src}) and projecting silhouette…`,
         customSearching: (q) => `Searching UniProtKB for “${q}”…`,
@@ -981,9 +985,11 @@
         customErrorFetch: (q, err) => `Could not load “${q}” (${err}). Check your connection or identifier.`,
         customFallbackArchNote: "3D coordinates unavailable — automatically switched to biochemical archetype from UniProt annotations.",
         customSource3dPdb: (pdb, ch) => `3D silhouette · PDB ${pdb} (chain ${ch})`,
+        customSource3dPdbComplex: (pdb, n, ch) => `3D silhouette · PDB ${pdb} (complex · ${n} chains: ${ch})`,
         customSource3dAf: (acc) => `3D silhouette · AlphaFold (${acc})`,
         customSourceArch: (arch) => `Archetype · ${arch}`,
         customArchNames: {
+          complex: "multi-subunit protein complex (tetramer)",
           cyp450: "peripheral membrane enzyme with TM anchor",
           tm1: "single-pass transmembrane protein",
           channel: "membrane channel",
@@ -1240,7 +1246,7 @@
         customShareBtn: "🔗 Link teilen",
         customCopied: "✓ Kopiert!",
         customPrintBtn: "🖨️ Druck A4",
-        customSizeLabel: (n) => `${n} AS`,
+        customSizeLabel: (n) => n >= 40 ? `${n} AS · XL` : `${n} AS`,
         customLoadingMeta: (q) => `Lade Daten für „${q}“ aus UniProt / RCSB PDB…`,
         customLoading3d: (src) => `Lade 3D-Cα-Koordinaten (${src}) und projiziere Silhouette…`,
         customSearching: (q) => `Suche „${q}“ in UniProtKB…`,
@@ -1249,9 +1255,11 @@
         customErrorFetch: (q, err) => `Konnte „${q}“ nicht laden (${err}). Prüfe Verbindung oder ID.`,
         customFallbackArchNote: "3D-Koordinaten nicht verfügbar — automatisch auf biochemischen Archetyp aus UniProt-Annotationen umgestellt.",
         customSource3dPdb: (pdb, ch) => `3D-Silhouette · PDB ${pdb} (Kette ${ch})`,
+        customSource3dPdbComplex: (pdb, n, ch) => `3D-Silhouette · PDB ${pdb} (Komplex · ${n} Ketten: ${ch})`,
         customSource3dAf: (acc) => `3D-Silhouette · AlphaFold (${acc})`,
         customSourceArch: (arch) => `Archetyp · ${arch}`,
         customArchNames: {
+          complex: "Protein-Multimerkomplex (Tetramer)",
           cyp450: "peripheres Membranenzym mit TM-Anker",
           tm1: "einfach durchspannendes Transmembranprotein",
           channel: "Membrankanal",
@@ -1508,7 +1516,7 @@
         customShareBtn: "🔗 Partager",
         customCopied: "✓ Copié !",
         customPrintBtn: "🖨️ Imprimer A4",
-        customSizeLabel: (n) => `${n} AA`,
+        customSizeLabel: (n) => n >= 40 ? `${n} AA · XL` : `${n} AA`,
         customLoadingMeta: (q) => `Chargement des données pour « ${q} » depuis UniProt / RCSB PDB…`,
         customLoading3d: (src) => `Téléchargement des coordonnées 3D Cα (${src}) et projection de la silhouette…`,
         customSearching: (q) => `Recherche de « ${q} » dans UniProtKB…`,
@@ -1517,9 +1525,11 @@
         customErrorFetch: (q, err) => `Impossible de charger « ${q} » (${err}). Vérifiez la connexion ou l'identifiant.`,
         customFallbackArchNote: "Coordonnées 3D indisponibles — passage automatique à l'archétype biochimique basé sur UniProt.",
         customSource3dPdb: (pdb, ch) => `Silhouette 3D · PDB ${pdb} (chaîne ${ch})`,
+        customSource3dPdbComplex: (pdb, n, ch) => `Silhouette 3D · PDB ${pdb} (complexe · ${n} chaînes : ${ch})`,
         customSource3dAf: (acc) => `Silhouette 3D · AlphaFold (${acc})`,
         customSourceArch: (arch) => `Archétype · ${arch}`,
         customArchNames: {
+          complex: "complexe protéique multi-sous-unités (tétramère)",
           cyp450: "enzyme membranaire périphérique avec ancre TM",
           tm1: "protéine transmembranaire à un passage",
           channel: "canal membranaire",
@@ -2094,7 +2104,7 @@
     }
 
     function isWideDesktopBoard(lvl) {
-      return lvl.cols >= 8;
+      return lvl.cols >= 9 || (lvl.cols >= 8 && lvl.rows <= 4);
     }
 
     function getBoardGap(lvl) {
@@ -2110,6 +2120,8 @@
       if (vw < 640) {
         let baseCap;
         if (lvl.cols >= 12) baseCap = 28;
+        else if (lvl.cols >= 9) baseCap = 36;
+        else if (lvl.rows >= 7) baseCap = 38;
         else if (lvl.cols >= 8) baseCap = 42;
         else if (lvl.rows >= 6) baseCap = 40;
         else if (lvl.cols >= 7) baseCap = 45;
@@ -2123,6 +2135,7 @@
       if (vw < 1024) {
         let baseCap;
         if (lvl.cols >= 12) baseCap = 42;
+        else if (lvl.rows >= 7) baseCap = 44;
         else if (lvl.cols >= 8) baseCap = 48;
         else if (lvl.rows >= 6) baseCap = 46;
         else baseCap = 52;
@@ -2132,18 +2145,19 @@
       }
 
       if (isWideDesktopBoard(lvl)) {
-        const baseCap = lvl.cols >= 12 ? 46 : 52;
+        const baseCap = lvl.cols >= 12 ? 46 : (lvl.rows >= 7 ? 44 : 52);
         const availW = Math.min(vw - 80, 1080) - 170;
         const fitW = Math.floor((availW - (lvl.cols - 1) * gap) / lvl.cols);
         return Math.max(36, Math.min(baseCap, fitW));
       }
 
       let baseCap;
-      if (lvl.rows >= 6) baseCap = 46;
+      if (lvl.rows >= 7) baseCap = 44;
+      else if (lvl.rows >= 6) baseCap = 46;
       else if (lvl.cols >= 7) baseCap = 48;
       else if (lvl.cols >= 6) baseCap = 52;
       else baseCap = 54;
-      const dockW = (lvl.rows >= 6 || lvl.pieces.length <= 3) ? 292 : 352;
+      const dockW = ((lvl.rows >= 6 && lvl.pieces.length <= 6) || lvl.pieces.length <= 3) ? 292 : 352;
       const availW = Math.min(vw - 80, 1080) - dockW - 164;
       const fitW = Math.floor((availW - (lvl.cols - 1) * gap) / lvl.cols);
       return Math.max(36, Math.min(baseCap, fitW));
@@ -2204,7 +2218,8 @@
       }
 
       function runPartition(strictMaxDim, strictMinDim, maxPieces) {
-        for (let attempt = 0; attempt < 160; attempt++) {
+        const maxAttempts = boardKeys.length >= 36 ? 240 : 160;
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
           const rem = new Set(boardKeys);
           const groups = [];
           let failed = false;
@@ -2229,9 +2244,9 @@
               return da - db;
             });
             const start = remArr[Math.floor(rng() * Math.min(3, remArr.length))];
-            const baseChoices = (preferCompact && boardKeys.length >= 26 && rem.size >= 10)
-              ? [4, 5, 4, 4]
-              : [4, 4, 5, 3];
+            let baseChoices = [4, 4, 5, 3];
+            if (preferCompact && boardKeys.length >= 36 && rem.size >= 10) baseChoices = [4, 5, 4, 5];
+            else if (preferCompact && boardKeys.length >= 26 && rem.size >= 10) baseChoices = [4, 5, 4, 4];
             const possible = baseChoices.filter(s => rem.size - s === 0 || rem.size - s >= 3);
             const target = possible[Math.floor(rng() * possible.length)];
             let chosen = null;
@@ -2268,7 +2283,7 @@
       }
 
       if (!preferCompact) return runPartition(5, 5, null);
-      const maxPieces = boardKeys.length >= 26 ? 7 : 8;
+      const maxPieces = boardKeys.length >= 36 ? 10 : (boardKeys.length >= 26 ? 7 : 8);
       return runPartition(3, 2, maxPieces)
         || runPartition(3, 3, maxPieces)
         || runPartition(4, 3, maxPieces + 1)
@@ -2370,6 +2385,8 @@
       { id: 'P04637', label: 'p53',              badge: 'P04637' }
     ];
 
+    const VALID_CUSTOM_SIZES = [16, 22, 28, 40];
+
     const customProteinState = {
       loaded: false,
       loading: false,
@@ -2377,11 +2394,14 @@
       query: '',
       canonicalId: '',
       mode: '3d', // '3d' | 'archetype'
-      size: 22,   // 16 | 22 | 28
+      size: 22,   // 16 | 22 | 28 | 40
       has3d: false,
       fallbackUsed: false,
       profile: null,
       atoms: [],
+      complexAtoms: [],
+      chainIds: [],
+      usingComplex: false,
       isAlphaFold: false,
       structSource: '',
       structChain: '',
@@ -2507,21 +2527,33 @@
           if (!chains.has(chain)) chains.set(chain, []);
           const arr = chains.get(chain);
           if (arr.length === 0 || arr[arr.length - 1].seqId !== seqId) {
-            arr.push({ x, y, z, aa, seqId, b });
+            arr.push({ x, y, z, aa, seqId, b, chain });
           }
         } else if (cols.length > 0 && line === '#' && chains.size > 0) {
           break;
         }
       }
-      if (chains.size === 0) return { chain: null, atoms: [] };
-      if (preferredChain && chains.has(preferredChain) && chains.get(preferredChain).length >= 12) {
-        return { chain: preferredChain, atoms: chains.get(preferredChain) };
-      }
+      return finalizeParsedChains(chains, preferredChain);
+    }
+
+    function finalizeParsedChains(chains, preferredChain = null) {
+      if (chains.size === 0) return { chain: null, atoms: [], complexAtoms: [], chainIds: [] };
       let bestChain = null, bestAtoms = [];
-      for (const [ch, arr] of chains.entries()) {
-        if (arr.length > bestAtoms.length) { bestChain = ch; bestAtoms = arr; }
+      if (preferredChain && chains.has(preferredChain) && chains.get(preferredChain).length >= 12) {
+        bestChain = preferredChain;
+        bestAtoms = chains.get(preferredChain);
+      } else {
+        for (const [ch, arr] of chains.entries()) {
+          if (arr.length > bestAtoms.length) { bestChain = ch; bestAtoms = arr; }
+        }
       }
-      return { chain: bestChain, atoms: bestAtoms };
+      const validChains = [...chains.entries()]
+        .filter(([, arr]) => arr.length >= 15)
+        .sort((a, b) => (a[0] === bestChain ? -1 : b[0] === bestChain ? 1 : b[1].length - a[1].length))
+        .slice(0, 8);
+      const chainIds = validChains.map(([ch]) => ch);
+      const complexAtoms = validChains.length >= 2 ? validChains.flatMap(([, arr]) => arr) : bestAtoms;
+      return { chain: bestChain, atoms: bestAtoms, complexAtoms, chainIds };
     }
 
     function parsePdbCA(text, preferredChain = null) {
@@ -2546,16 +2578,9 @@
         if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) continue;
         if (!chains.has(chain)) chains.set(chain, []);
         const arr = chains.get(chain);
-        if (arr.length === 0 || arr[arr.length - 1].seqId !== seqId) arr.push({ x, y, z, aa, seqId, b });
+        if (arr.length === 0 || arr[arr.length - 1].seqId !== seqId) arr.push({ x, y, z, aa, seqId, b, chain });
       }
-      if (preferredChain && chains.has(preferredChain) && chains.get(preferredChain).length >= 12) {
-        return { chain: preferredChain, atoms: chains.get(preferredChain) };
-      }
-      let bestChain = null, bestAtoms = [];
-      for (const [ch, arr] of chains.entries()) {
-        if (arr.length > bestAtoms.length) { bestChain = ch; bestAtoms = arr; }
-      }
-      return { chain: bestChain, atoms: bestAtoms };
+      return finalizeParsedChains(chains, preferredChain);
     }
 
     function classifyCustomInput(raw) {
@@ -2837,16 +2862,18 @@
       }
 
       setCustomFeedback('loading', dict().customLoading3d(`PDB ${pdbId}`));
-      let atoms = [], chain = prefChain || 'A', isAlphaFold = false;
+      let atoms = [], complexAtoms = [], chainIds = [], chain = prefChain || 'A', isAlphaFold = false;
       try {
         const res = await fetchPdbAtoms(pdbId, prefChain);
         atoms = res.atoms;
+        complexAtoms = res.complexAtoms || res.atoms;
+        chainIds = res.chainIds || [];
         chain = res.chain || chain;
       } catch (_) {
         if (profile.accession) {
           try {
             const af = await fetchAlphaFoldAtoms(profile.accession);
-            atoms = af.atoms; chain = af.chain || 'A'; isAlphaFold = true;
+            atoms = af.atoms; complexAtoms = af.atoms; chainIds = [af.chain || 'A']; chain = af.chain || 'A'; isAlphaFold = true;
           } catch (__) {}
         }
       }
@@ -2854,7 +2881,7 @@
         profile.seq = atoms.map(a => a.aa).join('');
         profile.seqLen = profile.seq.length;
       }
-      return { profile, atoms, chain, isAlphaFold, canonicalId: pdbId };
+      return { profile, atoms, complexAtoms, chainIds, chain, isAlphaFold, canonicalId: pdbId };
     }
 
     async function fetchCustomByUniProt(acc) {
@@ -2877,13 +2904,15 @@
         bestPdb = fullCovers[0] || null;
       }
 
-      let atoms = [], chain = 'A', isAlphaFold = false;
+      let atoms = [], complexAtoms = [], chainIds = [], chain = 'A', isAlphaFold = false;
       if (bestPdb) {
         profile.pdb = bestPdb.id;
         setCustomFeedback('loading', dict().customLoading3d(`PDB ${bestPdb.id}`));
         try {
           const res = await fetchPdbAtoms(bestPdb.id, bestPdb.chain);
           atoms = res.atoms;
+          complexAtoms = res.complexAtoms || res.atoms;
+          chainIds = res.chainIds || [];
           chain = res.chain || bestPdb.chain || 'A';
         } catch (_) {}
       }
@@ -2893,6 +2922,8 @@
         try {
           const af = await fetchAlphaFoldAtoms(profile.accession);
           atoms = af.atoms;
+          complexAtoms = af.atoms;
+          chainIds = [af.chain || 'A'];
           chain = af.chain || 'A';
           isAlphaFold = true;
           if (!profile.pdb && profile.pdbXrefs.length > 0) {
@@ -2907,13 +2938,15 @@
             try {
               const res = await fetchPdbAtoms(fallbackPdb.id, fallbackPdb.chain);
               atoms = res.atoms;
+              complexAtoms = res.complexAtoms || res.atoms;
+              chainIds = res.chainIds || [];
               chain = res.chain || 'A';
             } catch (__) {}
           }
         }
       }
 
-      return { profile, atoms, chain, isAlphaFold, canonicalId: profile.accession };
+      return { profile, atoms, complexAtoms, chainIds, chain, isAlphaFold, canonicalId: profile.accession };
     }
 
     async function searchUniProtByName(query) {
@@ -2938,7 +2971,7 @@
     // -------------------------------------------------------------------------
     // 3D -> 2D SILHOUETTE PROJECTION (PCA + TM Axis + 3D Burial + Active Tunnel)
     // -------------------------------------------------------------------------
-    function project3DToBoard(atoms, profile, targetN, isAlphaFold, archKey) {
+    function project3DToBoard(atoms, profile, targetN, isAlphaFold, archKey, primaryChain = null) {
       let pts = atoms;
       const tmRanges = profile?.tmRanges || [];
       const inTM = (seqId) => tmRanges.some(([s, e]) => seqId >= s && seqId <= e);
@@ -3029,7 +3062,7 @@
         return {
           u: x*axisX[0] + y*axisX[1] + z*axisX[2],
           v: x*axisY[0] + y*axisY[1] + z*axisY[2],
-          aa: p.aa, seqId: p.seqId, cn: cn[i], isTM: inTM(p.seqId)
+          aa: p.aa, seqId: p.seqId, chain: p.chain || null, cn: cn[i], isTM: inTM(p.seqId)
         };
       });
 
@@ -3041,14 +3074,17 @@
       const spanU = Math.max(1, maxU - minU), spanV = Math.max(1, maxV - minV);
       const ar = Math.max(0.55, Math.min(3.4, spanU / spanV));
 
+      const maxCols = (targetN >= 36 && ar > 1.7) ? 9 : 8;
+      const maxRows = (maxCols === 9) ? 5 : 7;
       const area = targetN * 1.45;
       let cols = Math.round(Math.sqrt(area * ar));
       let rows = Math.round(area / Math.max(1, cols));
-      cols = Math.max(4, Math.min(8, cols));
-      rows = Math.max(3, Math.min(7, rows));
+      cols = Math.max(4, Math.min(maxCols, cols));
+      rows = Math.max(3, Math.min(maxRows, rows));
       while (cols * rows < targetN + 3) {
-        if (cols < 8 && (cols / rows < ar || rows >= 7)) cols++;
-        else if (rows < 7) rows++;
+        if (cols < maxCols && (cols / rows < ar || rows >= maxRows)) cols++;
+        else if (rows < maxRows) rows++;
+        else if (cols < 9 && rows < 7) rows++;
         else break;
       }
 
@@ -3142,10 +3178,12 @@
       if (profile?.activeSite && AA_INFO[profile.activeSite.aa]) {
         const actPos = profile.activeSite.pos;
         const actAA = profile.activeSite.aa;
-        let actCell = statList.find(s => s.res.some(p => p.seqId === actPos && p.aa === actAA))
-          || statList.find(s => s.res.some(p => Math.abs(p.seqId - actPos) <= 2));
+        const chainOk = (p) => !primaryChain || !p.chain || p.chain === primaryChain;
+        let actCell = statList.find(s => s.res.some(p => chainOk(p) && p.seqId === actPos && p.aa === actAA))
+          || statList.find(s => s.res.some(p => chainOk(p) && Math.abs(p.seqId - actPos) <= 2))
+          || statList.find(s => s.res.some(p => p.seqId === actPos && p.aa === actAA));
         if (!actCell) {
-          const atom = projPts.find(p => p.seqId === actPos) || projPts.find(p => Math.abs(p.seqId - actPos) <= 3);
+          const atom = projPts.find(p => chainOk(p) && p.seqId === actPos) || projPts.find(p => Math.abs(p.seqId - actPos) <= 3);
           if (atom) {
             const fc = Math.max(0, Math.min(cols - 1e-4, ((atom.u - minU) / spanU) * cols)) - c0;
             const fr = Math.max(0, Math.min(rows - 1e-4, ((atom.v - minV) / spanV) * rows)) - r0;
@@ -3195,7 +3233,7 @@
     }
 
     // -------------------------------------------------------------------------
-    // BIOCHEMICAL ARCHETYPE BOARD GENERATOR (10 archetypes × 16 / 22 / 28 AA)
+    // BIOCHEMICAL ARCHETYPE BOARD GENERATOR (11 archetypes × 16 / 22 / 28 / 40 AA)
     // -------------------------------------------------------------------------
     function buildArchetypeBoard(archKey, targetN, activeReqAA = null) {
       const b = {};
@@ -3204,6 +3242,48 @@
         b[`${r},${c}`] = reqAA ? { env, zone, reqAA } : { env, zone };
       };
       const req = activeReqAA || 'C';
+
+      if (archKey === 'complex') {
+        const useActive = Boolean(activeReqAA);
+        if (targetN === 16) {
+          // 4x5 mini-dimer (2 lobes + polar interface)
+          for (let c = 1; c <= 3; c++) { set(0, c, 'water'); set(3, c, 'water'); }
+          for (const r of [1, 2]) {
+            [0, 2, 4].forEach(c => set(r, c, 'water'));
+            [1, 3].forEach(c => set(r, c, 'lipid'));
+          }
+          if (useActive) set(2, 2, 'active', req);
+          return { rows: 4, cols: 5, board: b };
+        }
+        if (targetN === 22) {
+          // 4x7 symmetric homodimer (two 2x2 subunit cores + polar interface)
+          [1, 2, 4, 5].forEach(c => { set(0, c, 'water'); set(3, c, 'water'); });
+          for (const r of [1, 2]) {
+            [0, 3, 6].forEach(c => set(r, c, 'water'));
+            [1, 2, 4, 5].forEach(c => set(r, c, 'lipid'));
+          }
+          if (useActive) set(2, 3, 'active', req);
+          return { rows: 4, cols: 7, board: b };
+        }
+        if (targetN === 28) {
+          // 4x8 symmetric homodimer with wider polar dimer cleft
+          for (let c = 1; c <= 6; c++) { set(0, c, 'water'); set(3, c, 'water'); }
+          for (const r of [1, 2]) {
+            [0, 3, 4, 7].forEach(c => set(r, c, 'water'));
+            [1, 2, 5, 6].forEach(c => set(r, c, 'lipid'));
+          }
+          if (useActive) set(2, 3, 'active', req);
+          return { rows: 4, cols: 8, board: b };
+        }
+        // 40 AA XL (7x7 4-lobe tetramer ring with hollow central cavity at (3,3) — e.g. Hemoglobin α₂β₂)
+        [1, 2, 4, 5].forEach(c => { set(0, c, 'water'); set(3, c, 'water'); set(6, c, 'water'); });
+        for (const r of [1, 2, 4, 5]) {
+          [0, 3, 6].forEach(c => set(r, c, 'water'));
+          [1, 2, 4, 5].forEach(c => set(r, c, 'lipid'));
+        }
+        if (useActive) set(2, 3, 'active', req);
+        return { rows: 7, cols: 7, board: b };
+      }
 
       if (archKey === 'globular' || archKey === 'mini') {
         if (targetN === 16) {
@@ -3218,12 +3298,19 @@
           for (let c = 1; c <= 4; c++) set(4, c, 'water');
           return { rows: 5, cols: 6, board: b };
         }
-        // 28 AA (6x6 symmetric globule)
-        [2, 3].forEach(c => set(0, c, 'water'));
-        [1, 4].forEach(c => set(1, c, 'water')); [2, 3].forEach(c => set(1, c, 'lipid'));
-        for (const r of [2, 3, 4]) { set(r, 0, 'water'); set(r, 5, 'water'); for (let c = 1; c <= 4; c++) set(r, c, 'lipid'); }
-        for (let c = 1; c <= 4; c++) set(5, c, 'water');
-        return { rows: 6, cols: 6, board: b };
+        if (targetN === 28) {
+          // 28 AA (6x6 symmetric globule)
+          [2, 3].forEach(c => set(0, c, 'water'));
+          [1, 4].forEach(c => set(1, c, 'water')); [2, 3].forEach(c => set(1, c, 'lipid'));
+          for (const r of [2, 3, 4]) { set(r, 0, 'water'); set(r, 5, 'water'); for (let c = 1; c <= 4; c++) set(r, c, 'lipid'); }
+          for (let c = 1; c <= 4; c++) set(5, c, 'water');
+          return { rows: 6, cols: 6, board: b };
+        }
+        // 40 AA XL (6x8 large globular domain)
+        for (let c = 1; c <= 6; c++) { set(0, c, 'water'); set(5, c, 'water'); }
+        for (const r of [1, 4]) { set(r, 1, 'water'); set(r, 6, 'water'); for (let c = 2; c <= 5; c++) set(r, c, 'lipid'); }
+        for (const r of [2, 3]) { set(r, 0, 'water'); set(r, 7, 'water'); for (let c = 1; c <= 6; c++) set(r, c, 'lipid'); }
+        return { rows: 6, cols: 8, board: b };
       }
 
       if (archKey === 'ribbon') {
@@ -3235,11 +3322,19 @@
           for (let c = 0; c < 11; c++) { set(0, c, 'water'); set(1, c, 'lipid'); }
           return { rows: 2, cols: 11, board: b };
         }
-        // 28 AA (3x10 minus 2)
-        for (let c = 0; c < 10; c++) set(0, c, 'water');
-        set(1, 0, 'water'); set(1, 9, 'water');
-        for (let c = 1; c <= 8; c++) { set(1, c, 'lipid'); set(2, c, 'lipid'); }
-        return { rows: 3, cols: 10, board: b };
+        if (targetN === 28) {
+          // 28 AA (3x10 minus 2)
+          for (let c = 0; c < 10; c++) set(0, c, 'water');
+          set(1, 0, 'water'); set(1, 9, 'water');
+          for (let c = 1; c <= 8; c++) { set(1, c, 'lipid'); set(2, c, 'lipid'); }
+          return { rows: 3, cols: 10, board: b };
+        }
+        // 40 AA XL (4x10 amphipathic ribbon)
+        for (let c = 0; c < 10; c++) {
+          set(0, c, 'water'); set(1, c, 'water');
+          set(2, c, 'lipid'); set(3, c, 'lipid');
+        }
+        return { rows: 4, cols: 10, board: b };
       }
 
       if (archKey === 'enzyme') {
@@ -3258,14 +3353,23 @@
           for (let c = 1; c <= 4; c++) set(4, c, 'water');
           return { rows: 5, cols: 6, board: b };
         }
-        // 28 AA (6x6 with deep 3-cell tunnel to active site)
-        set(0, 2, 'water'); set(0, 3, 'pore');
-        set(1, 1, 'water'); set(1, 2, 'lipid'); set(1, 3, 'pore'); set(1, 4, 'water');
-        set(2, 0, 'water'); set(2, 1, 'lipid'); set(2, 2, 'lipid'); set(2, 3, 'pore'); set(2, 4, 'lipid'); set(2, 5, 'water');
-        set(3, 0, 'water'); set(3, 1, 'lipid'); set(3, 2, 'lipid'); set(3, 3, 'active', req); set(3, 4, 'lipid'); set(3, 5, 'water');
-        set(4, 0, 'water'); for (let c = 1; c <= 4; c++) set(4, c, 'lipid'); set(4, 5, 'water');
-        for (let c = 1; c <= 4; c++) set(5, c, 'water');
-        return { rows: 6, cols: 6, board: b };
+        if (targetN === 28) {
+          // 28 AA (6x6 with deep 3-cell tunnel to active site)
+          set(0, 2, 'water'); set(0, 3, 'pore');
+          set(1, 1, 'water'); set(1, 2, 'lipid'); set(1, 3, 'pore'); set(1, 4, 'water');
+          set(2, 0, 'water'); set(2, 1, 'lipid'); set(2, 2, 'lipid'); set(2, 3, 'pore'); set(2, 4, 'lipid'); set(2, 5, 'water');
+          set(3, 0, 'water'); set(3, 1, 'lipid'); set(3, 2, 'lipid'); set(3, 3, 'active', req); set(3, 4, 'lipid'); set(3, 5, 'water');
+          set(4, 0, 'water'); for (let c = 1; c <= 4; c++) set(4, c, 'lipid'); set(4, 5, 'water');
+          for (let c = 1; c <= 4; c++) set(5, c, 'water');
+          return { rows: 6, cols: 6, board: b };
+        }
+        // 40 AA XL (6x8 large catalytic enzyme with deep substrate tunnel)
+        for (let c = 1; c <= 6; c++) { set(0, c, c === 3 ? 'pore' : 'water'); set(5, c, 'water'); }
+        for (const r of [1, 4]) { set(r, 1, 'water'); set(r, 6, 'water'); for (let c = 2; c <= 5; c++) set(r, c, (r === 1 && c === 3) ? 'pore' : 'lipid'); }
+        for (const r of [2, 3]) { set(r, 0, 'water'); set(r, 7, 'water'); for (let c = 1; c <= 6; c++) set(r, c, 'lipid'); }
+        set(2, 3, 'pore');
+        set(3, 3, 'active', req);
+        return { rows: 6, cols: 8, board: b };
       }
 
       if (archKey === 'channel' || archKey === 'transporter') {
@@ -3285,14 +3389,24 @@
           if (useActive) set(2, 2, 'active', req);
           return { rows: 5, cols: 6, board: b };
         }
-        // 28 AA (4x7 full membrane transporter)
-        for (let c = 0; c < 7; c++) { set(0, c, 'water'); set(3, c, 'water'); }
-        for (const r of [1, 2]) {
-          [0, 1, 5, 6].forEach(c => set(r, c, 'lipid'));
-          [2, 3, 4].forEach(c => set(r, c, 'pore'));
+        if (targetN === 28) {
+          // 28 AA (4x7 full membrane transporter)
+          for (let c = 0; c < 7; c++) { set(0, c, 'water'); set(3, c, 'water'); }
+          for (const r of [1, 2]) {
+            [0, 1, 5, 6].forEach(c => set(r, c, 'lipid'));
+            [2, 3, 4].forEach(c => set(r, c, 'pore'));
+          }
+          if (useActive) set(2, 3, 'active', req);
+          return { rows: 4, cols: 7, board: b };
+        }
+        // 40 AA XL (5x8 deep transmembrane channel / transporter complex)
+        for (let c = 0; c < 8; c++) { set(0, c, 'water'); set(4, c, 'water'); }
+        for (const r of [1, 2, 3]) {
+          [0, 1, 2, 5, 6, 7].forEach(c => set(r, c, 'lipid'));
+          [3, 4].forEach(c => set(r, c, 'pore'));
         }
         if (useActive) set(2, 3, 'active', req);
-        return { rows: 4, cols: 7, board: b };
+        return { rows: 5, cols: 8, board: b };
       }
 
       if (archKey === 'cyp450') {
@@ -3313,14 +3427,25 @@
           set(5, 0, 'water'); set(5, 1, 'water');
           return { rows: 6, cols: 6, board: b };
         }
-        // 28 AA (6x7 extended P450)
-        for (let c = 1; c <= 5; c++) set(0, c, 'water');
-        set(1, 1, 'water'); for (let c = 2; c <= 5; c++) set(1, c, 'lipid'); set(1, 6, 'water');
-        set(2, 0, 'water'); set(2, 1, 'water'); set(2, 2, 'lipid'); set(2, 3, 'lipid'); set(2, 4, 'active', req); set(2, 5, 'pore'); set(2, 6, 'pore');
-        for (let c = 0; c <= 5; c++) set(3, c, 'lipid');
-        set(4, 0, 'lipid'); set(4, 1, 'lipid');
-        set(5, 0, 'water'); set(5, 1, 'water');
-        return { rows: 6, cols: 7, board: b };
+        if (targetN === 28) {
+          // 28 AA (6x7 extended P450)
+          for (let c = 1; c <= 5; c++) set(0, c, 'water');
+          set(1, 1, 'water'); for (let c = 2; c <= 5; c++) set(1, c, 'lipid'); set(1, 6, 'water');
+          set(2, 0, 'water'); set(2, 1, 'water'); set(2, 2, 'lipid'); set(2, 3, 'lipid'); set(2, 4, 'active', req); set(2, 5, 'pore'); set(2, 6, 'pore');
+          for (let c = 0; c <= 5; c++) set(3, c, 'lipid');
+          set(4, 0, 'lipid'); set(4, 1, 'lipid');
+          set(5, 0, 'water'); set(5, 1, 'water');
+          return { rows: 6, cols: 7, board: b };
+        }
+        // 40 AA XL (7x8 full catalytic domain + TM anchor)
+        for (let c = 2; c <= 6; c++) set(0, c, 'water');
+        set(1, 1, 'water'); for (let c = 2; c <= 6; c++) set(1, c, 'lipid'); set(1, 7, 'water');
+        set(2, 0, 'water'); set(2, 1, 'water'); for (let c = 2; c <= 4; c++) set(2, c, 'lipid'); set(2, 5, 'active', req); set(2, 6, 'pore'); set(2, 7, 'pore');
+        for (let c = 0; c <= 6; c++) set(3, c, 'lipid'); set(3, 7, 'water');
+        for (let c = 0; c <= 5; c++) set(4, c, 'lipid');
+        for (let c = 0; c <= 2; c++) set(5, c, 'lipid');
+        for (let c = 0; c <= 2; c++) set(6, c, 'water');
+        return { rows: 7, cols: 8, board: b };
       }
 
       if (archKey === 'tm1') {
@@ -3339,12 +3464,23 @@
           set(3, 1, 'lipid'); set(3, 2, 'lipid');
           return { rows: 6, cols: 5, board: b };
         }
-        // 28 AA (6x6 single-pass TM receptor)
-        for (let c = 0; c < 6; c++) { set(0, c, 'water'); set(5, c, 'water'); }
-        for (const r of [1, 4]) { set(r, 0, 'water'); for (let c = 1; c <= 4; c++) set(r, c, 'lipid'); set(r, 5, 'water'); }
-        set(2, 2, 'lipid'); set(2, 3, 'lipid');
-        set(3, 2, 'lipid'); set(3, 3, 'lipid');
-        return { rows: 6, cols: 6, board: b };
+        if (targetN === 28) {
+          // 28 AA (6x6 single-pass TM receptor)
+          for (let c = 0; c < 6; c++) { set(0, c, 'water'); set(5, c, 'water'); }
+          for (const r of [1, 4]) { set(r, 0, 'water'); for (let c = 1; c <= 4; c++) set(r, c, 'lipid'); set(r, 5, 'water'); }
+          set(2, 2, 'lipid'); set(2, 3, 'lipid');
+          set(3, 2, 'lipid'); set(3, 3, 'lipid');
+          return { rows: 6, cols: 6, board: b };
+        }
+        // 40 AA XL (7x8 large single-pass TM receptor / spike ectodomain + TM stalk + cytoplasmic tail)
+        for (let c = 1; c <= 6; c++) set(0, c, 'water');
+        set(1, 0, 'water'); for (let c = 1; c <= 6; c++) set(1, c, 'lipid'); set(1, 7, 'water');
+        set(2, 1, 'water'); for (let c = 2; c <= 5; c++) set(2, c, 'lipid'); set(2, 6, 'water');
+        set(3, 3, 'lipid'); set(3, 4, 'lipid');
+        set(4, 3, 'lipid'); set(4, 4, 'lipid');
+        set(5, 0, 'water'); for (let c = 1; c <= 6; c++) set(5, c, 'lipid'); set(5, 7, 'water');
+        for (let c = 0; c < 8; c++) set(6, c, 'water');
+        return { rows: 7, cols: 8, board: b };
       }
 
       if (archKey === 'fibril') {
@@ -3360,11 +3496,19 @@
           for (let c = 0; c <= 6; c++) set(2, c, 'water');
           return { rows: 3, cols: 8, board: b };
         }
-        // 28 AA (3x10 fibril)
-        for (let c = 0; c <= 8; c++) set(0, c, 'water');
-        for (let c = 0; c <= 9; c++) set(1, c, 'lipid');
-        for (let c = 1; c <= 9; c++) set(2, c, 'water');
-        return { rows: 3, cols: 10, board: b };
+        if (targetN === 28) {
+          // 28 AA (3x10 fibril)
+          for (let c = 0; c <= 8; c++) set(0, c, 'water');
+          for (let c = 0; c <= 9; c++) set(1, c, 'lipid');
+          for (let c = 1; c <= 9; c++) set(2, c, 'water');
+          return { rows: 3, cols: 10, board: b };
+        }
+        // 40 AA XL (4x10 fibril bundle)
+        for (let c = 0; c < 10; c++) {
+          set(0, c, 'water'); set(1, c, 'lipid');
+          set(2, c, 'lipid'); set(3, c, 'water');
+        }
+        return { rows: 4, cols: 10, board: b };
       }
 
       // 'tandem' (two hydrophobic domains + polar hinge)
@@ -3380,14 +3524,23 @@
         [1, 2, 3, 4, 6, 7, 8, 9].forEach(c => set(1, c, 'lipid'));
         return { rows: 2, cols: 11, board: b };
       }
-      // 28 AA (4x8 two 2x2 hydrophobic domain cores + 2-col polar hinge)
-      for (let c = 0; c < 8; c++) set(0, c, 'water');
-      for (const r of [1, 2]) {
-        [0, 3, 4, 7].forEach(c => set(r, c, 'water'));
-        [1, 2, 5, 6].forEach(c => set(r, c, 'lipid'));
+      if (targetN === 28) {
+        // 28 AA (4x8 two 2x2 hydrophobic domain cores + 2-col polar hinge)
+        for (let c = 0; c < 8; c++) set(0, c, 'water');
+        for (const r of [1, 2]) {
+          [0, 3, 4, 7].forEach(c => set(r, c, 'water'));
+          [1, 2, 5, 6].forEach(c => set(r, c, 'lipid'));
+        }
+        [1, 2, 5, 6].forEach(c => set(3, c, 'water'));
+        return { rows: 4, cols: 8, board: b };
       }
-      [1, 2, 5, 6].forEach(c => set(3, c, 'water'));
-      return { rows: 4, cols: 8, board: b };
+      // 40 AA XL (4x10 two 2x3 hydrophobic domain cores + 2-col polar linker)
+      for (let c = 0; c < 10; c++) { set(0, c, 'water'); set(3, c, 'water'); }
+      for (const r of [1, 2]) {
+        [0, 4, 5, 9].forEach(c => set(r, c, 'water'));
+        [1, 2, 3, 6, 7, 8].forEach(c => set(r, c, 'lipid'));
+      }
+      return { rows: 4, cols: 10, board: b };
     }
 
     // -------------------------------------------------------------------------
@@ -3469,8 +3622,8 @@
           }
         }
       }
-      // Plant 1–2 inter-piece salt bridges (+ / −)
-      let saltTarget = keys.length >= 22 ? 2 : 1;
+      // Plant 1–3 inter-piece salt bridges (+ / −)
+      let saltTarget = keys.length >= 36 ? 3 : (keys.length >= 22 ? 2 : 1);
       for (const [a, b] of crossPairs) {
         if (saltTarget <= 0) break;
         if (usedBridgeCells.has(a) || usedBridgeCells.has(b)) continue;
@@ -3502,6 +3655,32 @@
       });
 
       return { pieces, solution };
+    }
+
+    function getEffectiveCustomArchKey() {
+      const base = customProteinState.archKey || 'globular';
+      const isMembrane = base === 'channel' || base === 'transporter' || base === 'cyp450' || base === 'tm1';
+      if (customProteinState.size >= 40 && customProteinState.chainIds.length >= 2 && !isMembrane) {
+        return 'complex';
+      }
+      return base;
+    }
+
+    function getCustomSourceText() {
+      const d = dict();
+      const p = customProteinState.profile;
+      const effArch = getEffectiveCustomArchKey();
+      const archLabel = d.customArchNames[effArch] || d.customArchNames.globular;
+      const is3d = customProteinState.mode === '3d' && customProteinState.has3d;
+      if (!is3d) return d.customSourceArch(archLabel);
+      if (customProteinState.isAlphaFold) return d.customSource3dAf(p.accession);
+      const pdbId = p.pdb || customProteinState.canonicalId;
+      if (customProteinState.usingComplex && customProteinState.chainIds.length >= 2) {
+        const shown = customProteinState.chainIds.slice(0, 6).join(', ');
+        const suffix = customProteinState.chainIds.length > 6 ? ', …' : '';
+        return d.customSource3dPdbComplex(pdbId, customProteinState.chainIds.length, `${shown}${suffix}`);
+      }
+      return d.customSource3dPdb(pdbId, customProteinState.structChain || 'A');
     }
 
     function getCustomEnvLabels(archKey) {
@@ -3540,13 +3719,10 @@
         };
       }
       const p = customProteinState.profile;
-      const archLabel = d.customArchNames[customProteinState.archKey] || d.customArchNames.globular;
+      const effArch = getEffectiveCustomArchKey();
+      const archLabel = d.customArchNames[effArch] || d.customArchNames.globular;
       const is3d = customProteinState.mode === '3d' && customProteinState.has3d;
-      const sourceText = is3d
-        ? (customProteinState.isAlphaFold
-          ? d.customSource3dAf(p.accession)
-          : d.customSource3dPdb(p.pdb || customProteinState.canonicalId, customProteinState.structChain || 'A'))
-        : d.customSourceArch(archLabel);
+      const sourceText = getCustomSourceText();
       const descModeText = is3d ? sourceText : d.customModeArch.replace(/^[^\s]+\s+/, '');
       const actSym = p.activeSite ? `${formatActiveSym(p.activeSite.aa)} (${p.activeSite.aa}${p.activeSite.pos})` : '';
       const hasActiveOnBoard = Object.values(LEVELS.custom.board).some(c => c.zone === 'active');
@@ -3573,7 +3749,7 @@
           name: `${p.name}${p.organism ? ` (${p.organism})` : ''}`,
           note: p.functionNote || featText
         },
-        envLabels: getCustomEnvLabels(customProteinState.archKey)
+        envLabels: getCustomEnvLabels(effArch)
       };
     }
 
@@ -3582,13 +3758,18 @@
       const p = customProteinState.profile;
       const targetN = customProteinState.size;
       const use3d = customProteinState.mode === '3d' && customProteinState.has3d && customProteinState.atoms.length >= 12;
+      const isComplexXL = use3d && targetN >= 40 && customProteinState.chainIds.length >= 2
+        && customProteinState.complexAtoms.length > customProteinState.atoms.length;
+      customProteinState.usingComplex = isComplexXL;
+      const effArch = getEffectiveCustomArchKey();
 
       let geo;
       if (use3d) {
-        geo = project3DToBoard(customProteinState.atoms, p, targetN, customProteinState.isAlphaFold, customProteinState.archKey);
+        const srcAtoms = isComplexXL ? customProteinState.complexAtoms : customProteinState.atoms;
+        geo = project3DToBoard(srcAtoms, p, targetN, customProteinState.isAlphaFold, customProteinState.archKey, customProteinState.structChain);
         customProteinState.cellStats = geo.cellStats;
       } else {
-        geo = buildArchetypeBoard(customProteinState.archKey, targetN, p.activeSite?.aa || null);
+        geo = buildArchetypeBoard(effArch, targetN, p.activeSite?.aa || null);
         customProteinState.cellStats = null;
       }
 
@@ -3599,7 +3780,7 @@
       lvl.pdb = p.pdb || '';
       lvl.uniprot = p.accession || '';
       lvl.alphafold = p.accession || '';
-      lvl.diffKey = targetN <= 16 ? 'easy' : (targetN <= 22 ? 'medium' : 'hard');
+      lvl.diffKey = targetN <= 16 ? 'easy' : (targetN <= 22 ? 'medium' : (targetN <= 28 ? 'hard' : 'expert'));
 
       const baseHash = hashString(`${customProteinState.canonicalId}|${customProteinState.mode}|${targetN}`);
       const variantOffset = vKey === 'A' ? 0 : (VARIANT_SEEDS[vKey] || 0);
@@ -3745,13 +3926,7 @@
 
       const pill = document.getElementById('custom-source-pill');
       if (pill && customProteinState.profile) {
-        const p = customProteinState.profile;
-        const archName = d.customArchNames[customProteinState.archKey] || d.customArchNames.globular;
-        pill.textContent = is3dActive
-          ? (customProteinState.isAlphaFold
-            ? d.customSource3dAf(p.accession)
-            : d.customSource3dPdb(p.pdb || customProteinState.canonicalId, customProteinState.structChain || 'A'))
-          : d.customSourceArch(archName);
+        pill.textContent = getCustomSourceText();
       }
     }
 
@@ -3796,6 +3971,9 @@
 
         customProteinState.profile = res.profile;
         customProteinState.atoms = res.atoms || [];
+        customProteinState.complexAtoms = res.complexAtoms || customProteinState.atoms;
+        customProteinState.chainIds = res.chainIds || (res.chain ? [res.chain] : []);
+        customProteinState.usingComplex = false;
         customProteinState.isAlphaFold = Boolean(res.isAlphaFold);
         customProteinState.structChain = res.chain || 'A';
         customProteinState.canonicalId = res.canonicalId;
@@ -3804,7 +3982,7 @@
         customProteinState.loaded = true;
         customProteinState.loading = false;
 
-        if (opts.size && [16, 22, 28].includes(opts.size)) {
+        if (opts.size && VALID_CUSTOM_SIZES.includes(opts.size)) {
           customProteinState.size = opts.size;
         }
         if (opts.mode === 'archetype') {
@@ -3852,7 +4030,7 @@
 
     function switchCustomSize(n) {
       const sz = Number(n);
-      if (![16, 22, 28].includes(sz) || customProteinState.size === sz) return;
+      if (!VALID_CUSTOM_SIZES.includes(sz) || customProteinState.size === sz) return;
       customProteinState.size = sz;
       if (customProteinState.loaded) buildCustomPuzzle('A');
       else renderCustomPanel();
@@ -4691,7 +4869,7 @@
           dock.className = 'w-full max-w-[760px] flex flex-col gap-1.5 sm:gap-2';
         } else {
           stage.className = 'rounded-xl bg-[var(--background)]/75 border border-[var(--border)]/80 p-2 sm:p-3 flex flex-col lg:flex-row items-center justify-center gap-2 sm:gap-3 lg:gap-4';
-          const narrowDock = lvl.rows >= 6 || pieceCount <= 3;
+          const narrowDock = (lvl.rows >= 6 && pieceCount <= 6) || pieceCount <= 3;
           dock.className = narrowDock
             ? 'w-full lg:w-[292px] shrink-0 flex flex-col gap-1.5 sm:gap-2'
             : 'w-full lg:w-[348px] shrink-0 flex flex-col gap-1.5 sm:gap-2';
@@ -4702,18 +4880,18 @@
         tapHintEl.classList.toggle('hidden', !(wideBoard && vw >= 640));
       }
 
-      // Dynamic tray column counts (compact 1–2 rows on mobile, tight adjacent block on desktop)
+      // Dynamic tray column counts (compact rows on mobile, tight adjacent block on desktop)
       let mobileColsCls;
       if (pieceCount === 4 || pieceCount >= 7) mobileColsCls = 'grid-cols-4';
       else mobileColsCls = 'grid-cols-3';
 
       let desktopColsCls;
       if (wideBoard) {
-        if (pieceCount <= 4) desktopColsCls = 'lg:grid-cols-4';
-        else if (pieceCount === 5) desktopColsCls = 'lg:grid-cols-5';
+        if (pieceCount <= 4 || pieceCount === 7 || pieceCount === 8) desktopColsCls = 'lg:grid-cols-4';
+        else if (pieceCount === 5 || pieceCount >= 9) desktopColsCls = 'lg:grid-cols-5';
         else desktopColsCls = 'lg:grid-cols-6';
       } else {
-        desktopColsCls = (lvl.rows >= 6 || pieceCount <= 3) ? 'lg:grid-cols-2' : 'lg:grid-cols-3';
+        desktopColsCls = ((lvl.rows >= 6 && pieceCount <= 6) || pieceCount <= 3) ? 'lg:grid-cols-2' : 'lg:grid-cols-3';
       }
 
       tray.className = `grid ${mobileColsCls} ${desktopColsCls} gap-1.5 sm:gap-2`;
@@ -4722,8 +4900,12 @@
       document.getElementById('active-piece-label').textContent =
         selectedPieceId ? getPieceName(selectedPieceId) : dict().trayNone;
 
-      const miniPx = isCompactMobile ? (pieceCount >= 7 ? 15 : 17) : 20;
-      const previewMinH = isCompactMobile ? (pieceCount >= 7 ? 'min-h-[48px]' : 'min-h-[54px]') : 'min-h-[60px]';
+      const miniPx = isCompactMobile
+        ? (pieceCount >= 9 ? 14 : (pieceCount >= 7 ? 15 : 17))
+        : (pieceCount >= 9 && !wideBoard ? 18 : 20);
+      const previewMinH = isCompactMobile
+        ? (pieceCount >= 9 ? 'min-h-[44px]' : (pieceCount >= 7 ? 'min-h-[48px]' : 'min-h-[54px]'))
+        : (pieceCount >= 9 && !wideBoard ? 'min-h-[50px]' : 'min-h-[60px]');
 
       lvl.pieces.forEach(pid => {
         const isPlaced = Boolean(st.placed[pid]);
@@ -4926,12 +5108,16 @@
     }
 
     function renderPrintPieceCard(pid, compact = false) {
+      const isUltra = compact === 'ultra';
       const minH = printCellMm * 2 + (compact ? 0 : 0.5);
-      const padStyle = compact ? 'padding:1mm 1.8mm 1.2mm;gap:0.8mm;' : '';
+      const padStyle = isUltra
+        ? 'padding:0.65mm 1.4mm 0.75mm;gap:0.4mm;'
+        : (compact ? 'padding:1mm 1.8mm 1.2mm;gap:0.8mm;' : '');
+      const titleFs = isUltra ? '6.9pt;line-height:1.05' : '7.3pt;line-height:1.1';
       const shapeTag = MASTER_POOL[pid]?.genCount ? '' : ` <span style="color:#475569;">(${getPieceShape(pid)})</span>`;
       return `
         <div class="print-piece-card" style="${padStyle}">
-          <div style="font-size:7.3pt;line-height:1.1;text-align:center;color:#0f172a;">
+          <div style="font-size:${titleFs};text-align:center;color:#0f172a;">
             <strong>${getPieceName(pid)}</strong>${shapeTag}
           </div>
           <div style="display:flex;align-items:center;justify-content:center;min-height:${minH}mm;">
@@ -5218,40 +5404,41 @@
       `;
     }
 
-    function renderPrintCustomLegend(activeReqAA = 'C', narrow = false) {
+    function renderPrintCustomLegend(activeReqAA = 'C', narrow = false, tight = false) {
       const d = dict();
       const actSym = formatActiveSym(activeReqAA);
-      const cols = narrow ? 2 : 5;
+      const cols = narrow === 1 ? 1 : (narrow ? 2 : 5);
+      const isNarrow = Boolean(narrow);
       return `
-        <div style="border:0.75px solid #cbd5e1;border-radius:2mm;padding:1.6mm 2.2mm;background:#f8fafc;">
-          <div style="font-size:6.8pt;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#475569;margin-bottom:1mm;">${d.printLegendCompactTitle}</div>
-          <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:1.4mm;font-size:6.7pt;line-height:1.18;">
+        <div style="border:0.75px solid #cbd5e1;border-radius:2mm;padding:${tight ? '1.1mm 1.8mm' : '1.6mm 2.2mm'};background:#f8fafc;">
+          <div style="font-size:${tight ? '6.4pt' : '6.8pt'};font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#475569;margin-bottom:${tight ? '0.7mm' : '1mm'};">${d.printLegendCompactTitle}</div>
+          <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:${tight ? '1mm' : '1.4mm'};font-size:${tight ? '6.4pt' : '6.7pt'};line-height:1.15;">
             <div style="display:flex;align-items:center;gap:1.1mm;">
-              <span class="aa-F" style="width:6.2mm;height:4.8mm;border-radius:1mm;border:1px solid #b45309;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">L●</span>
+              <span class="aa-F" style="width:6mm;height:4.5mm;border-radius:1mm;border:1px solid #b45309;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">L●</span>
               <div><strong>${d.aaHydrophobic}</strong><div style="color:#475569;">L,V,I,F,A,M,W</div></div>
             </div>
             <div style="display:flex;align-items:center;gap:1.1mm;">
-              <span class="aa-P" style="width:6.2mm;height:4.8mm;border-radius:1mm;border:1px solid #047857;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">S</span>
+              <span class="aa-P" style="width:6mm;height:4.5mm;border-radius:1mm;border:1px solid #047857;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">S</span>
               <div><strong>${d.aaPolar}</strong><div style="color:#475569;">S,T,N,Q,Y</div></div>
             </div>
             <div style="display:flex;align-items:center;gap:1.1mm;">
-              <span class="aa-POS" style="width:6.2mm;height:4.8mm;border-radius:1mm;border:1px solid #1d4ed8;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">K+</span>
+              <span class="aa-POS" style="width:6mm;height:4.5mm;border-radius:1mm;border:1px solid #1d4ed8;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">K+</span>
               <div><strong>${d.aaPositive}</strong><div style="color:#475569;">K,R,H (+/−)</div></div>
             </div>
             <div style="display:flex;align-items:center;gap:1.1mm;">
-              <span class="aa-NEG" style="width:6.2mm;height:4.8mm;border-radius:1mm;border:1px solid #b91c1c;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">D−</span>
+              <span class="aa-NEG" style="width:6mm;height:4.5mm;border-radius:1mm;border:1px solid #b91c1c;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">D−</span>
               <div><strong>${d.aaNegative}</strong><div style="color:#475569;">D,E (+/−)</div></div>
             </div>
-            <div style="display:flex;align-items:center;gap:1.1mm;${narrow ? 'grid-column:span 2;' : ''}">
-              <span class="aa-S" style="width:6.2mm;height:4.8mm;border-radius:1mm;border:1px solid #7e22ce;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">C*</span>
+            <div style="display:flex;align-items:center;gap:1.1mm;${cols === 2 ? 'grid-column:span 2;' : ''}">
+              <span class="aa-S" style="width:6mm;height:4.5mm;border-radius:1mm;border:1px solid #7e22ce;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;">C*</span>
               <div><strong>${d.aaSpecial}</strong><div style="color:#475569;">C* (S–S), G°, P°</div></div>
             </div>
           </div>
-          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:${narrow ? 'flex-start' : 'center'};gap:${narrow ? '2mm 3mm' : '3.5mm'};margin-top:1.2mm;padding-top:1.2mm;border-top:0.5px solid #cbd5e1;font-size:6.9pt;color:#334155;">
-            <span style="display:inline-flex;align-items:center;gap:1.1mm;"><span style="width:3.2mm;height:3.2mm;border-radius:0.8mm;background:rgba(56,189,248,0.18);border:1px dashed #0284c7;display:inline-block;"></span> ${d.zoneWater}</span>
-            <span style="display:inline-flex;align-items:center;gap:1.1mm;"><span style="width:3.2mm;height:3.2mm;border-radius:0.8mm;background:rgba(245,158,11,0.22);border:1px dashed #b45309;display:inline-block;"></span> ${d.zoneLipid}</span>
-            <span style="display:inline-flex;align-items:center;gap:1.1mm;"><span style="width:3.2mm;height:3.2mm;border-radius:0.8mm;background:rgba(16,185,129,0.22);border:1px dashed #047857;display:inline-block;"></span> ${d.zonePore}</span>
-            <span style="display:inline-flex;align-items:center;gap:1.1mm;"><span style="width:3.2mm;height:3.2mm;border-radius:0.8mm;background:rgba(168,85,247,0.24);border:1.2px dashed #7e22ce;display:inline-block;"></span> ${d.zoneActiveFor(actSym)}</span>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:${isNarrow ? 'flex-start' : 'center'};gap:${isNarrow ? '1.5mm 2.5mm' : '3.2mm'};margin-top:${tight ? '0.8mm' : '1.2mm'};padding-top:${tight ? '0.8mm' : '1.2mm'};border-top:0.5px solid #cbd5e1;font-size:${tight ? '6.5pt' : '6.9pt'};color:#334155;">
+            <span style="display:inline-flex;align-items:center;gap:1mm;"><span style="width:3mm;height:3mm;border-radius:0.8mm;background:rgba(56,189,248,0.18);border:1px dashed #0284c7;display:inline-block;"></span> ${d.zoneWater}</span>
+            <span style="display:inline-flex;align-items:center;gap:1mm;"><span style="width:3mm;height:3mm;border-radius:0.8mm;background:rgba(245,158,11,0.22);border:1px dashed #b45309;display:inline-block;"></span> ${d.zoneLipid}</span>
+            <span style="display:inline-flex;align-items:center;gap:1mm;"><span style="width:3mm;height:3mm;border-radius:0.8mm;background:rgba(16,185,129,0.22);border:1px dashed #047857;display:inline-block;"></span> ${d.zonePore}</span>
+            <span style="display:inline-flex;align-items:center;gap:1mm;"><span style="width:3mm;height:3mm;border-radius:0.8mm;background:rgba(168,85,247,0.24);border:1.2px dashed #7e22ce;display:inline-block;"></span> ${d.zoneActiveFor(actSym)}</span>
           </div>
         </div>
       `;
@@ -5266,14 +5453,22 @@
       const pids = lvl.pieces;
       const isLarge = printCellMm >= 20;
       const pieceCols = isLarge ? 2 : 3;
+      const ultraCompactPieces = isLarge && pids.length >= 9;
       const compactPieces = isLarge && pids.length >= 7;
+      const pieceCardMode = ultraCompactPieces ? 'ultra' : compactPieces;
       const actReq = getBoardActiveReqAA(lvl.board);
       const safeShort = escapeHtml(ltxt.shortTitle);
       const safeTitle = escapeHtml(ltxt.title);
       const safeDesc = escapeHtml(ltxt.desc);
       const safeDidactic = escapeHtml(ltxt.didactic);
       const safeExName = escapeHtml(ltxt.example.name);
-      const safeExNote = escapeHtml(ltxt.example.note);
+      const needsRotate = (lvl.cols * printCellMm > 164 && lvl.rows < lvl.cols);
+      const xlTall = !needsRotate && lvl.rows >= 7 && isLarge;
+      const rawExNote = ltxt.example.note || '';
+      const trimmedExNote = (xlTall || (needsRotate && lvl.rows >= 4 && isLarge)) && rawExNote.length > 165
+        ? `${rawExNote.slice(0, 162).trim()}…`
+        : rawExNote;
+      const safeExNote = escapeHtml(trimmedExNote);
 
       const idTags = [];
       if (lvl.pdb) idTags.push(`PDB: ${escapeHtml(lvl.pdb)}`);
@@ -5284,14 +5479,14 @@
       // Page 1: Cut-out custom pieces (exact 1:1 scale)
       const page1 = (idx, total) => `
         <div class="print-sheet">
-          <div style="display:flex;flex-direction:column;gap:${compactPieces ? '1.5mm' : '2.2mm'};">
+          <div style="display:flex;flex-direction:column;gap:${ultraCompactPieces ? '1mm' : (compactPieces ? '1.5mm' : '2.2mm')};">
             ${renderPrintSheetHeader(d.customPrintSheetPieces(safeShort), idx, total, d.printRotateOnlyRule)}
-            <div style="font-size:7.6pt;color:#334155;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.5mm;padding:1.2mm 2mm;border-radius:1.8mm;background:#f8fafc;border:0.75px solid #cbd5e1;">
+            <div style="font-size:${ultraCompactPieces ? '7.2pt' : '7.6pt'};color:#334155;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.2mm;padding:${ultraCompactPieces ? '0.75mm 1.8mm' : '1.2mm 2mm'};border-radius:1.8mm;background:#f8fafc;border:0.75px solid #cbd5e1;">
               <span><strong>${safeTitle}</strong> · ${getLevelDiff(lvl)} · ${totalAA} ${d.aaUnit} · ${formatPieces(pids.length)}</span>
-              <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:7pt;color:#475569;">${idBadgeStr}</span>
+              <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:${ultraCompactPieces ? '6.6pt' : '7pt'};color:#475569;">${idBadgeStr}</span>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(${pieceCols},1fr);gap:${compactPieces ? '1.3mm' : '1.8mm'};">
-              ${pids.map(pid => renderPrintPieceCard(pid, compactPieces)).join('')}
+            <div style="display:grid;grid-template-columns:repeat(${pieceCols},1fr);gap:${ultraCompactPieces ? '1mm' : (compactPieces ? '1.3mm' : '1.8mm')};">
+              ${pids.map(pid => renderPrintPieceCard(pid, pieceCardMode)).join('')}
             </div>
             ${!compactPieces ? renderPrintCustomLegend(actReq) : ''}
           </div>
@@ -5300,7 +5495,6 @@
       `;
 
       // Page 2: Board + Biochemical Context (auto-rotate 90° CW if wide at 20mm!)
-      const needsRotate = (lvl.cols * printCellMm > 164 && lvl.rows < lvl.cols);
       let boardSectionHtml;
 
       if (needsRotate) {
@@ -5310,84 +5504,94 @@
           rotBoard[`${c},${lvl.rows - 1 - r}`] = val;
         });
         const rotGridHtml = renderPrintBoardGrid(rotBoard, lvl.cols, lvl.rows);
+        const wideRot = lvl.rows >= 4 && isLarge;
+        const legendNarrow = lvl.rows >= 5 && isLarge ? 1 : 2;
         boardSectionHtml = `
-          <div class="print-board-card" style="display:flex;gap:4.5mm;align-items:stretch;padding:2.2mm 2.8mm;">
+          <div class="print-board-card" style="display:flex;gap:${wideRot ? '3mm' : '4.5mm'};align-items:stretch;padding:${wideRot ? '1.8mm 2.2mm' : '2.2mm 2.8mm'};">
             <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1mm;flex-shrink:0;">
-              <div style="font-size:7.2pt;font-weight:700;color:#475569;">${escapeHtml(ltxt.envLabels.left.replace(/\n+/g, ' '))}</div>
-              <div style="display:flex;align-items:center;gap:1.2mm;">
-                <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:7.2pt;font-weight:600;color:#475569;text-align:center;">${escapeHtml(ltxt.envLabels.bottom)}</div>
+              <div style="font-size:7pt;font-weight:700;color:#475569;">${escapeHtml(ltxt.envLabels.left.replace(/\n+/g, ' '))}</div>
+              <div style="display:flex;align-items:center;gap:1mm;">
+                <div style="writing-mode:vertical-rl;transform:rotate(180deg);font-size:7pt;font-weight:600;color:#475569;text-align:center;">${escapeHtml(ltxt.envLabels.bottom)}</div>
                 ${rotGridHtml}
-                <div style="writing-mode:vertical-rl;font-size:7.2pt;font-weight:600;color:#475569;text-align:center;">${escapeHtml(ltxt.envLabels.top)}</div>
+                <div style="writing-mode:vertical-rl;font-size:7pt;font-weight:600;color:#475569;text-align:center;">${escapeHtml(ltxt.envLabels.top)}</div>
               </div>
-              <div style="font-size:7.2pt;font-weight:700;color:#475569;">${escapeHtml(ltxt.envLabels.right.replace(/\n+/g, ' '))}</div>
+              <div style="font-size:7pt;font-weight:700;color:#475569;">${escapeHtml(ltxt.envLabels.right.replace(/\n+/g, ' '))}</div>
             </div>
-            <div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:2mm;padding:1mm 0;">
-              <div style="display:flex;flex-direction:column;gap:1.8mm;">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:1.6mm;padding:0.5mm 0;">
+              <div style="display:flex;flex-direction:column;gap:1.4mm;">
                 <div>
-                  <div style="font-size:10.2pt;font-weight:800;color:#0f172a;line-height:1.2;">${safeTitle}</div>
-                  <div style="margin-top:1mm;font-size:7.2pt;font-weight:600;color:#334155;">${getLevelDiff(lvl)} · ${totalAA} ${d.aaUnit} · ${formatPieces(pids.length)}</div>
+                  <div style="font-size:${wideRot ? '9.4pt' : '10.2pt'};font-weight:800;color:#0f172a;line-height:1.2;">${safeTitle}</div>
+                  <div style="margin-top:0.8mm;font-size:7pt;font-weight:600;color:#334155;">${getLevelDiff(lvl)} · ${totalAA} ${d.aaUnit} · ${formatPieces(pids.length)}</div>
                 </div>
-                <div style="font-size:8pt;color:#0f172a;padding:1.5mm 2mm;border-radius:1.8mm;background:#f8fafc;border:0.75px solid #cbd5e1;">
+                <div style="font-size:7.6pt;color:#0f172a;padding:1.2mm 1.8mm;border-radius:1.8mm;background:#f8fafc;border:0.75px solid #cbd5e1;">
                   ${d.printUsePieces} <strong>${pids.join(', ')}</strong>
                 </div>
-                <p style="font-size:7.8pt;color:#334155;line-height:1.38;margin:0;">${safeDesc}</p>
-                <div style="padding:1.8mm 2.2mm;border-radius:2mm;background:#f8fafc;border:0.75px solid #e2e8f0;">
-                  <div style="font-size:7.6pt;font-weight:700;color:#0f172a;margin-bottom:0.6mm;">🔬 ${d.didacticHeading}</div>
-                  <p style="font-size:7.3pt;color:#475569;line-height:1.38;margin:0;">${safeDidactic}</p>
+                <p style="font-size:7.4pt;color:#334155;line-height:1.32;margin:0;">${safeDesc}</p>
+                <div style="padding:1.4mm 1.8mm;border-radius:2mm;background:#f8fafc;border:0.75px solid #e2e8f0;">
+                  <div style="font-size:7.3pt;font-weight:700;color:#0f172a;margin-bottom:0.5mm;">🔬 ${d.didacticHeading}</div>
+                  <p style="font-size:7pt;color:#475569;line-height:1.32;margin:0;">${safeDidactic}</p>
                 </div>
-                <div style="padding:1.8mm 2.2mm;border-radius:2mm;background:#f8fafc;border:0.75px solid #e2e8f0;">
-                  <div style="font-size:7.6pt;font-weight:700;color:#0f172a;margin-bottom:0.6mm;">🧪 ${safeExName} <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#475569;">(${idBadgeStr})</span></div>
-                  <p style="font-size:7.2pt;color:#475569;line-height:1.35;margin:0;">${safeExNote}</p>
+                <div style="padding:1.4mm 1.8mm;border-radius:2mm;background:#f8fafc;border:0.75px solid #e2e8f0;">
+                  <div style="font-size:7.3pt;font-weight:700;color:#0f172a;margin-bottom:0.5mm;">🧪 ${safeExName} <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#475569;">(${idBadgeStr})</span></div>
+                  <p style="font-size:6.9pt;color:#475569;line-height:1.3;margin:0;">${safeExNote}</p>
                 </div>
               </div>
-              ${renderPrintCustomLegend(actReq, true)}
+              ${renderPrintCustomLegend(actReq, legendNarrow, wideRot)}
             </div>
           </div>
         `;
       } else {
         const gridHtml = renderPrintBoardGrid(lvl.board, lvl.rows, lvl.cols);
         const gridW = lvl.cols * printCellMm;
+        const ultraTightW = gridW >= 160;
         const tightW = gridW >= 150;
         const tallBoard = lvl.rows >= 6 && isLarge;
-        const sideStyle = tightW
-          ? 'font-size:6.5pt;font-weight:600;color:#475569;line-height:1.12;max-width:12mm;white-space:pre-line;'
-          : 'font-size:7.2pt;font-weight:600;color:#475569;line-height:1.15;max-width:22mm;white-space:pre-line;';
+        const sideStyle = ultraTightW
+          ? 'font-size:6.1pt;font-weight:600;color:#475569;line-height:1.1;max-width:10.5mm;white-space:pre-line;'
+          : (tightW
+            ? 'font-size:6.5pt;font-weight:600;color:#475569;line-height:1.12;max-width:12mm;white-space:pre-line;'
+            : 'font-size:7.2pt;font-weight:600;color:#475569;line-height:1.15;max-width:22mm;white-space:pre-line;');
+        const cardPad = xlTall
+          ? (ultraTightW ? 'padding:1.1mm 1.2mm;' : 'padding:1.1mm 1.8mm;')
+          : (tallBoard
+            ? (ultraTightW ? 'padding:1.5mm 1.2mm;' : 'padding:1.6mm 2mm;')
+            : (ultraTightW ? 'padding:1.8mm 1.2mm;' : ''));
         boardSectionHtml = `
-          <div class="print-board-card" style="${tallBoard ? 'padding:1.6mm 2mm;' : ''}">
-            <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:1mm;margin-bottom:${tallBoard ? '0.8mm' : '1.4mm'};">
+          <div class="print-board-card" style="${cardPad}">
+            <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:1mm;margin-bottom:${xlTall ? '0.5mm' : (tallBoard ? '0.8mm' : '1.4mm')};">
               <div style="display:flex;align-items:center;gap:1.2mm;flex-wrap:wrap;">
-                <span style="font-size:${tallBoard ? '9pt' : '9.6pt'};font-weight:800;color:#0f172a;">${safeTitle}</span>
-                <span style="font-size:6.8pt;font-weight:600;padding:0.3mm 1.5mm;border-radius:999px;background:#e2e8f0;color:#1e293b;">${getLevelDiff(lvl)} · ${totalAA} ${d.aaUnit}</span>
+                <span style="font-size:${xlTall ? '8.6pt' : (tallBoard ? '9pt' : '9.6pt')};font-weight:800;color:#0f172a;">${safeTitle}</span>
+                <span style="font-size:6.6pt;font-weight:600;padding:0.25mm 1.4mm;border-radius:999px;background:#e2e8f0;color:#1e293b;">${getLevelDiff(lvl)} · ${totalAA} ${d.aaUnit}</span>
               </div>
-              <div style="font-size:7.6pt;color:#334155;">
+              <div style="font-size:${xlTall ? '7.1pt' : '7.6pt'};color:#334155;">
                 ${d.printUsePieces} <strong style="color:#0f172a;">${pids.join(', ')}</strong>
               </div>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:${tallBoard ? '0.5mm' : '1mm'};padding:${tallBoard ? '0.2mm 0' : '0.6mm 0'};">
-              <div style="font-size:7.2pt;font-weight:600;color:#475569;">${escapeHtml(ltxt.envLabels.top)}</div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:${xlTall ? '0.35mm' : (tallBoard ? '0.5mm' : '1mm')};padding:${xlTall ? '0.1mm 0' : (tallBoard ? '0.2mm 0' : '0.6mm 0')};">
+              <div style="font-size:${xlTall ? '6.8pt' : '7.2pt'};font-weight:600;color:#475569;">${escapeHtml(ltxt.envLabels.top)}</div>
               <div style="display:flex;align-items:center;justify-content:center;gap:${tightW ? '1mm' : '2.2mm'};">
                 <div style="${sideStyle}text-align:right;">${escapeHtml(ltxt.envLabels.left)}</div>
                 ${gridHtml}
                 <div style="${sideStyle}text-align:left;">${escapeHtml(ltxt.envLabels.right)}</div>
               </div>
-              <div style="font-size:7.2pt;font-weight:600;color:#475569;">${escapeHtml(ltxt.envLabels.bottom)}</div>
+              <div style="font-size:${xlTall ? '6.8pt' : '7.2pt'};font-weight:600;color:#475569;">${escapeHtml(ltxt.envLabels.bottom)}</div>
             </div>
-            <div style="font-size:7.1pt;color:#334155;text-align:center;line-height:1.25;margin-top:${tallBoard ? '0.6mm' : '1mm'};">
+            <div style="font-size:${xlTall ? '6.7pt' : '7.1pt'};color:#334155;text-align:center;line-height:${xlTall ? '1.18' : '1.25'};margin-top:${xlTall ? '0.4mm' : (tallBoard ? '0.6mm' : '1mm')};">
               ${safeDesc}
             </div>
           </div>
-          <div style="border:0.75px solid #cbd5e1;border-radius:2.2mm;padding:${tallBoard ? '1.6mm 2.4mm' : '2mm 2.8mm'};background:#f8fafc;">
-            <div style="font-size:7.6pt;font-weight:700;color:#0f172a;margin-bottom:0.5mm;">🔬 ${d.didacticHeading} · <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#475569;">${idBadgeStr}</span></div>
-            <p style="font-size:7.2pt;color:#334155;line-height:1.34;margin:0;">${safeDidactic}</p>
-            ${p && p.functionNote ? `<p style="font-size:7pt;color:#475569;line-height:1.32;margin:1mm 0 0;padding-top:1mm;border-top:0.5px solid #cbd5e1;"><strong>🧪 ${safeExName}:</strong> ${safeExNote}</p>` : ''}
+          <div style="border:0.75px solid #cbd5e1;border-radius:2.2mm;padding:${xlTall ? '1.1mm 2mm' : (tallBoard ? '1.6mm 2.4mm' : '2mm 2.8mm')};background:#f8fafc;">
+            <div style="font-size:${xlTall ? '7.2pt' : '7.6pt'};font-weight:700;color:#0f172a;margin-bottom:0.4mm;">🔬 ${d.didacticHeading} · <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#475569;">${idBadgeStr}</span></div>
+            <p style="font-size:${xlTall ? '6.8pt' : '7.2pt'};color:#334155;line-height:${xlTall ? '1.24' : '1.34'};margin:0;">${safeDidactic}</p>
+            ${p && p.functionNote ? `<p style="font-size:${xlTall ? '6.6pt' : '7pt'};color:#475569;line-height:${xlTall ? '1.22' : '1.32'};margin:${xlTall ? '0.7mm' : '1mm'} 0 0;padding-top:${xlTall ? '0.7mm' : '1mm'};border-top:0.5px solid #cbd5e1;"><strong>🧪 ${safeExName}:</strong> ${safeExNote}</p>` : ''}
           </div>
-          ${renderPrintCustomLegend(actReq)}
+          ${renderPrintCustomLegend(actReq, false, xlTall)}
         `;
       }
 
       const page2 = (idx, total) => `
         <div class="print-sheet">
-          <div style="display:flex;flex-direction:column;gap:1.8mm;">
+          <div style="display:flex;flex-direction:column;gap:${xlTall ? '1.2mm' : '1.8mm'};">
             ${renderPrintSheetHeader(d.customPrintSheetBoard(safeShort), idx, total)}
             ${boardSectionHtml}
           </div>
@@ -5796,12 +6000,12 @@
       }
 
       if (customParam) {
-        if ([16, 22, 28].includes(customSizeParam)) customProteinState.size = customSizeParam;
+        if (VALID_CUSTOM_SIZES.includes(customSizeParam)) customProteinState.size = customSizeParam;
         if (customModeParam === '3d' || customModeParam === 'archetype') customProteinState.mode = customModeParam;
         selectLevel('custom', true, true, true);
         loadCustomProtein(customParam, {
           mode: (customModeParam === '3d' || customModeParam === 'archetype') ? customModeParam : undefined,
-          size: [16, 22, 28].includes(customSizeParam) ? customSizeParam : undefined
+          size: VALID_CUSTOM_SIZES.includes(customSizeParam) ? customSizeParam : undefined
         }).then((ok) => {
           if (ok && params.get('view') === 'print') {
             setPrintScope('custom');
