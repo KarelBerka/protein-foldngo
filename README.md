@@ -1,9 +1,9 @@
-# 🧬 Protein Fold'n'Go (Proteinové Ubongo)
+# <img src="./protein-emoji.svg" width="32" alt="Protein emoji" align="absmiddle" /> Protein Fold'n'Go (Proteinové Ubongo)
 
 Interaktivní biochemická skládačka ve stylu deskové hry **Ubongo**, ve které z peptidových polyomino dílků skládáte trojrozměrné architektury proteinů podle vlastností postranních řetězců aminokyselin.
 
 👉 **Hrát přímo v prohlížeči:** [https://karelberka.github.io/protein-foldngo/](https://karelberka.github.io/protein-foldngo/)  
-🌐 **Jazykové verze / Languages:** [Čeština (CZ)](https://karelberka.github.io/protein-foldngo/cz/) · [English (EN)](https://karelberka.github.io/protein-foldngo/en/) · [Deutsch (DE)](https://karelberka.github.io/protein-foldngo/de/) · [Français (FR)](https://karelberka.github.io/protein-foldngo/fr/)
+🌐 **Jazykové verze / Languages:** [Čeština (CZ, výchozí)](https://karelberka.github.io/protein-foldngo/) · [English (`?lang=en`)](https://karelberka.github.io/protein-foldngo/?lang=en) · [Deutsch (`?lang=de`)](https://karelberka.github.io/protein-foldngo/?lang=de) · [Français (`?lang=fr`)](https://karelberka.github.io/protein-foldngo/?lang=fr)
 
 ## Co hra obsahuje
 
@@ -20,7 +20,7 @@ Interaktivní biochemická skládačka ve stylu deskové hry **Ubongo**, ve kter
 - **✨ Skládání proteinu na přání (název, UniProt ID nebo PDB ID):**
   - Živé vyhledávání v **UniProtKB**, **RCSB PDB (ModelServer Cα)** a **AlphaFold DB** přímo v prohlížeči (včetně rychlých tipů jako Hemoglobin `4HHB`, GFP `1EMA`, CYP3A4 `P08684`, Rhodopsin `1U19`, Aquaporin-1 `P29972`, Ubiquitin `1UBQ`, SARS-CoV-2 Spike `6VXX`, p53 `P04637`).
   - **Hybridní generátor hrací plochy:** reálná **🧊 3D silueta** (PCA + zarovnání transmembránové osy + 3D zanoření + aktivní místo a polární tunel z UniProt anotací) s okamžitým přepnutím na **📐 biochemický archetyp** (a automatickým fallbackem při absenci 3D struktury).
-  - Volba velikosti / obtížnosti (**16 / 22 / 28 AK**), varianty dílků A–D / 🎲, **sdílitelný URL odkaz** (`?custom=4HHB&mode=3d&n=22`) a **tisková A4 šablona 1:1** (`20 mm` i `14 mm`) přímo pro vygenerovaný protein.
+  - Volba velikosti / obtížnosti (**16 / 22 / 28 / 40 AK · XL** pro vícepodjednotkové komplexy jako hemoglobin `4HHB` nebo trimerní SARS-CoV-2 Spike `6VXX` na dlouhém membránovém stonku — z PDB se promítají všechny řetězce komplexu a archetypy zahrnují čtyřlalokový tetramer i trimerní korunu na stonku), varianty dílků A–D / 🎲, **sdílitelný URL odkaz** (`?custom=4HHB&mode=3d&n=40`) a **tisková A4 šablona 1:1** (`20 mm` i `14 mm`) přímo pro vygenerovaný protein.
 - **4 jazykové verze:** čeština (`CZ`), angličtina (`EN`), němčina (`DE`) a francouzština (`FR`).
 - **4 předpřipravené varianty (A–D) + generátor `🎲 Jiná kombinace`** pro nekonečnou znovuhratelnost u každého typu proteinu.
 - **Responzivní rozhraní pro počítač i mobil (pouze otáčení bez zrcadlového překlápění)** — dílky přímo u herní plochy, přetahování myší i prstem (Drag & Drop s magnetickým přicvakáváním), ťuknutí na vybraný dílek / tlačítko `↻` / pravý klik / klávesa `R` pro otočení o 90°.
@@ -44,6 +44,8 @@ Interaktivní biochemická skládačka ve stylu deskové hry **Ubongo**, ve kter
 ## Poděkování / Acknowledgement
 
 This work was supported in part by complimentary access to [Google Antigravity](https://antigravity.google/) and Gemini 4 Argon, Carbon, Neon and Hydrogen to accelerate scientific workflows.
+
+Protein emoji icon by [Andrew White / University of Rochester](https://github.com/whitead/protein-emoji) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)).
 
 ## Licence
 

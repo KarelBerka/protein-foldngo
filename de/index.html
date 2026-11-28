@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Protein Fold'n'Go – Deutsch</title>
+  <link rel="icon" type="image/svg+xml" href="../protein-emoji.svg" />
   <script>
-    localStorage.setItem("foldngo-lang", "de");
-    window.location.replace("../?lang=de");
+    const params = new URLSearchParams(window.location.search);
+    params.set("lang", "de");
+    window.location.replace("../?" + params.toString());
   </script>
   <noscript>
     <meta http-equiv="refresh" content="0; url=../?lang=de">
