@@ -1,4 +1,4 @@
-# 🧬 Protein Fold'n'Go (Proteinové Ubongo)
+# <img src="./protein-emoji.svg" width="32" alt="Protein emoji" align="absmiddle" /> Protein Fold'n'Go (Proteinové Ubongo)
 
 Interaktivní biochemická skládačka ve stylu deskové hry **Ubongo**, ve které z peptidových polyomino dílků skládáte trojrozměrné architektury proteinů podle vlastností postranních řetězců aminokyselin.
 
@@ -44,6 +44,8 @@ Interaktivní biochemická skládačka ve stylu deskové hry **Ubongo**, ve kter
 ## Poděkování / Acknowledgement
 
 This work was supported in part by complimentary access to [Google Antigravity](https://antigravity.google/) and Gemini 4 Argon, Carbon, Neon and Hydrogen to accelerate scientific workflows.
+
+Protein emoji icon by [Andrew White / University of Rochester](https://github.com/whitead/protein-emoji) ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)).
 
 ## Licence
 

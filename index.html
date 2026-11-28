@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Protein Fold'n'Go — Proteinové Ubongo</title>
   <meta name="description" content="Interaktivní biochemická skládačka ve stylu Ubongo: skládej globulární proteiny, membránové kanály, fibrily i enzymy s polárním tunelem a aktivním místem C*." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>" />
+  <link rel="icon" type="image/svg+xml" href="./protein-emoji.svg" />
+  <link rel="icon" type="image/png" sizes="72x72" href="./protein-emoji.png" />
+  <link rel="apple-touch-icon" href="./protein-emoji.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
@@ -240,7 +242,8 @@
     <header id="site-header" class="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 pb-2 border-b border-[var(--border)]">
       <div class="order-1 flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0">
         <h1 class="text-base sm:text-lg font-bold tracking-tight flex items-center gap-1.5 flex-wrap">
-          <span>🧬</span> Protein Fold'n'Go
+          <img src="./protein-emoji.svg" alt="" aria-hidden="true" class="w-6 h-6 sm:w-7 sm:h-7 shrink-0" />
+          <span>Protein Fold'n'Go</span>
           <span data-i18n="headerSubtitle" class="hidden md:inline text-xs font-normal text-[var(--muted-foreground)]">(Proteinové Ubongo)</span>
         </h1>
         <span id="overall-progress" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
@@ -598,7 +601,10 @@
     <footer id="site-footer" class="pt-5 mt-6 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)] space-y-2.5">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span class="font-semibold text-[var(--foreground)]">🧬 Protein Fold'n'Go</span>
+          <span class="inline-flex items-center gap-1.5 font-semibold text-[var(--foreground)]">
+            <img src="./protein-emoji.svg" alt="" aria-hidden="true" class="w-4 h-4 shrink-0" />
+            Protein Fold'n'Go
+          </span>
           <span>·</span>
           <span>
             <span data-i18n="footerAuthorLabel">Autor:</span>
@@ -619,6 +625,13 @@
         <a href="https://antigravity.google/" target="_blank" rel="noopener noreferrer"
            class="text-[var(--primary)] hover:underline font-medium">Google Antigravity</a>
         and Gemini 4 Argon, Carbon, Neon and Hydrogen to accelerate scientific workflows.
+      </p>
+      <p class="text-[11px] leading-relaxed opacity-80">
+        Protein emoji by
+        <a href="https://github.com/whitead/protein-emoji" target="_blank" rel="noopener noreferrer"
+           class="text-[var(--primary)] hover:underline">Andrew White / University of Rochester</a>
+        (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer"
+            class="hover:underline">CC BY 4.0</a>).
       </p>
     </footer>
 
@@ -5139,7 +5152,7 @@
       return `
         <div style="border-bottom:1.5px solid #0f172a;padding-bottom:1.2mm;display:flex;align-items:baseline;justify-content:space-between;gap:2mm;">
           <div>
-            <div style="font-size:9.8pt;font-weight:800;color:#0f172a;line-height:1.15;">🧬 Protein Fold'n'Go — ${title}</div>
+            <div style="font-size:9.8pt;font-weight:800;color:#0f172a;line-height:1.15;"><img src="./protein-emoji.svg" alt="" style="width:3.8mm;height:3.8mm;display:inline-block;vertical-align:-0.55mm;margin-right:1mm;" />Protein Fold'n'Go — ${title}</div>
             ${subtitle ? `<div style="font-size:7.3pt;color:#475569;margin-top:0.5mm;">${subtitle}</div>` : ''}
           </div>
           <div style="font-size:7.5pt;font-weight:700;color:#334155;white-space:nowrap;">${d.printPageLabel(pageIdx, totalPages)}</div>
